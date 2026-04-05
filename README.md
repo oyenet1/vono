@@ -471,6 +471,40 @@ my-app/
 
 ---
 
+## Publishing to npm
+
+> Full guide: [PUBLISHING.md](./PUBLISHING.md)
+
+### Quick publish (manual)
+
+```bash
+bun run build
+cd packages/vonosan && npm version patch && npm publish --access public && cd ../..
+cd packages/create-vonosan && npm version patch && npm publish --access public && cd ../..
+```
+
+### Publish via script
+
+```bash
+chmod +x scripts/publish.sh
+./scripts/publish.sh              # patch bump all packages
+./scripts/publish.sh minor        # minor bump
+./scripts/publish.sh patch vonosan  # only core package
+```
+
+### Publish via CI/CD (GitHub Actions)
+
+```bash
+git tag v0.2.0 && git push origin main --tags
+```
+
+Or trigger manually from the [Actions tab](https://github.com/oyenet1/vonosan/actions/workflows/release-packages.yml).
+
+> **Required:** Add an `NPM_TOKEN` secret to your repo at  
+> [Settings → Secrets → Actions](https://github.com/oyenet1/vonosan/settings/secrets/actions)
+
+---
+
 ## Deep Dive
 
 The sections below provide detailed implementation notes and architecture decisions.
