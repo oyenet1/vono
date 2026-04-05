@@ -13,13 +13,13 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "giget": "^1.2.3",
-    "kolorist": "^1.8.0",
-    "execa": "^9.5.2"
+    "@clack/prompts": "0.11.0",
+    "execa": "9.5.2",
+    "giget": "1.2.3",
+    "kolorist": "1.8.0"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "@types/bun": "^1.2.14"
+    "@types/bun": "1.2.14",
+    "typescript": "5.8.3"
   }
 }

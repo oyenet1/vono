@@ -21,9 +21,9 @@
     "vono": ">=0.1.0"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "@types/bun": "^1.2.14",
-    "drizzle-orm": "^0.44.5",
+    "@types/bun": "1.2.14",
+    "drizzle-orm": "0.44.5",
+    "typescript": "5.8.3",
     "vono": "workspace:*"
   }
 }
