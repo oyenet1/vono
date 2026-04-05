@@ -9303,6 +9303,7 @@ It does the following:
 - Creates `.tgz` package archives for each package in `packages/*`
 - Uploads archives as workflow artifacts
 - Publishes/updates a GitHub Release with those archives attached
+- Publishes non-private workspace packages to npm (if `NPM_TOKEN` is configured)
 
 #### Trigger by tag push
 
@@ -9314,6 +9315,10 @@ git push origin v0.1.0
 #### Trigger manually
 
 Use **Actions -> Release Packages -> Run workflow** and provide a tag like `v0.1.0`.
+
+#### Required secret for npm publish
+
+- `NPM_TOKEN`
 
 ### Module versioning
 

@@ -26,15 +26,16 @@ async function main(): Promise<void> {
   const args = process.argv.slice(2)
 
   // Parse project name (first positional arg)
-  const projectName = args.find((a) => !a.startsWith('--')) ?? 'my-vonosan-app'
+  const initialProjectName = args.find((a) => !a.startsWith('--')) ?? ''
 
   // Parse flags
   const saasFlag = args.includes('--saas')
 
-  process.stdout.write(bold(`\ncreate-vonosan v0.1.0\n\n`))
+  process.stdout.write(bold(`\ncreate-vonosan v0.1.7\n\n`))
 
   // ── Run interactive wizard ────────────────────────────────────────
-  const answers = await runWizard(projectName, saasFlag)
+  const answers = await runWizard(initialProjectName, saasFlag)
+  const projectName = answers.projectName
 
   // ── Scaffold project files ────────────────────────────────────────
   process.stdout.write(`\nScaffolding project "${projectName}"...\n`)
@@ -97,6 +98,10 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
+  if (err instanceof Error && err.message === 'Operation cancelled') {
+    process.exit(0)
+  }
+
   process.stderr.write(`\x1b[31mFatal: ${String(err)}\x1b[0m\n`)
   process.exit(1)
 })

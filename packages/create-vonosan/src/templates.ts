@@ -23,7 +23,39 @@ const HEADER = (date: string) => `/**
 export function generateTemplates(answers: WizardAnswers): Record<string, string> {
   const date = new Date().toISOString().slice(0, 10)
   const h = HEADER(date)
-  const { projectName, deploymentTarget, database, auth, apiDocs, saas, testing } = answers
+  const {
+    projectName,
+    deploymentTarget,
+    database,
+    auth,
+    apiDocs,
+    saas,
+    testing,
+    queue,
+    queueRedisDriver,
+    cache,
+    websocket,
+    websocketDriver,
+  } = answers
+  const isDockerTarget = deploymentTarget === 'bun-docker' || deploymentTarget === 'nodejs-docker'
+  const dockerRuntime = deploymentTarget === 'nodejs-docker' ? 'nodejs' : 'bun'
+  const runtimeTarget =
+    deploymentTarget === 'nodejs' || deploymentTarget === 'nodejs-docker'
+      ? 'node'
+      : deploymentTarget === 'bun-docker'
+        ? 'bun'
+        : deploymentTarget
+  const startCommand =
+    deploymentTarget === 'nodejs' || deploymentTarget === 'nodejs-docker'
+      ? 'node dist/server/index.js'
+      : 'bun dist/server/index.js'
+  const needsIoredis =
+    cache === 'ioredis' ||
+    (queue === 'bullmq' && (queueRedisDriver === 'ioredis' || queueRedisDriver === 'upstash-redis'))
+  const needsRedisClient = queue === 'bullmq' && queueRedisDriver === 'redis'
+  const needsUpstashRedis = cache === 'upstash'
+  const needsSocketIo = websocketDriver === 'socket.io'
+  const needsNativeWs = websocketDriver === 'native'
 
   return {
     'vonosan.config.ts': `${h}
@@ -38,7 +70,7 @@ export default defineVonosanConfig({
     key: process.env.APP_KEY ?? 'change-me',
     language: 'ts',
   },
-  runtime: '${deploymentTarget}',
+  runtime: '${runtimeTarget}',
   mode: '${answers.projectType}',
   ${saas ? 'saas: true,' : ''}
   ${apiDocs ? `docs: {
@@ -87,8 +119,22 @@ APP_KEY=change-me-to-a-random-secret
 
 DATABASE_URL=postgresql://postgres:password@localhost:5432/${projectName.replace(/-/g, '_')}
 JWT_SECRET=change-me-to-a-random-jwt-secret
-CLIENT_URL=http://localhost:5173
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost:4000
+CLIENT_URL=http://localhost:4000
+ALLOWED_ORIGINS=http://localhost:4000
+${queue !== 'none' ? `QUEUE_DRIVER=${queue}
+` : ''}${queue === 'bullmq' ? `QUEUE_REDIS_DRIVER=${queueRedisDriver}
+REDIS_URL=redis://localhost:6379
+` : ''}${queue === 'cloudflare-queues' ? `CF_QUEUE_NAME=default
+` : ''}${queue === 'bullmq' && queueRedisDriver === 'upstash-redis' ? `UPSTASH_REDIS_URL=rediss://default:your-password@your-upstash-host:6379
+` : ''}${cache === 'ioredis' ? `CACHE_DRIVER=ioredis
+CACHE_REDIS_URL=redis://localhost:6379
+` : ''}${cache === 'upstash' ? `CACHE_DRIVER=upstash
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+` : ''}${cache === 'kv' ? `CACHE_DRIVER=kv
+CLOUDFLARE_KV_NAMESPACE_ID=
+` : ''}${websocket ? `WEBSOCKET_DRIVER=${websocketDriver}
+` : ''}
 `,
 
     '.env.example': `# ──────────────────────────────────────────────────────────────────
@@ -105,6 +151,17 @@ DATABASE_URL=
 JWT_SECRET=
 CLIENT_URL=
 ALLOWED_ORIGINS=
+QUEUE_DRIVER=
+QUEUE_REDIS_DRIVER=
+CF_QUEUE_NAME=
+REDIS_URL=
+UPSTASH_REDIS_URL=
+CACHE_DRIVER=
+CACHE_REDIS_URL=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+CLOUDFLARE_KV_NAMESPACE_ID=
+WEBSOCKET_DRIVER=
 `,
 
     'llms.txt': `# ${projectName}
@@ -115,8 +172,9 @@ ALLOWED_ORIGINS=
 - Runtime: ${deploymentTarget}
 - Database: ${database}
 - Auth: ${auth ? 'JWT + refresh tokens' : 'none'}
-- Queue: ${answers.queue}
-- Cache: ${answers.cache}
+- Queue: ${queue}${queue === 'bullmq' ? ` (${queueRedisDriver})` : ''}
+- Cache: ${cache}
+- WebSocket: ${websocket ? websocketDriver : 'none'}
 - Email: ${answers.email}
 - Storage: ${answers.storage}
 
@@ -129,7 +187,10 @@ ALLOWED_ORIGINS=
 
 ## Commands
 - \`bun run dev\` — start the development server
-- \`bunx @vonosan/cli make:module <name>\` — scaffold a module (after CLI package is published)
+- \`bun run lint\` — run Vonosan linter
+- \`bun run migrate:make\` — create migration
+- \`bun run migrate:run\` — run migrations
+- \`bun run make:module -- users\` — scaffold a module
 `,
 
     'index.html': `<!DOCTYPE html>
@@ -144,6 +205,30 @@ ALLOWED_ORIGINS=
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
+`,
+
+    'index.ts': `${h}
+
+import app from './src/app.js'
+
+const port = Number(process.env.PORT ?? 4000)
+
+const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
+
+if (typeof bunRef?.serve === 'function') {
+  bunRef.serve({
+    port,
+    fetch: app.fetch,
+  })
+} else {
+  const { serve } = await import('@hono/node-server')
+  serve({
+    port,
+    fetch: app.fetch,
+  })
+}
+
+export default app
 `,
 
     'src/App.vue': `<!--
@@ -272,6 +357,215 @@ export const db = null
 export const client = null
 `,
 
+    ...(queue === 'bullmq'
+      ? {
+          'src/jobs/queue.provider.ts': `${h}
+
+/**
+ * Queue provider scaffold.
+ * Driver: bullmq
+ * Redis backend: ${queueRedisDriver}
+ */
+export const queueDriver = 'bullmq' as const
+export const queueRedisBackend = '${queueRedisDriver}' as const
+
+export const queueConnection = {
+  redisUrl:
+    process.env.REDIS_URL ??
+    process.env.UPSTASH_REDIS_URL ??
+    'redis://localhost:6379',
+}
+`,
+        }
+      : {}),
+
+    ...(queue === 'cloudflare-queues'
+      ? {
+          'src/jobs/queue.provider.ts': `${h}
+
+/**
+ * Queue provider scaffold.
+ * Driver: cloudflare-queues
+ */
+export const queueDriver = 'cloudflare-queues' as const
+export const cloudflareQueueName = process.env.CF_QUEUE_NAME ?? 'default'
+`,
+        }
+      : {}),
+
+    'scripts/vono-cli.mjs': `#!/usr/bin/env node
+
+import { existsSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+import { join } from 'node:path'
+
+const args = process.argv.slice(2)
+
+if (!args.length) {
+  console.error('[vono-cli] Missing command, e.g. migrate:run or lint')
+  process.exit(1)
+}
+
+function run(command, commandArgs) {
+  const result = spawnSync(command, commandArgs, {
+    stdio: 'inherit',
+    shell: process.platform === 'win32',
+  })
+
+  if (typeof result.status === 'number') return result.status
+  return result.error ? 1 : 0
+}
+
+const localBin = process.platform === 'win32'
+  ? join(process.cwd(), 'node_modules', '.bin', 'vonosan.cmd')
+  : join(process.cwd(), 'node_modules', '.bin', 'vonosan')
+
+if (existsSync(localBin)) {
+  process.exit(run(localBin, args))
+}
+
+let status = run('bunx', ['--yes', '@vonosan/cli', ...args])
+if (status === 0) {
+  process.exit(0)
+}
+
+status = run('npx', ['--yes', '@vonosan/cli', ...args])
+if (status === 0) {
+  process.exit(0)
+}
+
+console.error(
+  '[vono-cli] Could not run @vonosan/cli. Please install it or try again later when npm release is available.',
+)
+process.exit(1)
+`,
+
+    ...(websocket
+      ? {
+          'src/shared/ws/provider.ts': `${h}
+
+/**
+ * WebSocket provider scaffold.
+ * Selected driver: ${websocketDriver}
+ */
+export const websocketDriver = '${websocketDriver}' as const
+`,
+        }
+      : {}),
+
+    ...(websocketDriver === 'socket.io'
+      ? {
+          'src/shared/ws/socketio.server.ts': `${h}
+
+import { Server as SocketIOServer } from 'socket.io'
+
+export function createSocketIOServer() {
+  return new SocketIOServer({
+    cors: {
+      origin: process.env.CLIENT_URL ?? process.env.APP_URL ?? 'http://localhost:4000',
+      credentials: true,
+    },
+  })
+}
+`,
+        }
+      : {}),
+
+    ...(websocketDriver === 'native'
+      ? {
+          'src/shared/ws/native.server.ts': `${h}
+
+import { WebSocketServer } from 'ws'
+
+export function createNativeWebSocketServer(port = Number(process.env.PORT ?? 4000)) {
+  return new WebSocketServer({ port })
+}
+`,
+        }
+      : {}),
+
+    ...(websocketDriver === 'cloudflare-websocket'
+      ? {
+          'src/shared/ws/cloudflare.server.ts': `${h}
+
+/**
+ * Cloudflare WebSocket scaffold placeholder.
+ * Implement with Hono upgradeWebSocket helper in Workers runtime.
+ */
+export const cloudflareWebSocketEnabled = true
+`,
+        }
+      : {}),
+
+    ...(isDockerTarget
+      ? {
+          '.dockerignore': `node_modules
+dist
+.git
+.github
+*.log
+.env
+`,
+          Dockerfile:
+            dockerRuntime === 'bun'
+              ? `FROM oven/bun:1
+
+WORKDIR /app
+
+COPY . .
+
+RUN bun install --frozen-lockfile || bun install
+RUN bun run build
+
+EXPOSE 4000
+
+CMD ["bun", "run", "start"]
+`
+              : `FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 4000
+
+CMD ["npm", "run", "start"]
+`,
+          'docker-compose.yml': `services:
+  app:
+    build: .
+    container_name: ${projectName}
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    restart: unless-stopped
+`,
+          'docker-stack.yml': `version: "3.9"
+
+services:
+  app:
+    image: ${projectName}:latest
+    ports:
+      - target: 4000
+        published: 4000
+        protocol: tcp
+        mode: ingress
+    env_file:
+      - .env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+`,
+        }
+      : {}),
+
     'src/db/schema.ts': `${h}
 
 // Auto-generated by vonosan schema:sync
@@ -294,25 +588,46 @@ export {}
         version: '0.1.0',
         type: 'module',
         scripts: {
-          dev: 'vite',
+          dev: 'vite --host 0.0.0.0 --port 4000',
           build: 'vite build',
-          preview: 'vite preview',
-          start: 'bun dist/server/index.js',
+          preview: 'vite preview --host 0.0.0.0 --port 4000',
+          start: startCommand,
+          'vono:cli': 'node ./scripts/vono-cli.mjs',
+          'migrate:run': 'node ./scripts/vono-cli.mjs migrate:run',
+          'migrate:make': 'node ./scripts/vono-cli.mjs migrate:make',
+          lint: 'node ./scripts/vono-cli.mjs lint',
+          'make:module': 'node ./scripts/vono-cli.mjs make:module',
           ...(testing !== 'none' ? { test: testing === 'bun' ? 'bun test' : testing } : {}),
         },
         dependencies: {
           vonosan: 'latest',
           hono: 'latest',
+          '@hono/node-server': 'latest',
           vue: 'latest',
           'vue-router': 'latest',
           pinia: 'latest',
           '@unhead/vue': 'latest',
           '@nuxt/ui': 'latest',
           'drizzle-orm': 'latest',
+          ...(queue === 'bullmq' ? { bullmq: 'latest' } : {}),
+          ...(needsIoredis ? { ioredis: 'latest' } : {}),
+          ...(needsRedisClient ? { redis: 'latest' } : {}),
+          ...(needsUpstashRedis ? { '@upstash/redis': 'latest' } : {}),
+          ...(needsSocketIo
+            ? {
+                'socket.io': 'latest',
+                'socket.io-client': 'latest',
+              }
+            : {}),
+          ...(needsNativeWs ? { ws: 'latest' } : {}),
           zod: 'latest',
         },
         devDependencies: {
+          '@hono/vite-dev-server': 'latest',
+          '@vitejs/plugin-vue': 'latest',
           typescript: 'latest',
+          'unplugin-auto-import': 'latest',
+          'unplugin-vue-components': 'latest',
           vite: 'latest',
           'drizzle-kit': 'latest',
           '@types/bun': 'latest',
