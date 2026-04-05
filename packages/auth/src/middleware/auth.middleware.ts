@@ -10,8 +10,8 @@
 
 import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
-import type { AppVariables, AuthAccount } from 'vonosansan/types'
-import { Logger } from 'vonosansan/server'
+import type { AppVariables, AuthAccount } from 'vonosan/types'
+import { Logger } from 'vonosan/server'
 import { verifyToken } from '../lib/jwt.js'
 import { apiKeys } from '../schema.js'
 import { eq } from 'drizzle-orm'

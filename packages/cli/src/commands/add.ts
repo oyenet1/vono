@@ -11,7 +11,7 @@
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync, cpSync } from 'node:fs'
 import { join } from 'node:path'
-import { Logger } from 'vonosansan/server'
+import { Logger } from 'vonosan/server'
 
 const green = (s: string) => `\x1b[32m${s}\x1b[0m`
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`
@@ -65,7 +65,7 @@ function updateVonosanConfig(packageName: string): void {
 }
 
 /**
- * `vono add <module> [--eject]`
+ * `vonosan add <module> [--eject]`
  *
  * - Installs the @vonosan/<module> package
  * - Generates required files
@@ -80,7 +80,7 @@ export async function runAdd(args: string[]): Promise<void> {
   const [moduleName, ...extra] = moduleArgs
 
   if (!moduleName) {
-    process.stderr.write(red('Usage: vono add <module> [--eject]\n'))
+    process.stderr.write(red('Usage: vonosan add <module> [--eject]\n'))
     process.stderr.write(`  Known modules: ${Object.keys(KNOWN_MODULES).join(', ')}\n`)
     process.exit(1)
   }
@@ -131,7 +131,7 @@ async function ejectModule(moduleName: string, packageName: string): Promise<voi
     process.stderr.write(
       red(
         `Cannot eject: ${packageName} is not installed or has no src/ directory.\n` +
-          `Run \`vono add ${moduleName}\` first.\n`,
+          `Run \`vonosan add ${moduleName}\` first.\n`,
       ),
     )
     process.exit(1)

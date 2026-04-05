@@ -60,7 +60,7 @@ function buildTestCommand(runner: 'bun' | 'vitest' | 'jest'): { cmd: string; arg
 // ─── runTest ─────────────────────────────────────────────────────────
 
 /**
- * vono test — executes the configured test runner and reports results.
+ * vonosan test — executes the configured test runner and reports results.
  */
 export async function runTest(_args: string[]): Promise<void> {
   const runner = detectTestRunner()
@@ -84,7 +84,7 @@ export async function runTest(_args: string[]): Promise<void> {
 // ─── runTestClean ─────────────────────────────────────────────────────
 
 /**
- * vono test:clean — runs tests first, then deletes **\/*.test.ts
+ * vonosan test:clean — runs tests first, then deletes **\/*.test.ts
  * only if ALL tests pass. Reports error without deleting if any fail.
  */
 export async function runTestClean(_args: string[]): Promise<void> {

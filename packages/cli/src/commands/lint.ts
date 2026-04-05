@@ -46,7 +46,7 @@ function formatResults(results: LintResult[]): void {
 }
 
 /**
- * `vono lint` — scans src/ for all lint violations and prints a report.
+ * `vonosan lint` — scans src/ for all lint violations and prints a report.
  * Exits with code 1 when violations are found.
  */
 export async function runLint(args: string[]): Promise<void> {

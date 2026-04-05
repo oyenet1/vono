@@ -2,11 +2,11 @@
 
 ## Overview
 
-Vono (Vue + Hono) is a batteries-included full-stack TypeScript framework that unifies a Hono API backend with a Vue 3 frontend in a single codebase. It ships as a family of npm packages and codifies the Bonifade Technologies development standards into automated tooling.
+Vonosan (Vue + Hono) is a batteries-included full-stack TypeScript framework that unifies a Hono API backend with a Vue 3 frontend in a single codebase. It ships as a family of npm packages and codifies the Bonifade Technologies development standards into automated tooling.
 
 The framework is composed of:
 - `create-vonosan` — interactive project scaffolder
-- `vono` — core runtime package (config, composables, Vite plugin, server/client helpers)
+- `vonosan` — core runtime package (config, composables, Vite plugin, server/client helpers)
 - `@vonosan/cli` — Artisan-style CLI for code generation, migrations, auditing, and git automation
 - `@vonosan/drizzle` — Drizzle ORM integration (mixins, soft deletes, scopes, seed helpers)
 - `@vonosan/auth`, `@vonosan/notifications`, `@vonosan/logging`, `@vonosan/ws` — optional add-on modules
@@ -23,7 +23,7 @@ Projects can be deployed to Node.js, Bun, Deno, Docker, Cloudflare Workers, and 
 create-vonosan (scaffolder)
     └── generates a Vonosan project
          ├── vonosan.config.ts          (defineVonosanConfig)
-         ├── vite.config.ts          (vono() Vite plugin)
+         ├── vite.config.ts          (vonosan() Vite plugin)
          ├── src/
          │   ├── main.ts             (shared app factory)
          │   ├── app.ts              (outer Hono app)
@@ -64,20 +64,20 @@ create-vonosan (scaffolder)
 create-vonosan
   └── @clack/prompts, giget, kolorist, execa
 
-vono (core)
-  ├── vono/vite      → Vite plugin
-  ├── vono/server    → SSR helpers, renderStream
-  ├── vono/client    → composables (useAsyncData, useState, useCookie, etc.)
-  └── vono/types     → shared TypeScript interfaces
+vonosan (core)
+  ├── vonosan/vite      → Vite plugin
+  ├── vonosan/server    → SSR helpers, renderStream
+  ├── vonosan/client    → composables (useAsyncData, useState, useCookie, etc.)
+  └── vonosan/types     → shared TypeScript interfaces
 
 @vonosan/cli
-  └── depends on vono (core)
+  └── depends on vonosan (core)
 
 @vonosan/drizzle
-  └── depends on vono (core)
+  └── depends on vonosan (core)
 
 @vonosan/auth | @vonosan/notifications | @vonosan/logging | @vonosan/ws
-  └── each depends on vono (core)
+  └── each depends on vonosan (core)
 ```
 
 ### Rendering Pipeline
@@ -124,28 +124,28 @@ Key behaviors:
 
 | Command | Description |
 |---|---|
-| `vono make:module <name>` | Scaffold full module (routes, controller, service, dto, schema, pages, composables, tests, scopes) |
-| `vono make:service/controller/dto/routes/schema/middleware/page/component/composable/store/migration/seed/test/notification/resource/policy/job/email/helper <name>` | Individual file generators |
-| `vono make:version <v>` | New API version namespace |
-| `vono add <module>` | Install optional add-on module |
-| `vono add <module> --eject` | Copy module source into project |
-| `vono migrate:make/run/rollback/status/reset/fresh` | Drizzle migration commands |
-| `vono db:push/studio/seed` | Database utilities |
-| `vono schema:sync` | Regenerate schema barrel file |
-| `vono lint` | Run linter (headers, logs, naming, versioning, DRY) |
-| `vono fix:headers` | Auto-inject missing file headers |
-| `vono fix:logs` | Replace console.* with Logger |
-| `vono audit [--fix]` | Full code audit |
-| `vono env:add <KEY> <desc>` | Add env var to .env and .env.example |
-| `vono branch:new/finish` | Git branch automation |
-| `vono commit "<msg>"` | Conventional commit validator |
-| `vono test [--clean]` | Run test suite |
-| `vono jobs:run <name>` | Execute a cron job immediately |
-| `vono upgrade [--check] [--apply-codemods]` | Version upgrade tooling |
+| `vonosan make:module <name>` | Scaffold full module (routes, controller, service, dto, schema, pages, composables, tests, scopes) |
+| `vonosan make:service/controller/dto/routes/schema/middleware/page/component/composable/store/migration/seed/test/notification/resource/policy/job/email/helper <name>` | Individual file generators |
+| `vonosan make:version <v>` | New API version namespace |
+| `vonosan add <module>` | Install optional add-on module |
+| `vonosan add <module> --eject` | Copy module source into project |
+| `vonosan migrate:make/run/rollback/status/reset/fresh` | Drizzle migration commands |
+| `vonosan db:push/studio/seed` | Database utilities |
+| `vonosan schema:sync` | Regenerate schema barrel file |
+| `vonosan lint` | Run linter (headers, logs, naming, versioning, DRY) |
+| `vonosan fix:headers` | Auto-inject missing file headers |
+| `vonosan fix:logs` | Replace console.* with Logger |
+| `vonosan audit [--fix]` | Full code audit |
+| `vonosan env:add <KEY> <desc>` | Add env var to .env and .env.example |
+| `vonosan branch:new/finish` | Git branch automation |
+| `vonosan commit "<msg>"` | Conventional commit validator |
+| `vonosan test [--clean]` | Run test suite |
+| `vonosan jobs:run <name>` | Execute a cron job immediately |
+| `vonosan upgrade [--check] [--apply-codemods]` | Version upgrade tooling |
 
-### `vono` Core Runtime
+### `vonosan` Core Runtime
 
-#### Vite Plugin (`vono/vite`)
+#### Vite Plugin (`vonosan/vite`)
 
 Composes internally:
 - `@vitejs/plugin-vue`
@@ -529,7 +529,7 @@ interface VonosanModuleDefinition {
 
 ### Property 16: Module scaffold produces all required files
 
-*For any* valid module name, running `vono make:module <name>` with API support SHALL produce files at `src/modules/<name>/<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.dto.ts`, and `<name>.schema.ts`.
+*For any* valid module name, running `vonosan make:module <name>` with API support SHALL produce files at `src/modules/<name>/<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.dto.ts`, and `<name>.schema.ts`.
 
 **Validates: Requirements 2.1, 2.2**
 
@@ -578,7 +578,7 @@ At startup, before accepting requests:
 ### CLI Error Handling
 
 - Directory/module already exists → descriptive error, halt, no file modifications.
-- Uncommitted changes on `vono branch:finish` → error, halt.
+- Uncommitted changes on `vonosan branch:finish` → error, halt.
 - Non-conforming commit message → descriptive error with format examples.
 - Incompatible driver/runtime combination → descriptive error listing supported drivers.
 - Shutdown handler errors → log error, `process.exit(1)`.
@@ -603,7 +603,7 @@ The framework uses a property-based testing library appropriate for the target l
 
 Each property test is tagged with a comment referencing the design property:
 ```
-// Feature: vono, Property N: <property_text>
+// Feature: vonosan, Property N: <property_text>
 ```
 
 Properties to implement as PBT tests:
@@ -645,8 +645,8 @@ Focus areas:
 - `autoRegisterRoutes()`: verify routes are mounted at correct paths
 - `configProvider` + `dbProvider` middleware chain
 - Auth middleware: JWT verification, role loading, `c.var.account` population
-- `vono env:add`: verify both `.env` and `.env.example` are updated
-- `vono migrate:make`: verify schema sync runs before migration generation
+- `vonosan env:add`: verify both `.env` and `.env.example` are updated
+- `vonosan migrate:make`: verify schema sync runs before migration generation
 - Linter: header violations, console.log violations, naming violations
 - Auditor: exit code 0 on clean, exit code 1 on violations
 

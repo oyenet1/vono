@@ -9,7 +9,7 @@
  */
 
 import { sign, verify } from 'hono/jwt'
-import { Logger } from 'vonosansan/server'
+import { Logger } from 'vonosan/server'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 

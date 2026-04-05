@@ -39,7 +39,7 @@ export interface SchemaBarrelOptions {
  * generateSchemaBarrel — scan `src/modules/**\/*.schema.ts` files and
  * write a `src/db/schema.ts` barrel that re-exports all schemas.
  *
- * This is called by `vono schema:sync` and `vono migrate:make`.
+ * This is called by `vonosan schema:sync` and `vonosan migrate:make`.
  *
  * Usage:
  * ```ts
@@ -75,7 +75,7 @@ export async function generateSchemaBarrel(options: SchemaBarrelOptions = {}): P
     '',
     '/**',
     ' * src/db/schema.ts — auto-generated schema barrel.',
-    ' * DO NOT EDIT MANUALLY — run `vono schema:sync` to regenerate.',
+    ' * DO NOT EDIT MANUALLY — run `vonosan schema:sync` to regenerate.',
     ' */',
     '',
   ]

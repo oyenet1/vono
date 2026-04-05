@@ -25,7 +25,7 @@ export function generateGracefulShutdown(): string {
  * ──────────────────────────────────────────────────────────────────
  */
 
-import { Logger } from 'vonosansan/server'
+import { Logger } from 'vonosan/server'
 
 // ─── Graceful shutdown ───────────────────────────────────────────────
 
@@ -40,15 +40,15 @@ export function registerGracefulShutdown(options?: {
   onShutdown?: () => Promise<void>
 }): void {
   const shutdown = async (signal: string) => {
-    Logger.info(\`[vono] Received \${signal} — shutting down gracefully...\`)
+    Logger.info(\`[vonosan] Received \${signal} — shutting down gracefully...\`)
 
     try {
       if (options?.onShutdown) {
         await options.onShutdown()
       }
-      Logger.info('[vono] Shutdown complete.')
+      Logger.info('[vonosan] Shutdown complete.')
     } catch (err) {
-      Logger.error('[vono] Error during shutdown', { error: String(err) })
+      Logger.error('[vonosan] Error during shutdown', { error: String(err) })
     } finally {
       process.exit(0)
     }

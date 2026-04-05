@@ -24,7 +24,7 @@ function run(cmd: string): void {
 // ─── db:push ─────────────────────────────────────────────────────────────────
 
 /**
- * `vono db:push` — pushes the current schema to the database without generating
+ * `vonosan db:push` — pushes the current schema to the database without generating
  * a migration file (useful during development).
  */
 export async function runDbPush(_args: string[]): Promise<void> {
@@ -36,7 +36,7 @@ export async function runDbPush(_args: string[]): Promise<void> {
 // ─── db:studio ───────────────────────────────────────────────────────────────
 
 /**
- * `vono db:studio` — opens Drizzle Studio in the browser.
+ * `vonosan db:studio` — opens Drizzle Studio in the browser.
  * This is a long-running process; we spawn it without waiting.
  */
 export async function runDbStudio(_args: string[]): Promise<void> {
@@ -48,7 +48,7 @@ export async function runDbStudio(_args: string[]): Promise<void> {
 // ─── db:seed ─────────────────────────────────────────────────────────────────
 
 /**
- * `vono db:seed [name]`
+ * `vonosan db:seed [name]`
  *
  * Runs seed files from `src/db/seeds/`.
  * - With no argument: runs `src/db/seeds/index.ts`

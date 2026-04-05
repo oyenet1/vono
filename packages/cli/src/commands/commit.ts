@@ -52,7 +52,7 @@ export function isConventionalCommit(message: string): boolean {
 }
 
 /**
- * `vono commit "<message>"`
+ * `vonosan commit "<message>"`
  *
  * Validates the commit message against the Conventional Commits format,
  * then runs `git commit -m "<message>"`.
@@ -61,7 +61,7 @@ export async function runCommit(args: string[]): Promise<void> {
   const message = args.join(' ').trim()
 
   if (!message) {
-    process.stderr.write(red('Usage: vono commit "<message>"\n'))
+    process.stderr.write(red('Usage: vonosan commit "<message>"\n'))
     process.exit(1)
   }
 

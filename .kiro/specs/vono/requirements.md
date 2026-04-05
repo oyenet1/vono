@@ -2,16 +2,16 @@
 
 ## Introduction
 
-Vono (Vue + Hono) is a batteries-included full-stack TypeScript framework that combines a Hono API backend with a Vue 3 frontend in a single codebase. It ships as multiple npm packages, supports hybrid SSR/SPA rendering, file-based routing, Drizzle ORM integration, and a Laravel-style CLI. Projects can be deployed anywhere Hono runs: Node.js, Bun, Deno, Docker, Cloudflare Workers, and Vercel.
+Vonosan (Vue + Hono) is a batteries-included full-stack TypeScript framework that combines a Hono API backend with a Vue 3 frontend in a single codebase. It ships as multiple npm packages, supports hybrid SSR/SPA rendering, file-based routing, Drizzle ORM integration, and a Laravel-style CLI. Projects can be deployed anywhere Hono runs: Node.js, Bun, Deno, Docker, Cloudflare Workers, and Vercel.
 
-The framework is not a runtime library alone — it is a complete developer toolchain: a project scaffolder (`create-vonosan`), a core runtime package (`vono`), an Artisan-style CLI (`@vonosan/cli`), and a suite of optional add-on modules (`@vonosan/auth`, `@vonosan/drizzle`, `@vonosan/notifications`, `@vonosan/logging`, `@vonosan/ws`). It codifies the Bonifade Technologies development standards into automated tooling so every project starts and stays consistent.
+The framework is not a runtime library alone — it is a complete developer toolchain: a project scaffolder (`create-vonosan`), a core runtime package (`vonosan`), an Artisan-style CLI (`@vonosan/cli`), and a suite of optional add-on modules (`@vonosan/auth`, `@vonosan/drizzle`, `@vonosan/notifications`, `@vonosan/logging`, `@vonosan/ws`). It codifies the Bonifade Technologies development standards into automated tooling so every project starts and stays consistent.
 
 ---
 
 ## Glossary
 
 - **Framework**: The Vonosan framework — its CLI tools, runtime packages, Vite plugin, and code generators.
-- **CLI**: The command-line interface entry point (`vono`) used to invoke all framework commands.
+- **CLI**: The command-line interface entry point (`vonosan`) used to invoke all framework commands.
 - **Project**: A full-stack or API-only application scaffolded or managed by the Framework.
 - **Module**: A self-contained feature folder within a Project containing routes, controller, service, DTO, schema, pages, components, and composables.
 - **Scaffold**: The act of generating a new Project or Module from a template with all required boilerplate.
@@ -31,7 +31,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 - **SSR**: Server-Side Rendering — the server renders the Vue app to HTML before sending to the client.
 - **SPA**: Single-Page Application mode — the server sends a bare HTML shell; Vue renders entirely on the client.
 - **Route_Rules**: The `src/route-rules.ts` configuration that maps URL patterns to rendering modes (`ssr`, `spa`, `prerender`).
-- **Vite_Plugin**: The `vono/vite` Vite plugin that wires SSR, file-based routing, auto-imports, dev server, and HMR.
+- **Vite_Plugin**: The `vonosan/vite` Vite plugin that wires SSR, file-based routing, auto-imports, dev server, and HMR.
 - **Module_System**: The `defineVonosanModule()` API for creating installable Vonosan modules that register middleware, schemas, routes, pages, and composables.
 - **Vono_Config**: The `vonosan.config.ts` project configuration file, defined via `defineVonosanConfig()`.
 - **Auto_Import**: The `unplugin-auto-import` integration that makes shared utilities, composables, and framework APIs available without explicit import statements.
@@ -57,7 +57,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `bun create vono@latest <project-name>`, THE CLI SHALL launch an interactive wizard that prompts for: language (TypeScript/JavaScript), project type (full-stack/API-only), package manager, deployment target, database, queue driver, cache driver, email provider, file storage, WebSocket support, notifications, logging, auth scaffolding, password reset method, roles, testing framework, and API docs.
+1. WHEN the developer runs `bun create vonosan@latest <project-name>`, THE CLI SHALL launch an interactive wizard that prompts for: language (TypeScript/JavaScript), project type (full-stack/API-only), package manager, deployment target, database, queue driver, cache driver, email provider, file storage, WebSocket support, notifications, logging, auth scaffolding, password reset method, roles, testing framework, and API docs.
 2. WHEN scaffolding a new project, THE CLI SHALL generate the standard Modular Monolith folder structure (`src/modules/`, `src/shared/`, `src/db/`, `src/lib/`, `src/types/`).
 3. WHEN scaffolding a new project, THE CLI SHALL initialize the project with TypeScript (strict mode), Bun as the default package manager, and Drizzle ORM as the default ORM.
 4. WHEN scaffolding a new project, THE CLI SHALL generate a `.env` file and a corresponding `.env.example` file with identical keys and placeholder values.
@@ -80,7 +80,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono make:module <module-name>`, THE CLI SHALL prompt for which parts to generate (API files, pages, composables, components) and create the selected files under `src/modules/<module-name>/`.
+1. WHEN the developer runs `vonosan make:module <module-name>`, THE CLI SHALL prompt for which parts to generate (API files, pages, composables, components) and create the selected files under `src/modules/<module-name>/`.
 2. WHEN generating a module with API support, THE CLI SHALL create `<module>.routes.ts`, `<module>.controller.ts`, `<module>.service.ts`, `<module>.dto.ts`, and `<module>.schema.ts`.
 3. WHEN generating a module with frontend support, THE CLI SHALL create `index.page.vue` and a `composables/use<ModuleName>.ts` file inside the module folder.
 4. WHEN generating a module with API support, THE CLI SHALL auto-register the module's routes via `autoRegisterRoutes()` — no manual router registration is required.
@@ -89,8 +89,8 @@ The framework is not a runtime library alone — it is a complete developer tool
 7. WHEN generating a module, THE CLI SHALL include `created_at` and `updated_at` timestamp columns in the generated Schema.
 8. WHEN generating a module, THE CLI SHALL inject the standard file header comment (via Header_Generator) into every generated file.
 9. IF a module with the same name already exists, THEN THE CLI SHALL return an error and halt without overwriting existing files.
-10. THE Framework SHALL generate a `src/db/seeds/` directory during project scaffolding for database seed scripts, and `vono make:seed <name>` SHALL generate a seed file in that directory.
-11. THE CLI SHALL support individual file generators: `vono make:service <name>`, `vono make:controller <name>`, `vono make:dto <name>`, `vono make:routes <name>`, `vono make:schema <name>`, `vono make:middleware <name>`, `vono make:page <module/PageName>`, `vono make:component <module/ComponentName>`, `vono make:composable <module/useComposable>`, `vono make:store <name>`, `vono make:migration <name>`, `vono make:seed <name>`, `vono make:test <name>`, and `vono make:notification <name>` — each generating only the specified file type in the appropriate location.
+10. THE Framework SHALL generate a `src/db/seeds/` directory during project scaffolding for database seed scripts, and `vonosan make:seed <name>` SHALL generate a seed file in that directory.
+11. THE CLI SHALL support individual file generators: `vonosan make:service <name>`, `vonosan make:controller <name>`, `vonosan make:dto <name>`, `vonosan make:routes <name>`, `vonosan make:schema <name>`, `vonosan make:middleware <name>`, `vonosan make:page <module/PageName>`, `vonosan make:component <module/ComponentName>`, `vonosan make:composable <module/useComposable>`, `vonosan make:store <name>`, `vonosan make:migration <name>`, `vonosan make:seed <name>`, `vonosan make:test <name>`, and `vonosan make:notification <name>` — each generating only the specified file type in the appropriate location.
 
 ---
 
@@ -103,8 +103,8 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Header_Generator SHALL produce a header comment containing: company name (Bonifade Technologies), developer name (Bowofade Oyerinde), GitHub handle (oyenet1), created date, and updated date.
 2. WHEN the Framework generates any file, THE Header_Generator SHALL inject the header at the top of that file before any other content.
 3. WHEN the Linter scans a file and finds no header comment, THE Linter SHALL report a violation identifying the file path and the missing header.
-4. WHEN the developer runs `vono lint`, THE Linter SHALL scan all `.ts` and `.vue` files under `src/` and report all header violations.
-5. WHEN the developer runs `vono fix:headers`, THE Header_Generator SHALL inject missing headers into all non-compliant files without modifying any other content in those files.
+4. WHEN the developer runs `vonosan lint`, THE Linter SHALL scan all `.ts` and `.vue` files under `src/` and report all header violations.
+5. WHEN the developer runs `vonosan fix:headers`, THE Header_Generator SHALL inject missing headers into all non-compliant files without modifying any other content in those files.
 
 ---
 
@@ -134,7 +134,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 3. WHEN the Linter scans a Schema file, THE Linter SHALL report a violation if `created_at` or `updated_at` columns are absent from any table definition.
 4. WHEN SaaS_Mode is enabled and the Linter scans a Schema file, THE Linter SHALL report a violation if a `deleted_at` nullable timestamp column is absent from any table definition.
 5. WHEN the Linter scans a Schema file, THE Linter SHALL report a violation for any foreign key, status, email, or slug column that lacks a Drizzle ORM index definition.
-6. WHEN the developer runs `vono migrate:make <name>`, THE CLI SHALL sync the `src/db/schema.ts` barrel file and invoke the Drizzle Kit migration generator, placing output in the configured migrations directory.
+6. WHEN the developer runs `vonosan migrate:make <name>`, THE CLI SHALL sync the `src/db/schema.ts` barrel file and invoke the Drizzle Kit migration generator, placing output in the configured migrations directory.
 7. THE Framework SHALL provide `timestamps` and `softDeletable` Drizzle mixins in `src/db/mixins/` that can be spread into any table definition.
 
 ---
@@ -161,7 +161,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. WHEN the Framework scaffolds a new project, THE CLI SHALL mount all feature modules under `/api/v1/` by default via the inner API router.
-2. WHEN the developer runs `vono make:version <version>`, THE CLI SHALL generate a new version namespace and register it in the app entry without modifying any existing version's files.
+2. WHEN the developer runs `vonosan make:version <version>`, THE CLI SHALL generate a new version namespace and register it in the app entry without modifying any existing version's files.
 3. WHEN the Linter scans route files, THE Linter SHALL report a violation for any route that is not nested under a versioned prefix (e.g., `/api/v1/`).
 4. WHILE a previous API version exists, THE Framework SHALL preserve all files belonging to that version unchanged when a new version is created.
 5. IF a developer attempts to modify a route, controller, or schema file belonging to a previously released API version, THEN THE Linter SHALL emit a warning indicating that changes to released versions may introduce breaking changes.
@@ -174,7 +174,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono env:add <KEY> <description>`, THE CLI SHALL append the key with an empty placeholder value to both `.env` and `.env.example`, and add the description as an inline comment in `.env.example`.
+1. WHEN the developer runs `vonosan env:add <KEY> <description>`, THE CLI SHALL append the key with an empty placeholder value to both `.env` and `.env.example`, and add the description as an inline comment in `.env.example`.
 2. WHEN the Linter runs, THE Linter SHALL compare all keys present in `.env` against `.env.example` and report any key that exists in `.env` but is absent from `.env.example`.
 3. WHEN the Linter runs, THE Linter SHALL compare all keys present in `.env.example` against `.env` and report any key that exists in `.env.example` but is absent from `.env`.
 4. IF the `.env` file does not exist in the project root, THEN THE CLI SHALL return an informational message and skip the sync check without throwing an error.
@@ -189,7 +189,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 1. THE Framework SHALL generate a `Logger` utility in `src/shared/logger.ts` during project scaffolding, wrapping a structured logging library.
 2. WHEN the Linter scans any `.ts` file under `src/`, THE Linter SHALL report a violation for every occurrence of `console.log`, `console.warn`, `console.error`, or `console.debug`.
-3. WHEN the developer runs `vono fix:logs`, THE CLI SHALL replace detected raw `console.*` calls with the equivalent `Logger` method and add an import for the Logger if not already present.
+3. WHEN the developer runs `vonosan fix:logs`, THE CLI SHALL replace detected raw `console.*` calls with the equivalent `Logger` method and add an import for the Logger if not already present.
 4. IF a `console.*` call is found inside a file marked with `// @vonosan-ignore-logs`, THEN THE Linter SHALL skip that file without reporting a violation.
 
 ---
@@ -215,10 +215,10 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. WHEN the Framework scaffolds a new project, THE CLI SHALL initialize a Git repository and create an initial commit with the message `chore: initial project scaffold`.
-2. WHEN the developer runs `vono branch:new <feature-name>`, THE CLI SHALL record the current branch as the parent branch, then create and check out a new branch named `feature/<feature-name>`.
-3. WHEN the developer runs `vono branch:finish`, THE CLI SHALL merge the current feature branch into the recorded parent branch, delete the feature branch, and check out the parent branch.
-4. IF the current branch has uncommitted changes when `vono branch:finish` is run, THEN THE CLI SHALL halt and return an error message instructing the developer to commit or stash changes first.
-5. WHEN the developer runs `vono commit "<message>"`, THE CLI SHALL validate that the message conforms to the Conventional Commits format (e.g., `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`) and reject non-conforming messages with a descriptive error.
+2. WHEN the developer runs `vonosan branch:new <feature-name>`, THE CLI SHALL record the current branch as the parent branch, then create and check out a new branch named `feature/<feature-name>`.
+3. WHEN the developer runs `vonosan branch:finish`, THE CLI SHALL merge the current feature branch into the recorded parent branch, delete the feature branch, and check out the parent branch.
+4. IF the current branch has uncommitted changes when `vonosan branch:finish` is run, THEN THE CLI SHALL halt and return an error message instructing the developer to commit or stash changes first.
+5. WHEN the developer runs `vonosan commit "<message>"`, THE CLI SHALL validate that the message conforms to the Conventional Commits format (e.g., `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`) and reject non-conforming messages with a descriptive error.
 
 ---
 
@@ -228,11 +228,11 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono make:module <module-name>`, THE CLI SHALL generate a `tests/` folder containing `<module-name>.unit.test.ts`, `<module-name>.integration.test.ts`, and `<module-name>.e2e.test.ts`.
+1. WHEN the developer runs `vonosan make:module <module-name>`, THE CLI SHALL generate a `tests/` folder containing `<module-name>.unit.test.ts`, `<module-name>.integration.test.ts`, and `<module-name>.e2e.test.ts`.
 2. THE Framework SHALL configure `bun test` as the default test runner in `package.json` during project scaffolding, with Vitest and Jest available as alternatives via the wizard.
-3. WHEN the developer runs `vono test`, THE CLI SHALL execute the configured test runner and report pass/fail results.
-4. WHEN the developer runs `vono test:clean`, THE CLI SHALL delete all files matching `**/*.test.ts` after confirming all tests pass, and report an error without deleting if any test fails.
-5. IF the test runner exits with a non-zero code during `vono test:clean`, THEN THE CLI SHALL halt the cleanup and display the failing test output.
+3. WHEN the developer runs `vonosan test`, THE CLI SHALL execute the configured test runner and report pass/fail results.
+4. WHEN the developer runs `vonosan test:clean`, THE CLI SHALL delete all files matching `**/*.test.ts` after confirming all tests pass, and report an error without deleting if any test fails.
+5. IF the test runner exits with a non-zero code during `vonosan test:clean`, THEN THE CLI SHALL halt the cleanup and display the failing test output.
 
 ---
 
@@ -242,11 +242,11 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono audit`, THE Auditor SHALL scan all files under `src/` and produce a report listing all detected violations grouped by rule category.
+1. WHEN the developer runs `vonosan audit`, THE Auditor SHALL scan all files under `src/` and produce a report listing all detected violations grouped by rule category.
 2. THE Auditor report SHALL include for each violation: the file path, line number, rule name, and a human-readable description of the violation.
 3. WHEN the Auditor detects zero violations, THE Auditor SHALL output a confirmation message and exit with code `0`.
 4. WHEN the Auditor detects one or more violations, THE Auditor SHALL exit with code `1` so that CI/CD pipelines can fail the build.
-5. WHEN the developer runs `vono audit --fix`, THE Auditor SHALL automatically resolve all auto-fixable violations (headers, log statements) and report which violations required manual intervention.
+5. WHEN the developer runs `vonosan audit --fix`, THE Auditor SHALL automatically resolve all auto-fixable violations (headers, log statements) and report which violations required manual intervention.
 
 ---
 
@@ -271,7 +271,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. WHEN the Linter detects an identical function body appearing in more than two files under `src/modules/`, THE Linter SHALL report a DRY violation identifying all file paths where the duplication occurs.
-2. WHEN the developer runs `vono make:helper <helper-name>`, THE CLI SHALL generate a shared helper file in `src/shared/utils/<helper-name>.ts` with the standard header and an exported function stub.
+2. WHEN the developer runs `vonosan make:helper <helper-name>`, THE CLI SHALL generate a shared helper file in `src/shared/utils/<helper-name>.ts` with the standard header and an exported function stub.
 3. THE Framework SHALL provide a `src/shared/` directory in every scaffolded project, pre-populated with `response.ts` (Response_Formatter), `logger.ts` (Logger), `mappers.ts` (toCamel), `softDeletes.ts` (Soft_Delete_Helper), `pagination.ts` (Paginator), `id.ts` (generateId, prefixedId), and `autoRoutes.ts` (autoRegisterRoutes).
 
 ---
@@ -282,13 +282,13 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL publish `create-vonosan` as the interactive project scaffolder installable via `bun create vono@latest <app-name>`.
-2. THE Framework SHALL publish `vono` as the core runtime package with subpath exports: `vono` (config/composables), `vono/vite` (Vite plugin), `vono/server` (server helpers), `vono/client` (client composables), and `vono/types` (shared TypeScript types).
+1. THE Framework SHALL publish `create-vonosan` as the interactive project scaffolder installable via `bun create vonosan@latest <app-name>`.
+2. THE Framework SHALL publish `vonosan` as the core runtime package with subpath exports: `vonosan` (config/composables), `vonosan/vite` (Vite plugin), `vonosan/server` (server helpers), `vonosan/client` (client composables), and `vonosan/types` (shared TypeScript types).
 3. THE Framework SHALL publish `@vonosan/cli` as the Artisan-style scaffolding CLI installed as a dev dependency.
 4. THE Framework SHALL publish `@vonosan/drizzle` as the Drizzle ORM integration package providing mixins, soft deletes, scopes, and seed helpers.
-5. THE Framework SHALL publish `@vonosan/auth`, `@vonosan/notifications`, `@vonosan/logging`, and `@vonosan/ws` as optional add-on modules installable via `vono add <module>`.
-6. WHEN the developer runs `vono add <module>`, THE CLI SHALL install the package, generate required files, and update `vonosan.config.ts` — and the operation SHALL be idempotent (running it again skips existing files). Supported `vono add` commands include: `vono add auth`, `vono add storage` (prompts for driver), `vono add queue`, `vono add cache`, `vono add email`, `vono add oauth google`, `vono add oauth github`, `vono add websocket`, `vono add notifications`, `vono add logging`, `vono add ws`, and `vono add i18n`.
-7. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module's source into `src/modules/<module>/`, remove the package dependency, and update `vonosan.config.ts`.
+5. THE Framework SHALL publish `@vonosan/auth`, `@vonosan/notifications`, `@vonosan/logging`, and `@vonosan/ws` as optional add-on modules installable via `vonosan add <module>`.
+6. WHEN the developer runs `vonosan add <module>`, THE CLI SHALL install the package, generate required files, and update `vonosan.config.ts` — and the operation SHALL be idempotent (running it again skips existing files). Supported `vonosan add` commands include: `vonosan add auth`, `vonosan add storage` (prompts for driver), `vonosan add queue`, `vonosan add cache`, `vonosan add email`, `vonosan add oauth google`, `vonosan add oauth github`, `vonosan add websocket`, `vonosan add notifications`, `vonosan add logging`, `vonosan add ws`, and `vonosan add i18n`.
+7. WHEN the developer runs `vonosan add <module> --eject`, THE CLI SHALL copy the module's source into `src/modules/<module>/`, remove the package dependency, and update `vonosan.config.ts`.
 8. THE `create-vonosan` package SHALL use `@clack/prompts` for terminal prompts, `giget` for template fetching, `kolorist` for terminal colors, and `execa` for running install commands.
 
 ---
@@ -373,7 +373,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Vite_Plugin SHALL be importable from `vono/vite` and usable as `plugins: [vono()]` in `vite.config.ts`, internally composing `@vitejs/plugin-vue`, `vue-router/vite`, `unplugin-auto-import/vite`, `unplugin-vue-components/vite`, `@hono/vite-dev-server`, and `@nuxt/ui/vite`.
+1. THE Vite_Plugin SHALL be importable from `vonosan/vite` and usable as `plugins: [vonosan()]` in `vite.config.ts`, internally composing `@vitejs/plugin-vue`, `vue-router/vite`, `unplugin-auto-import/vite`, `unplugin-vue-components/vite`, `@hono/vite-dev-server`, and `@nuxt/ui/vite`.
 2. WHEN the developer runs the build command, THE Vite_Plugin SHALL perform a dual build: a client build to `dist/client/` and an SSR build to `dist/server/`.
 3. THE Vite_Plugin SHALL configure `@hono/vite-dev-server` for development, excluding Vue files, static assets, and CSS from the Hono handler so Vite handles them directly.
 4. WHEN `vonosan.config.ts` changes during development, THE Vite_Plugin SHALL trigger a full dev server restart.
@@ -410,7 +410,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 2. THE Framework SHALL mount Swagger UI at `GET /docs` via `@hono/swagger-ui`, pointing to `GET /openapi.json`.
 3. THE Framework SHALL mount Scalar API Reference at `GET /reference` via `@scalar/hono-api-reference` as a supported alternative to Swagger UI, pointing to `GET /openapi.json`.
 4. THE Framework SHALL mount the Fiberplane API playground at `GET /fp/*` via `@fiberplane/hono`, pointing to `GET /openapi.json`.
-5. WHEN the developer runs `vono make:module`, THE CLI SHALL add a tag entry for the new module to `src/openapi.ts`.
+5. WHEN the developer runs `vonosan make:module`, THE CLI SHALL add a tag entry for the new module to `src/openapi.ts`.
 
 ---
 
@@ -433,7 +433,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono add auth`, THE CLI SHALL scaffold auth API routes, controller, service, DTO, schema, frontend pages (login, register, forgot-password, reset-password), and a `useAuth` composable.
+1. WHEN the developer runs `vonosan add auth`, THE CLI SHALL scaffold auth API routes, controller, service, DTO, schema, frontend pages (login, register, forgot-password, reset-password), and a `useAuth` composable.
 2. THE Framework SHALL implement JWT access tokens (15-minute expiry) and refresh tokens (7-day expiry) using `hono/jwt` with PBKDF2 password hashing via the Web Crypto API (compatible with Cloudflare Workers).
 3. THE Framework SHALL provide `authMiddleware` that verifies the JWT, loads the user's roles from the database, and sets `c.var.account` as an `AuthAccount` object.
 4. THE Framework SHALL provide `isAdmin` and `isSuperAdmin` role guard middleware that throw HTTP 403 if the authenticated user lacks the required role.
@@ -523,7 +523,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono add ws`, THE CLI SHALL prompt for the WebSocket driver (Hono built-in or Socket.IO) and install the appropriate packages and generate server + client code.
+1. WHEN the developer runs `vonosan add ws`, THE CLI SHALL prompt for the WebSocket driver (Hono built-in or Socket.IO) and install the appropriate packages and generate server + client code.
 2. THE Framework SHALL support Hono's `upgradeWebSocket()` helper on all runtimes (Bun via `hono/bun`, Node via `@hono/node-ws`, Cloudflare Workers via `hono/cloudflare-workers`, Deno via `hono/deno`), with the correct import resolved automatically via the `@@ws-adapter` alias.
 3. THE Framework SHALL support Socket.IO (with `@socket.io/bun-engine` for Bun, `socket.io` for Node) only when the deployment target is Bun, Node.js, Docker (Bun), or Docker (Node).
 4. THE Framework SHALL generate a `useWebSocket(path)` Vue composable in `src/shared/composables/useWebSocket.ts` that provides reactive `messages`, `isConnected`, `send()`, `connect()`, and `disconnect()` with auto-reconnect on close.
@@ -537,7 +537,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono add notifications`, THE CLI SHALL generate Drizzle `notifications` and `notification_preferences` table schemas, a notification service, controller, routes, and (in full-stack mode) a notifications page.
+1. WHEN the developer runs `vonosan add notifications`, THE CLI SHALL generate Drizzle `notifications` and `notification_preferences` table schemas, a notification service, controller, routes, and (in full-stack mode) a notifications page.
 2. THE notifications API SHALL provide endpoints to list notifications for the authenticated user, mark a notification as read, mark all as read, and delete a notification.
 3. THE notifications API SHALL provide endpoints to get and update notification preferences per user.
 4. WHEN a notification is created, THE Framework SHALL support dispatching it via the queue (if configured) for async persistence, falling back to synchronous DB write.
@@ -550,7 +550,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono add logging`, THE CLI SHALL generate a Drizzle `activity_logs` table schema, a logging service, and a queue job for async log persistence.
+1. WHEN the developer runs `vonosan add logging`, THE CLI SHALL generate a Drizzle `activity_logs` table schema, a logging service, and a queue job for async log persistence.
 2. WHEN a queue driver is configured, THE logging service SHALL dispatch log events to the queue for async DB writes; otherwise it SHALL write synchronously.
 3. THE activity log record SHALL capture: actor ID, action name, resource type, resource ID, IP address, user agent (parsed via `src/lib/ua-parser.ts`), and timestamp.
 4. THE Framework SHALL provide an admin API endpoint to query activity logs with filtering by actor, action, resource type, and date range.
@@ -563,9 +563,9 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL provide a `defineVonosanConfig(config)` function exported from `vono` that accepts and validates the full framework configuration object.
+1. THE Framework SHALL provide a `defineVonosanConfig(config)` function exported from `vonosan` that accepts and validates the full framework configuration object.
 2. THE Framework SHALL provide a `useVonosanConfig()` composable that returns the resolved config, stripping server-only values when called on the client.
-3. THE Vite_Plugin SHALL read `vonosan.config.ts` at build time and inject a `virtual:vono/config` module with the resolved public config values.
+3. THE Vite_Plugin SHALL read `vonosan.config.ts` at build time and inject a `virtual:vonosan/config` module with the resolved public config values.
 4. WHEN `vonosan.config.ts` is missing or contains invalid configuration, THE Framework SHALL throw a descriptive error at startup before accepting any requests.
 5. THE `defineVonosanConfig()` function SHALL accept a `ui.colors` object with `primary` and `neutral` color keys that configure the Nuxt UI theme, passed to the `@nuxt/ui/vite` plugin.
 
@@ -580,7 +580,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL provide a `defineVonosanModule(definition)` function that accepts `name`, `version`, `requires`, `middleware`, `schemas`, `serverImports`, `clientImports`, `pages`, `components`, `routes`, `migrations`, `configSchema`, `setup`, and `hooks` fields.
 2. WHEN a module is registered in `vonosan.config.ts` via the `modules` array, THE Vite_Plugin SHALL merge the module's schemas into `src/db/schema.ts`, mount its routes, register its auto-imports, and add its pages to the file-based router.
 3. THE Framework SHALL support module lifecycle hooks: `app:created`, `app:ready`, `build:before`, `build:after`, and `routes:resolved`.
-4. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module source into `src/modules/<module>/`, remove the package from dependencies, and update `vonosan.config.ts`.
+4. WHEN the developer runs `vonosan add <module> --eject`, THE CLI SHALL copy the module source into `src/modules/<module>/`, remove the package from dependencies, and update `vonosan.config.ts`.
 
 ---
 
@@ -607,7 +607,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 1. THE Framework SHALL provide an `authorize(user, ability, resource?)` function that throws HTTP 403 if the user is not permitted, and a `can(user, ability, resource?)` function that returns a boolean.
 2. THE Framework SHALL support Gate-based authorization (no resource) registered in `src/shared/gates/index.ts` and Policy-based authorization (per resource) defined in `src/<module>/<module>.policy.ts`.
-3. WHEN the developer runs `vono make:policy <name>`, THE CLI SHALL generate a policy file in `src/modules/<name>/<name>.policy.ts` with stubs for `view`, `create`, `update`, `delete`, and `forceDelete` actions, and register it in `src/shared/policies/index.ts`.
+3. WHEN the developer runs `vonosan make:policy <name>`, THE CLI SHALL generate a policy file in `src/modules/<name>/<name>.policy.ts` with stubs for `view`, `create`, `update`, `delete`, and `forceDelete` actions, and register it in `src/shared/policies/index.ts`.
 4. THE Framework SHALL provide a `gate(ability)` middleware factory and a `policy(ability)` middleware factory for use directly in route definitions.
 
 ---
@@ -619,7 +619,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. THE Framework SHALL support Resource classes with `static toResource(item)` and `static toCollection(items, total, page, limit)` methods that transform raw DB rows into shaped API responses.
-2. WHEN the developer runs `vono make:resource <name>`, THE CLI SHALL generate a resource file in `src/modules/<name>/<name>.resource.ts` with both methods pre-stubbed.
+2. WHEN the developer runs `vonosan make:resource <name>`, THE CLI SHALL generate a resource file in `src/modules/<name>/<name>.resource.ts` with both methods pre-stubbed.
 3. THE `toCollection` method SHALL use `buildPaginationMeta()` to include a `meta` pagination object with `page`, `page_size`, `total_items`, `total_pages`, `has_next`, and `has_prev` fields alongside the `items` array.
 4. THE `toResource` method SHALL accept an optional `fields` string array and return only the requested keys when provided (field selection).
 5. THE Framework SHALL provide a `resolveStorageUrl(path, config?)` utility in `src/shared/utils/storage.ts` that converts stored file paths to full public URLs based on the configured storage driver.
@@ -635,7 +635,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL validate all environment variables defined in `vonosan.config.ts` `env.schema` using Zod at application startup, before accepting any requests.
 2. WHEN validation fails, THE Framework SHALL print a formatted error listing each failing variable with its Zod error message and exit the process.
 3. THE Framework SHALL support cross-field validation via an `env.refine` function that can throw errors for dependent variable combinations (e.g., requiring `GOOGLE_CLIENT_SECRET` when `GOOGLE_CLIENT_ID` is set).
-4. WHEN the developer runs `vono add <module>`, THE CLI SHALL append the module's required env vars to `.env.example` with descriptive comments.
+4. WHEN the developer runs `vonosan add <module>`, THE CLI SHALL append the module's required env vars to `.env.example` with descriptive comments.
 5. THE Framework SHALL provide a `defineEnv(schema)` helper that wraps Zod env validation and returns a typed, validated config object.
 
 ---
@@ -648,7 +648,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 1. THE Framework SHALL provide a `useStorage(c)` server helper that returns a storage client for the configured driver, with `upload(file, options?)`, `delete(key)`, and `url(key)` methods.
 2. THE Framework SHALL support storage drivers: `local` (saves to `./storage/uploads`, serves at `/uploads`), `r2` (Cloudflare R2 via S3-compatible API), `s3` (AWS S3), `cloudinary` (image/video CDN), and `bunny` (Bunny.net CDN via REST API).
-3. WHEN the developer runs `vono add storage`, THE CLI SHALL prompt for the driver and install the required package (`cloudinary`, `@aws-sdk/client-s3`, etc.).
+3. WHEN the developer runs `vonosan add storage`, THE CLI SHALL prompt for the driver and install the required package (`cloudinary`, `@aws-sdk/client-s3`, etc.).
 4. WHEN a file upload exceeds the configured maximum size, THE upload handler SHALL return HTTP 413 with a standard error response.
 5. WHEN a file upload has a disallowed MIME type, THE upload handler SHALL return HTTP 415 with a standard error response.
 
@@ -664,8 +664,8 @@ The framework is not a runtime library alone — it is a complete developer tool
 2. WHEN the deployment target is Node.js or Bun, THE Framework SHALL use `node-cron` to run jobs in-process on the configured schedule.
 3. WHEN the deployment target is Cloudflare Workers, THE Framework SHALL generate a `[triggers]` section in `wrangler.jsonc` for each defined cron job.
 4. WHEN the deployment target is Vercel, THE Framework SHALL generate a `vercel.json` `crons` config entry for each defined cron job.
-5. WHEN the developer runs `vono make:job <name> --module=<module> --schedule="<cron>"`, THE CLI SHALL generate a job file in `src/modules/<module>/jobs/<name>.job.ts`.
-6. WHEN the developer runs `vono jobs:run <name>`, THE CLI SHALL execute the named job immediately outside of its schedule.
+5. WHEN the developer runs `vonosan make:job <name> --module=<module> --schedule="<cron>"`, THE CLI SHALL generate a job file in `src/modules/<module>/jobs/<name>.job.ts`.
+6. WHEN the developer runs `vonosan jobs:run <name>`, THE CLI SHALL execute the named job immediately outside of its schedule.
 
 ---
 
@@ -678,7 +678,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL provide a `defineEmail({ subject, html, text })` function where `subject`, `html`, and `text` are functions that accept a typed data object and return strings.
 2. THE Framework SHALL provide a `sendEmail(c, { to, subject, html, text, queue? })` server helper that sends via the configured email driver (`resend`, `postmark`, `smtp`, or `console`).
 3. WHEN `queue: true` is passed to `sendEmail`, THE Framework SHALL dispatch the email to the queue for async delivery instead of sending immediately.
-4. WHEN the developer runs `vono make:email <name> --module=<module>`, THE CLI SHALL generate an email template file in `src/modules/<module>/emails/<name>.email.ts`.
+4. WHEN the developer runs `vonosan make:email <name> --module=<module>`, THE CLI SHALL generate an email template file in `src/modules/<module>/emails/<name>.email.ts`.
 5. THE Framework SHALL support email providers: Resend (`resend` package), Postmark (`postmark` package), SMTP (`nodemailer`), and Console (dev-only, logs to stdout).
 6. FOR ALL valid email template data objects, calling `WelcomeEmail.render(data)` SHALL produce a `{ subject, html, text }` object where `html` contains the data values (round-trip property).
 
@@ -690,7 +690,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL provide an `@vonosan/i18n` module installable via `vono add i18n` that supports `prefix`, `cookie`, and `header` locale detection strategies.
+1. THE Framework SHALL provide an `@vonosan/i18n` module installable via `vonosan add i18n` that supports `prefix`, `cookie`, and `header` locale detection strategies.
 2. WHEN i18n is configured, THE Framework SHALL load translation files from `src/locales/<locale>.json` on demand (lazy loading).
 3. THE Framework SHALL provide a `useI18n()` composable returning `t(key)`, `locale`, `setLocale(locale)`, and `availableLocales`.
 4. THE Framework SHALL provide a server-side `getLocale(c)` and `t(locale, key)` for translating API responses.
@@ -708,7 +708,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 2. THE Framework SHALL scaffold `default.vue`, `dashboard.vue`, and `auth.vue` layouts during project creation.
 3. WHEN a page sets `layout: 'auth'` in `definePage()`, THE Framework SHALL wrap that page's content with `src/shared/layouts/auth.vue` instead of the default layout.
 4. WHEN a page sets `layout: 'blank'` or no layout is specified and no default exists, THE Framework SHALL render the page without any layout wrapper.
-5. THE Framework SHALL provide a `resolveLayout(layoutName)` utility from `vono/client` that returns the correct layout component for use in `App.vue`.
+5. THE Framework SHALL provide a `resolveLayout(layoutName)` utility from `vonosan/client` that returns the correct layout component for use in `App.vue`.
 
 ---
 
@@ -773,9 +773,9 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. THE Framework SHALL follow semantic versioning: patch for bug fixes, minor for backward-compatible features, major for breaking changes.
-2. WHEN the developer runs `vono upgrade --check`, THE CLI SHALL report available updates for `vono`, `@vonosan/cli`, and all installed `@vonosan/*` modules.
-3. WHEN the developer runs `vono upgrade --apply-codemods`, THE CLI SHALL run automated codemods for the current major version upgrade, reporting which changes were applied automatically and which require manual review.
-4. EACH `@vonosan/*` module SHALL declare a `peerDependencies` range for the compatible `vono` core version.
+2. WHEN the developer runs `vonosan upgrade --check`, THE CLI SHALL report available updates for `vonosan`, `@vonosan/cli`, and all installed `@vonosan/*` modules.
+3. WHEN the developer runs `vonosan upgrade --apply-codemods`, THE CLI SHALL run automated codemods for the current major version upgrade, reporting which changes were applied automatically and which require manual review.
+4. EACH `@vonosan/*` module SHALL declare a `peerDependencies` range for the compatible `vonosan` core version.
 
 ---
 
@@ -850,7 +850,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Soft_Delete_Helper SHALL expose a `softDelete(db, table, condition)` function that sets `deleted_at` to the current timestamp on records matching the condition and returns the affected record IDs.
 2. THE Soft_Delete_Helper SHALL expose a `forceDelete(db, table, condition)` function that permanently removes records matching the condition from the database and returns the affected record IDs.
 3. THE Framework SHALL support query scopes as plain functions that return Drizzle `SQL` conditions, defined in `src/modules/<module>/<module>.scopes.ts` files.
-4. WHEN the developer runs `vono make:module`, THE CLI SHALL generate a `<module>.scopes.ts` file with example scope stubs (e.g., `active()`, `ownedBy(accountId)`) if the module includes API support.
+4. WHEN the developer runs `vonosan make:module`, THE CLI SHALL generate a `<module>.scopes.ts` file with example scope stubs (e.g., `active()`, `ownedBy(accountId)`) if the module includes API support.
 5. THE Framework SHALL support composing multiple scopes using Drizzle's `and()` and `or()` operators in `WHERE` clauses.
 6. FOR ALL valid scope combinations, composing scopes with `and()` SHALL produce a single `WHERE` clause containing all individual conditions (no subquery or N+1 overhead).
 
@@ -862,11 +862,11 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono db:seed`, THE CLI SHALL discover all `*.seed.ts` files in `src/db/seeds/`, execute their exported `seed(db)` functions in alphabetical order, and report which seeds were applied.
-2. WHEN the developer runs `vono db:seed <name>`, THE CLI SHALL execute only the named seed file (`src/db/seeds/<name>.seed.ts`) and report success or failure.
+1. WHEN the developer runs `vonosan db:seed`, THE CLI SHALL discover all `*.seed.ts` files in `src/db/seeds/`, execute their exported `seed(db)` functions in alphabetical order, and report which seeds were applied.
+2. WHEN the developer runs `vonosan db:seed <name>`, THE CLI SHALL execute only the named seed file (`src/db/seeds/<name>.seed.ts`) and report success or failure.
 3. THE generated seed file SHALL export an `async function seed(db: DrizzleDb)` that receives a connected Drizzle database instance.
 4. THE generated seed file SHALL use `onConflictDoNothing()` on insert operations so that running the same seed multiple times is idempotent.
-5. WHEN the developer runs `vono migrate:fresh --seed`, THE CLI SHALL drop all tables, re-run all migrations, and then execute all seed files.
+5. WHEN the developer runs `vonosan migrate:fresh --seed`, THE CLI SHALL drop all tables, re-run all migrations, and then execute all seed files.
 
 ---
 
@@ -876,14 +876,14 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. WHEN the developer runs `vono migrate:run`, THE CLI SHALL execute all pending Drizzle Kit migrations against the configured database.
-2. WHEN the developer runs `vono migrate:rollback`, THE CLI SHALL roll back the last batch of applied migrations.
-3. WHEN the developer runs `vono migrate:status`, THE CLI SHALL display a list of all migrations with their applied/pending status.
-4. WHEN the developer runs `vono migrate:reset`, THE CLI SHALL roll back all applied migrations and then re-run them from the beginning.
-5. WHEN the developer runs `vono db:push`, THE CLI SHALL push the current schema directly to the database without generating migration SQL files (development only).
-6. WHEN the developer runs `vono db:studio`, THE CLI SHALL launch Drizzle Studio for interactive database browsing.
-7. WHEN the developer runs `vono schema:sync`, THE CLI SHALL scan all `*.schema.ts` files under `src/modules/` and regenerate the `src/db/schema.ts` barrel file with updated export statements.
-8. THE `vono migrate:make <name>` command SHALL first run `schema:sync` to ensure all module schemas are included, then invoke Drizzle Kit's migration generator.
+1. WHEN the developer runs `vonosan migrate:run`, THE CLI SHALL execute all pending Drizzle Kit migrations against the configured database.
+2. WHEN the developer runs `vonosan migrate:rollback`, THE CLI SHALL roll back the last batch of applied migrations.
+3. WHEN the developer runs `vonosan migrate:status`, THE CLI SHALL display a list of all migrations with their applied/pending status.
+4. WHEN the developer runs `vonosan migrate:reset`, THE CLI SHALL roll back all applied migrations and then re-run them from the beginning.
+5. WHEN the developer runs `vonosan db:push`, THE CLI SHALL push the current schema directly to the database without generating migration SQL files (development only).
+6. WHEN the developer runs `vonosan db:studio`, THE CLI SHALL launch Drizzle Studio for interactive database browsing.
+7. WHEN the developer runs `vonosan schema:sync`, THE CLI SHALL scan all `*.schema.ts` files under `src/modules/` and regenerate the `src/db/schema.ts` barrel file with updated export statements.
+8. THE `vonosan migrate:make <name>` command SHALL first run `schema:sync` to ensure all module schemas are included, then invoke Drizzle Kit's migration generator.
 
 ---
 
@@ -896,7 +896,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL generate a `src/db/relations.ts` file during project scaffolding for defining cross-module Drizzle ORM relations.
 2. WHEN two modules' tables reference each other via foreign keys, THE developer SHALL define the relation in `src/db/relations.ts` using Drizzle's `relations()` helper rather than inside individual module schema files.
 3. THE `src/db/relations.ts` file SHALL be imported by the `src/db/schema.ts` barrel file so that Drizzle Kit and relational queries can discover all relations.
-4. WHEN the developer runs `vono make:module` and the new module's schema references an existing module's table, THE CLI SHALL append a stub relation entry to `src/db/relations.ts`.
+4. WHEN the developer runs `vonosan make:module` and the new module's schema references an existing module's table, THE CLI SHALL append a stub relation entry to `src/db/relations.ts`.
 
 ---
 
@@ -913,7 +913,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 5. THE `defineVonosanConfig()` function SHALL accept a `payment` object with `driver` (`'paystack'` | `'stripe'` | `'both'`), and driver-specific sub-objects for `paystack` (publicKey, secretKey, webhookSecret) and `stripe` (publishableKey, secretKey, webhookSecret).
 6. THE `defineVonosanConfig()` function SHALL accept a `docs` object with `swagger` (boolean), `fiberplane` (boolean), and `openapi` (string path) fields to control API documentation endpoints.
 7. THE `defineVonosanConfig()` function SHALL accept a `test` object with `driver` (`'bun'` | `'vitest'` | `'jest'`) to configure the project's test runner.
-8. THE Framework SHALL provide `env(key, fallback?)`, `envNumber(key, fallback)`, `envBool(key, fallback)`, and `envRequired(key)` config helper functions exported from `vono` for use in `vonosan.config.ts`.
+8. THE Framework SHALL provide `env(key, fallback?)`, `envNumber(key, fallback)`, `envBool(key, fallback)`, and `envRequired(key)` config helper functions exported from `vonosan` for use in `vonosan.config.ts`.
 
 ---
 

@@ -9,3 +9,9 @@ coverage/
 .turbo/
 packages/*/dist/
 packages/*/node_modules/
+
+# Release/package artifacts
+release-packages/
+packages/*.tgz
+packages/*/*.tgz
+*.tgz

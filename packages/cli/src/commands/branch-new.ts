@@ -16,7 +16,7 @@ const green = (s: string) => `\x1b[32m${s}\x1b[0m`
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`
 
-const BRANCH_STATE_PATH = join(process.cwd(), '.vono', 'branch-state.json')
+const BRANCH_STATE_PATH = join(process.cwd(), '.vonosan', 'branch-state.json')
 
 interface BranchState {
   parent: string
@@ -34,7 +34,7 @@ function readBranchState(): BranchState | null {
 }
 
 function writeBranchState(state: BranchState): void {
-  const dir = join(process.cwd(), '.vono')
+  const dir = join(process.cwd(), '.vonosan')
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true })
   writeFileSync(BRANCH_STATE_PATH, JSON.stringify(state, null, 2), 'utf8')
 }
@@ -44,16 +44,16 @@ function currentBranch(): string {
 }
 
 /**
- * `vono branch:new <feature-name>`
+ * `vonosan branch:new <feature-name>`
  *
- * Records the current branch as parent in .vono/branch-state.json,
+ * Records the current branch as parent in .vonosan/branch-state.json,
  * then creates and checks out feature/<feature-name>.
  */
 export async function runBranchNew(args: string[]): Promise<void> {
   const [featureName] = args
 
   if (!featureName) {
-    process.stderr.write(red('Usage: vono branch:new <feature-name>\n'))
+    process.stderr.write(red('Usage: vonosan branch:new <feature-name>\n'))
     process.exit(1)
   }
 

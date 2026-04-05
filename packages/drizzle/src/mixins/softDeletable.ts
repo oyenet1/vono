@@ -15,7 +15,7 @@ import { timestamp } from 'drizzle-orm/pg-core'
  *
  * For SaaS products, every table MUST use soft deletes instead of
  * permanently destroying records. Combine with the `withSoftDeletes`,
- * `onlyTrashed`, and `withTrashed` query helpers from `vono/server`.
+ * `onlyTrashed`, and `withTrashed` query helpers from `vonosan/server`.
  *
  * Usage:
  * ```ts

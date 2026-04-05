@@ -63,7 +63,7 @@ function readPackageJson(): Record<string, unknown> {
 }
 
 /**
- * Collect all vono-related packages from package.json.
+ * Collect all vonosan-related packages from package.json.
  */
 function collectVonoPackages(pkg: Record<string, unknown>): Record<string, string> {
   const deps = {
@@ -85,10 +85,10 @@ function collectVonoPackages(pkg: Record<string, unknown>): Record<string, strin
 // ─── runUpgradeCheck ─────────────────────────────────────────────────
 
 /**
- * vono upgrade --check
+ * vonosan upgrade --check
  *
  * Reads package.json, checks npm registry for latest versions of
- * vono, @vonosan/cli, and all installed @vonosan/* packages.
+ * vonosan, @vonosan/cli, and all installed @vonosan/* packages.
  */
 export async function runUpgradeCheck(_args: string[]): Promise<void> {
   process.stdout.write(bold('Checking for Vonosan updates...\n\n'))
@@ -152,7 +152,7 @@ export async function runUpgradeCheck(_args: string[]): Promise<void> {
   if (hasMajor) {
     process.stdout.write(
       `\n${yellow('⚠ Major updates may include breaking changes.')}\n` +
-        `  Run ${bold('vono upgrade --apply-codemods')} to apply automated migrations.\n`,
+        `  Run ${bold('vonosan upgrade --apply-codemods')} to apply automated migrations.\n`,
     )
   } else {
     process.stdout.write(
@@ -164,7 +164,7 @@ export async function runUpgradeCheck(_args: string[]): Promise<void> {
 // ─── runUpgradeApply ─────────────────────────────────────────────────
 
 /**
- * vono upgrade --apply-codemods
+ * vonosan upgrade --apply-codemods
  *
  * Runs automated codemods for major version upgrades.
  * Reports what was changed vs what needs manual review.
@@ -194,7 +194,7 @@ export async function runUpgradeApply(_args: string[]): Promise<void> {
     process.stdout.write('No codemods available for the current version range.\n')
     process.stdout.write(
       `\n${yellow('Manual steps may still be required.')}\n` +
-        `  Check the changelog at https://github.com/oyenet1/vono/releases\n`,
+        `  Check the changelog at https://github.com/oyenet1/vonosan/releases\n`,
     )
     return
   }

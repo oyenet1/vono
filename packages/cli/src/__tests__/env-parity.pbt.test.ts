@@ -47,7 +47,7 @@ describe('.env / .env.example key parity (Property 2)', () => {
   let tmpDir: string
 
   beforeEach(() => {
-    tmpDir = join(tmpdir(), `vono-pbt-${Date.now()}-${Math.random().toString(36).slice(2)}`)
+    tmpDir = join(tmpdir(), `vonosan-pbt-${Date.now()}-${Math.random().toString(36).slice(2)}`)
     mkdirSync(tmpDir, { recursive: true })
   })
 

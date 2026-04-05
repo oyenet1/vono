@@ -6,6 +6,6 @@
   },
   "include": ["src/**/*"],
   "references": [
-    { "path": "../vono" }
+    { "path": "../vonosan" }
   ]
 }

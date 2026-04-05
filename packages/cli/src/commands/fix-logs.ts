@@ -25,8 +25,8 @@ const METHOD_MAP: Record<string, string> = {
   info: 'info',
 }
 
-const LOGGER_IMPORT = `import { Logger } from 'vonosansan/server'`
-const LOGGER_IMPORT_RE = /import\s*\{[^}]*Logger[^}]*\}\s*from\s*['"]vono\/server['"]/
+const LOGGER_IMPORT = `import { Logger } from 'vonosan/server'`
+const LOGGER_IMPORT_RE = /import\s*\{[^}]*Logger[^}]*\}\s*from\s*['"]vonosan\/server['"]/
 
 /**
  * Replaces all `console.*()` calls in `content` with `Logger.*()` equivalents
@@ -63,7 +63,7 @@ function fixLogs(content: string): string | null {
 }
 
 /**
- * `vono fix:logs` — replaces raw `console.*` calls with `Logger.*` equivalents
+ * `vonosan fix:logs` — replaces raw `console.*` calls with `Logger.*` equivalents
  * across all .ts files under src/.
  */
 export async function runFixLogs(args: string[]): Promise<void> {

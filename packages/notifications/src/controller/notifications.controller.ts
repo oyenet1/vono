@@ -9,8 +9,8 @@
  */
 
 import type { Context } from 'hono'
-import type { AppVariables } from 'vonosansan/types'
-import { ApiResponse } from 'vonosansan/server'
+import type { AppVariables } from 'vonosan/types'
+import { ApiResponse } from 'vonosan/server'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import { NotificationsService } from '../service/notifications.service.js'
 

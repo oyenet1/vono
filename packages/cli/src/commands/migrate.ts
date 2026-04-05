@@ -28,7 +28,7 @@ function capture(cmd: string): string {
 // ─── migrate:run ─────────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:run` — applies all pending Drizzle migrations.
+ * `vonosan migrate:run` — applies all pending Drizzle migrations.
  */
 export async function runMigrateRun(_args: string[]): Promise<void> {
   process.stdout.write(bold('Running migrations …\n'))
@@ -39,7 +39,7 @@ export async function runMigrateRun(_args: string[]): Promise<void> {
 // ─── migrate:rollback ─────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:rollback` — rolls back the last applied migration.
+ * `vonosan migrate:rollback` — rolls back the last applied migration.
  *
  * Drizzle Kit does not have a native rollback command; we implement it by
  * dropping the last entry from the drizzle migrations journal and re-running
@@ -67,7 +67,7 @@ export async function runMigrateRollback(_args: string[]): Promise<void> {
 // ─── migrate:status ───────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:status` — shows the current migration status.
+ * `vonosan migrate:status` — shows the current migration status.
  */
 export async function runMigrateStatus(_args: string[]): Promise<void> {
   process.stdout.write(bold('Migration status:\n'))
@@ -77,7 +77,7 @@ export async function runMigrateStatus(_args: string[]): Promise<void> {
 // ─── migrate:reset ────────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:reset` — rolls back all migrations then re-runs them.
+ * `vonosan migrate:reset` — rolls back all migrations then re-runs them.
  */
 export async function runMigrateReset(_args: string[]): Promise<void> {
   process.stdout.write(bold('Resetting database …\n'))
@@ -94,7 +94,7 @@ export async function runMigrateReset(_args: string[]): Promise<void> {
 // ─── migrate:fresh ────────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:fresh [--seed]`
+ * `vonosan migrate:fresh [--seed]`
  *
  * Drops all tables, re-runs all migrations, and optionally runs seeds.
  */
@@ -121,14 +121,14 @@ export async function runMigrateFresh(args: string[]): Promise<void> {
 // ─── migrate:make ─────────────────────────────────────────────────────────────
 
 /**
- * `vono migrate:make <name>`
+ * `vonosan migrate:make <name>`
  *
  * Syncs the schema barrel first, then generates a new Drizzle migration.
  */
 export async function runMigrateMake(args: string[]): Promise<void> {
   const [name] = args
   if (!name) {
-    process.stderr.write(red('Usage: vono migrate:make <name>\n'))
+    process.stderr.write(red('Usage: vonosan migrate:make <name>\n'))
     process.exit(1)
   }
 

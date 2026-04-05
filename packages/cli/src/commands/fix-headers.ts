@@ -16,7 +16,7 @@ const green = (s: string) => `\x1b[32m${s}\x1b[0m`
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`
 
 /**
- * `vono fix:headers` — injects missing Bonifade headers into all .ts / .vue
+ * `vonosan fix:headers` — injects missing Bonifade headers into all .ts / .vue
  * files under src/ without touching any other content.
  */
 export async function runFixHeaders(args: string[]): Promise<void> {
