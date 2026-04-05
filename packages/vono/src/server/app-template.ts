@@ -16,12 +16,12 @@ import { configProvider } from './middleware/configProvider.js'
 import { dbProvider } from './middleware/dbProvider.js'
 import { autoRegisterRoutes } from '../shared/utils/autoRoutes.js'
 import { Logger } from '../shared/utils/logger.js'
-import type { VonoConfig, AppVariables, Env } from '../types/index.js'
+import type { VonosanConfig, AppVariables, Env } from '../types/index.js'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
 export interface VonoAppOptions {
-  config: VonoConfig
+  config: VonosanConfig
   openApiSpec?: Record<string, unknown>
   /** Pass import.meta.glob('/src/modules/*\/*.routes.ts', { eager: true }) here */
   modules?: Record<string, { default?: unknown }>
@@ -30,7 +30,7 @@ export interface VonoAppOptions {
 // ─── Factory ────────────────────────────────────────────────────────
 
 /**
- * createVonoApp — two-layer Hono app factory.
+ * createVonosanApp — two-layer Hono app factory.
  *
  * Layer 1 (outer): global middleware (logger, prettyJSON, CORS),
  *   health check, robots.txt, sitemap.xml, API docs endpoints.
@@ -40,15 +40,15 @@ export interface VonoAppOptions {
  *
  * Usage in your project's src/index.ts:
  * ```ts
- * import { createVonoApp } from 'vono/server'
- * import config from '../vono.config.js'
+ * import { createVonosanApp } from 'vonosansan/server'
+ * import config from '../vonosan.config.js'
  * import openApiSpec from './openapi.js'
  *
- * const app = createVonoApp({ config, openApiSpec })
+ * const app = createVonosanApp({ config, openApiSpec })
  * export default app
  * ```
  */
-export function createVonoApp(options: VonoAppOptions): Hono<{ Variables: AppVariables; Bindings: Env }> {
+export function createVonosanApp(options: VonoAppOptions): Hono<{ Variables: AppVariables; Bindings: Env }> {
   const { config, openApiSpec } = options
 
   // ── Outer app ────────────────────────────────────────────────────
@@ -138,14 +138,14 @@ export function createVonoApp(options: VonoAppOptions): Hono<{ Variables: AppVar
 // ─── CORS helper ────────────────────────────────────────────────────
 
 /**
- * Build CORS middleware from vono.config.ts + ALLOWED_ORIGINS env var.
+ * Build CORS middleware from vonosan.config.ts + ALLOWED_ORIGINS env var.
  *
  * Priority:
- *   1. config.cors.origins (explicit list in vono.config.ts)
+ *   1. config.cors.origins (explicit list in vonosan.config.ts)
  *   2. ALLOWED_ORIGINS env var (comma-separated)
  *   3. Dev auto-allow: localhost:4000 and localhost:5173
  */
-function buildCorsMiddleware(config: VonoConfig) {
+function buildCorsMiddleware(config: VonosanConfig) {
   const isDev = config.app.env !== 'production'
 
   // Collect allowed origins
@@ -183,7 +183,7 @@ function buildCorsMiddleware(config: VonoConfig) {
  */
 function mountDocEndpoints(
   app: Hono<{ Variables: AppVariables; Bindings: Env }>,
-  config: VonoConfig,
+  config: VonosanConfig,
   openApiSpec?: Record<string, unknown>,
 ): void {
   const docsConfig = config.docs!

@@ -8,12 +8,12 @@
  * ──────────────────────────────────────────────────────────────────
  */
 
-import type { VonoModuleDefinition, VonoLifecycleHook } from './define-module.js'
+import type { VonosanModuleDefinition, VonoLifecycleHook } from './define-module.js'
 import { Logger } from '../shared/utils/logger.js'
 
 // ─── Registry state ──────────────────────────────────────────────────
 
-const registry: VonoModuleDefinition[] = []
+const registry: VonosanModuleDefinition[] = []
 
 // ─── registerModule ──────────────────────────────────────────────────
 
@@ -22,7 +22,7 @@ const registry: VonoModuleDefinition[] = []
  *
  * Throws if a module with the same name is already registered.
  */
-export function registerModule(module: VonoModuleDefinition): void {
+export function registerModule(module: VonosanModuleDefinition): void {
   const existing = registry.find((m) => m.name === module.name)
 
   if (existing) {
@@ -41,7 +41,7 @@ export function registerModule(module: VonoModuleDefinition): void {
 /**
  * getModules — returns all registered modules.
  */
-export function getModules(): VonoModuleDefinition[] {
+export function getModules(): VonosanModuleDefinition[] {
   return [...registry]
 }
 

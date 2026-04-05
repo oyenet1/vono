@@ -38,7 +38,7 @@ interface RateLimiterState {
  * for Cloudflare Workers compatibility — CF Workers prohibit top-level
  * I/O and timers outside of request handlers.
  *
- * @param tier    — { windowMs, limit } from VonoConfig.rateLimit
+ * @param tier    — { windowMs, limit } from VonosanConfig.rateLimit
  * @param keyFn   — function to derive the rate-limit key from the request
  *                  (defaults to client IP)
  * @param message — custom 429 message
@@ -141,7 +141,7 @@ export function createRateLimiter(
 // ─── Default tiers ──────────────────────────────────────────────────
 
 /**
- * Default rate limit tiers — used when vono.config.ts does not specify
+ * Default rate limit tiers — used when vonosan.config.ts does not specify
  * custom values. Projects should override these in their config.
  */
 const DEFAULT_AUTH_TIER: RateLimitTier = {
@@ -167,7 +167,7 @@ const DEFAULT_API_TIER: RateLimitTier = {
  * Uses DEFAULT_AUTH_TIER unless overridden via config.
  * Override in your src/index.ts:
  * ```ts
- * import { createRateLimiter } from 'vono/server'
+ * import { createRateLimiter } from 'vonosansan/server'
  * const authRateLimiter = createRateLimiter(config.rateLimit?.auth ?? DEFAULT_AUTH_TIER)
  * ```
  */
@@ -198,15 +198,15 @@ export const apiRateLimiter = createRateLimiter(
 // ─── Config-aware factory ────────────────────────────────────────────
 
 /**
- * createConfiguredRateLimiters — build rate limiters from VonoConfig.
+ * createConfiguredRateLimiters — build rate limiters from VonosanConfig.
  *
- * Call this in your src/index.ts after loading vono.config.ts to get
+ * Call this in your src/index.ts after loading vonosan.config.ts to get
  * limiters that respect your project's custom tier settings.
  *
  * Usage:
  * ```ts
- * import { createConfiguredRateLimiters } from 'vono/server'
- * import config from '../vono.config.js'
+ * import { createConfiguredRateLimiters } from 'vonosansan/server'
+ * import config from '../vonosan.config.js'
  *
  * const { authRateLimiter, otpRateLimiter, apiRateLimiter } =
  *   createConfiguredRateLimiters(config.rateLimit)

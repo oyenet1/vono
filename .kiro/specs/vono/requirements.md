@@ -4,13 +4,13 @@
 
 Vono (Vue + Hono) is a batteries-included full-stack TypeScript framework that combines a Hono API backend with a Vue 3 frontend in a single codebase. It ships as multiple npm packages, supports hybrid SSR/SPA rendering, file-based routing, Drizzle ORM integration, and a Laravel-style CLI. Projects can be deployed anywhere Hono runs: Node.js, Bun, Deno, Docker, Cloudflare Workers, and Vercel.
 
-The framework is not a runtime library alone — it is a complete developer toolchain: a project scaffolder (`create-vono`), a core runtime package (`vono`), an Artisan-style CLI (`@vono/cli`), and a suite of optional add-on modules (`@vono/auth`, `@vono/drizzle`, `@vono/notifications`, `@vono/logging`, `@vono/ws`). It codifies the Bonifade Technologies development standards into automated tooling so every project starts and stays consistent.
+The framework is not a runtime library alone — it is a complete developer toolchain: a project scaffolder (`create-vonosan`), a core runtime package (`vono`), an Artisan-style CLI (`@vonosan/cli`), and a suite of optional add-on modules (`@vonosan/auth`, `@vonosan/drizzle`, `@vonosan/notifications`, `@vonosan/logging`, `@vonosan/ws`). It codifies the Bonifade Technologies development standards into automated tooling so every project starts and stays consistent.
 
 ---
 
 ## Glossary
 
-- **Framework**: The Vono framework — its CLI tools, runtime packages, Vite plugin, and code generators.
+- **Framework**: The Vonosan framework — its CLI tools, runtime packages, Vite plugin, and code generators.
 - **CLI**: The command-line interface entry point (`vono`) used to invoke all framework commands.
 - **Project**: A full-stack or API-only application scaffolded or managed by the Framework.
 - **Module**: A self-contained feature folder within a Project containing routes, controller, service, DTO, schema, pages, components, and composables.
@@ -32,8 +32,8 @@ The framework is not a runtime library alone — it is a complete developer tool
 - **SPA**: Single-Page Application mode — the server sends a bare HTML shell; Vue renders entirely on the client.
 - **Route_Rules**: The `src/route-rules.ts` configuration that maps URL patterns to rendering modes (`ssr`, `spa`, `prerender`).
 - **Vite_Plugin**: The `vono/vite` Vite plugin that wires SSR, file-based routing, auto-imports, dev server, and HMR.
-- **Module_System**: The `defineVonoModule()` API for creating installable Vono modules that register middleware, schemas, routes, pages, and composables.
-- **Vono_Config**: The `vono.config.ts` project configuration file, defined via `defineVonoConfig()`.
+- **Module_System**: The `defineVonosanModule()` API for creating installable Vonosan modules that register middleware, schemas, routes, pages, and composables.
+- **Vono_Config**: The `vonosan.config.ts` project configuration file, defined via `defineVonosanConfig()`.
 - **Auto_Import**: The `unplugin-auto-import` integration that makes shared utilities, composables, and framework APIs available without explicit import statements.
 - **Resource**: An API response transformer class with `toResource()` and `toCollection()` static methods.
 - **Policy**: A resource-level authorization class defining per-action rules for a module.
@@ -63,9 +63,9 @@ The framework is not a runtime library alone — it is a complete developer tool
 4. WHEN scaffolding a new project, THE CLI SHALL generate a `.env` file and a corresponding `.env.example` file with identical keys and placeholder values.
 5. WHEN scaffolding a new project, THE CLI SHALL generate a `package.json` with all required dependencies installed at their latest versions (not pinned).
 6. WHEN scaffolding a new project, THE CLI SHALL create a `drizzle.config.ts` file pre-configured for the project's database connection.
-7. WHEN scaffolding a new project, THE CLI SHALL create a `vono.config.ts` file at the project root using `defineVonoConfig()`.
+7. WHEN scaffolding a new project, THE CLI SHALL create a `vonosan.config.ts` file at the project root using `defineVonosanConfig()`.
 8. WHEN scaffolding a new project, THE CLI SHALL create a root `llms.txt` file documenting the project's architecture, module list, and technology stack.
-9. WHEN the developer passes a `--saas` flag or selects SaaS mode in the wizard, THE CLI SHALL enable SaaS_Mode for the project, recording this in `vono.config.ts`.
+9. WHEN the developer passes a `--saas` flag or selects SaaS mode in the wizard, THE CLI SHALL enable SaaS_Mode for the project, recording this in `vonosan.config.ts`.
 10. IF the target project directory already exists, THEN THE CLI SHALL return an error message and halt without modifying any existing files.
 11. WHEN scaffolding a full-stack project, THE CLI SHALL generate `src/main.ts`, `src/app.ts`, `src/server.ts`, `src/router.ts`, `src/route-rules.ts`, `src/App.vue`, and `index.html`.
 12. WHEN scaffolding a full-stack project, THE CLI SHALL install Vue 3, Vue Router v5, Pinia, `@nuxt/ui`, and `@unhead/vue` as dependencies.
@@ -190,7 +190,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL generate a `Logger` utility in `src/shared/logger.ts` during project scaffolding, wrapping a structured logging library.
 2. WHEN the Linter scans any `.ts` file under `src/`, THE Linter SHALL report a violation for every occurrence of `console.log`, `console.warn`, `console.error`, or `console.debug`.
 3. WHEN the developer runs `vono fix:logs`, THE CLI SHALL replace detected raw `console.*` calls with the equivalent `Logger` method and add an import for the Logger if not already present.
-4. IF a `console.*` call is found inside a file marked with `// @vono-ignore-logs`, THEN THE Linter SHALL skip that file without reporting a violation.
+4. IF a `console.*` call is found inside a file marked with `// @vonosan-ignore-logs`, THEN THE Linter SHALL skip that file without reporting a violation.
 
 ---
 
@@ -278,18 +278,18 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ### Requirement 16: Package Architecture & npm Packages
 
-**User Story:** As a developer, I want Vono to ship as clearly separated npm packages, so that I can install only what my project needs.
+**User Story:** As a developer, I want Vonosan to ship as clearly separated npm packages, so that I can install only what my project needs.
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL publish `create-vono` as the interactive project scaffolder installable via `bun create vono@latest <app-name>`.
+1. THE Framework SHALL publish `create-vonosan` as the interactive project scaffolder installable via `bun create vono@latest <app-name>`.
 2. THE Framework SHALL publish `vono` as the core runtime package with subpath exports: `vono` (config/composables), `vono/vite` (Vite plugin), `vono/server` (server helpers), `vono/client` (client composables), and `vono/types` (shared TypeScript types).
-3. THE Framework SHALL publish `@vono/cli` as the Artisan-style scaffolding CLI installed as a dev dependency.
-4. THE Framework SHALL publish `@vono/drizzle` as the Drizzle ORM integration package providing mixins, soft deletes, scopes, and seed helpers.
-5. THE Framework SHALL publish `@vono/auth`, `@vono/notifications`, `@vono/logging`, and `@vono/ws` as optional add-on modules installable via `vono add <module>`.
-6. WHEN the developer runs `vono add <module>`, THE CLI SHALL install the package, generate required files, and update `vono.config.ts` — and the operation SHALL be idempotent (running it again skips existing files). Supported `vono add` commands include: `vono add auth`, `vono add storage` (prompts for driver), `vono add queue`, `vono add cache`, `vono add email`, `vono add oauth google`, `vono add oauth github`, `vono add websocket`, `vono add notifications`, `vono add logging`, `vono add ws`, and `vono add i18n`.
-7. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module's source into `src/modules/<module>/`, remove the package dependency, and update `vono.config.ts`.
-8. THE `create-vono` package SHALL use `@clack/prompts` for terminal prompts, `giget` for template fetching, `kolorist` for terminal colors, and `execa` for running install commands.
+3. THE Framework SHALL publish `@vonosan/cli` as the Artisan-style scaffolding CLI installed as a dev dependency.
+4. THE Framework SHALL publish `@vonosan/drizzle` as the Drizzle ORM integration package providing mixins, soft deletes, scopes, and seed helpers.
+5. THE Framework SHALL publish `@vonosan/auth`, `@vonosan/notifications`, `@vonosan/logging`, and `@vonosan/ws` as optional add-on modules installable via `vono add <module>`.
+6. WHEN the developer runs `vono add <module>`, THE CLI SHALL install the package, generate required files, and update `vonosan.config.ts` — and the operation SHALL be idempotent (running it again skips existing files). Supported `vono add` commands include: `vono add auth`, `vono add storage` (prompts for driver), `vono add queue`, `vono add cache`, `vono add email`, `vono add oauth google`, `vono add oauth github`, `vono add websocket`, `vono add notifications`, `vono add logging`, `vono add ws`, and `vono add i18n`.
+7. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module's source into `src/modules/<module>/`, remove the package dependency, and update `vonosan.config.ts`.
+8. THE `create-vonosan` package SHALL use `@clack/prompts` for terminal prompts, `giget` for template fetching, `kolorist` for terminal colors, and `execa` for running install commands.
 
 ---
 
@@ -376,7 +376,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Vite_Plugin SHALL be importable from `vono/vite` and usable as `plugins: [vono()]` in `vite.config.ts`, internally composing `@vitejs/plugin-vue`, `vue-router/vite`, `unplugin-auto-import/vite`, `unplugin-vue-components/vite`, `@hono/vite-dev-server`, and `@nuxt/ui/vite`.
 2. WHEN the developer runs the build command, THE Vite_Plugin SHALL perform a dual build: a client build to `dist/client/` and an SSR build to `dist/server/`.
 3. THE Vite_Plugin SHALL configure `@hono/vite-dev-server` for development, excluding Vue files, static assets, and CSS from the Hono handler so Vite handles them directly.
-4. WHEN `vono.config.ts` changes during development, THE Vite_Plugin SHALL trigger a full dev server restart.
+4. WHEN `vonosan.config.ts` changes during development, THE Vite_Plugin SHALL trigger a full dev server restart.
 5. WHEN API route files change during development, THE Vite_Plugin SHALL hot-reload them via `ssrLoadModule` without a full restart.
 6. THE Vite_Plugin SHALL resolve the `@@ws-adapter` alias to the correct WebSocket adapter import based on the configured deployment target.
 7. THE Vite_Plugin SHALL generate `src/auto-imports.d.ts`, `src/auto-imports-client.d.ts`, and `src/components.d.ts` type declaration files for all auto-imported symbols.
@@ -416,18 +416,18 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ### Requirement 25: CORS Configuration
 
-**User Story:** As a developer, I want CORS to be configured from `vono.config.ts`, so that allowed origins are managed in one place and support both Cloudflare Workers and Node.js environments.
+**User Story:** As a developer, I want CORS to be configured from `vonosan.config.ts`, so that allowed origins are managed in one place and support both Cloudflare Workers and Node.js environments.
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL configure `hono/cors` middleware on the outer app using the `cors` settings from `vono.config.ts`.
+1. THE Framework SHALL configure `hono/cors` middleware on the outer app using the `cors` settings from `vonosan.config.ts`.
 2. THE CORS origin validator SHALL read allowed origins from the `ALLOWED_ORIGINS` environment variable (comma-separated), checking `c.env` first then `process.env`.
 3. THE Framework SHALL default to allowing `Content-Type`, `Authorization`, and `X-API-Key` headers, and `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS` methods with `credentials: true`.
 4. WHEN `NODE_ENV` is `development`, THE Framework SHALL automatically allow `http://localhost:4000` and `http://localhost:5173` as origins.
 
 ---
 
-### Requirement 26: Authentication System (`@vono/auth`)
+### Requirement 26: Authentication System (`@vonosan/auth`)
 
 **User Story:** As a developer, I want a complete authentication system scaffolded with a single command, so that I have working login, registration, OAuth, and session management without writing boilerplate.
 
@@ -503,7 +503,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ### Requirement 31: Deployment Targets
 
-**User Story:** As a developer, I want to deploy my Vono app to any supported runtime without code changes, so that I can choose the best infrastructure for my needs.
+**User Story:** As a developer, I want to deploy my Vonosan app to any supported runtime without code changes, so that I can choose the best infrastructure for my needs.
 
 #### Acceptance Criteria
 
@@ -517,7 +517,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ---
 
-### Requirement 32: WebSocket & Real-Time (`@vono/ws`)
+### Requirement 32: WebSocket & Real-Time (`@vonosan/ws`)
 
 **User Story:** As a developer, I want to add real-time WebSocket support to my app with a single command, so that I can build live features without configuring a separate WebSocket server.
 
@@ -531,7 +531,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ---
 
-### Requirement 33: Notifications Module (`@vono/notifications`)
+### Requirement 33: Notifications Module (`@vonosan/notifications`)
 
 **User Story:** As a developer, I want an in-app notification system scaffolded automatically, so that I can notify users of events without building the schema, API, and UI from scratch.
 
@@ -544,7 +544,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ---
 
-### Requirement 34: Activity Logging Module (`@vono/logging`)
+### Requirement 34: Activity Logging Module (`@vonosan/logging`)
 
 **User Story:** As a developer, I want an activity and audit trail system, so that I can track what actions users perform in the application.
 
@@ -557,41 +557,41 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ---
 
-### Requirement 35: Vono Config System
+### Requirement 35: Vonosan Config System
 
 **User Story:** As a developer, I want a typed, runtime-aware configuration system, so that I can define all framework settings in one place and access them safely on both server and client.
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL provide a `defineVonoConfig(config)` function exported from `vono` that accepts and validates the full framework configuration object.
-2. THE Framework SHALL provide a `useVonoConfig()` composable that returns the resolved config, stripping server-only values when called on the client.
-3. THE Vite_Plugin SHALL read `vono.config.ts` at build time and inject a `virtual:vono/config` module with the resolved public config values.
-4. WHEN `vono.config.ts` is missing or contains invalid configuration, THE Framework SHALL throw a descriptive error at startup before accepting any requests.
-5. THE `defineVonoConfig()` function SHALL accept a `ui.colors` object with `primary` and `neutral` color keys that configure the Nuxt UI theme, passed to the `@nuxt/ui/vite` plugin.
+1. THE Framework SHALL provide a `defineVonosanConfig(config)` function exported from `vono` that accepts and validates the full framework configuration object.
+2. THE Framework SHALL provide a `useVonosanConfig()` composable that returns the resolved config, stripping server-only values when called on the client.
+3. THE Vite_Plugin SHALL read `vonosan.config.ts` at build time and inject a `virtual:vono/config` module with the resolved public config values.
+4. WHEN `vonosan.config.ts` is missing or contains invalid configuration, THE Framework SHALL throw a descriptive error at startup before accepting any requests.
+5. THE `defineVonosanConfig()` function SHALL accept a `ui.colors` object with `primary` and `neutral` color keys that configure the Nuxt UI theme, passed to the `@nuxt/ui/vite` plugin.
 
 ---
 
 ### Requirement 36: Module/Plugin System
 
-**User Story:** As a developer, I want to create installable Vono modules that register middleware, schemas, routes, and pages, so that I can package and share framework extensions.
+**User Story:** As a developer, I want to create installable Vonosan modules that register middleware, schemas, routes, and pages, so that I can package and share framework extensions.
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL provide a `defineVonoModule(definition)` function that accepts `name`, `version`, `requires`, `middleware`, `schemas`, `serverImports`, `clientImports`, `pages`, `components`, `routes`, `migrations`, `configSchema`, `setup`, and `hooks` fields.
-2. WHEN a module is registered in `vono.config.ts` via the `modules` array, THE Vite_Plugin SHALL merge the module's schemas into `src/db/schema.ts`, mount its routes, register its auto-imports, and add its pages to the file-based router.
+1. THE Framework SHALL provide a `defineVonosanModule(definition)` function that accepts `name`, `version`, `requires`, `middleware`, `schemas`, `serverImports`, `clientImports`, `pages`, `components`, `routes`, `migrations`, `configSchema`, `setup`, and `hooks` fields.
+2. WHEN a module is registered in `vonosan.config.ts` via the `modules` array, THE Vite_Plugin SHALL merge the module's schemas into `src/db/schema.ts`, mount its routes, register its auto-imports, and add its pages to the file-based router.
 3. THE Framework SHALL support module lifecycle hooks: `app:created`, `app:ready`, `build:before`, `build:after`, and `routes:resolved`.
-4. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module source into `src/modules/<module>/`, remove the package from dependencies, and update `vono.config.ts`.
+4. WHEN the developer runs `vono add <module> --eject`, THE CLI SHALL copy the module source into `src/modules/<module>/`, remove the package from dependencies, and update `vonosan.config.ts`.
 
 ---
 
-### Requirement 37: Vono Client Composables
+### Requirement 37: Vonosan Client Composables
 
 **User Story:** As a developer, I want SSR-safe composables for data fetching, cookies, shared state, and navigation, so that I can build full-stack features without worrying about server/client differences.
 
 #### Acceptance Criteria
 
 1. THE Framework SHALL provide `useAsyncData(key, fetcher, options?)` that fetches on the server during SSR, stores the result in the SSR payload, and hydrates on the client without a duplicate fetch.
-2. THE Framework SHALL provide `useVonoFetch(url, options?)` as a typed fetch wrapper that uses relative URLs on the server and absolute URLs on the client, automatically forwarding auth cookies during SSR.
+2. THE Framework SHALL provide `useVonosanFetch(url, options?)` as a typed fetch wrapper that uses relative URLs on the server and absolute URLs on the client, automatically forwarding auth cookies during SSR.
 3. THE Framework SHALL provide `useCookie(name, options?)` that reads from request headers on the server and `document.cookie` on the client, and supports writing (sets cookie on both server response and client).
 4. THE Framework SHALL provide `useState(key, init?)` that stores shared state in the SSR payload, serializes it as `window.__VONO_STATE__` in the HTML, and restores it during client hydration.
 5. THE Framework SHALL provide `navigateTo(path, options?)` that wraps `vue-router` for programmatic navigation, supporting `replace`, `external`, and `redirectCode` options, and sending a 302 redirect during SSR.
@@ -632,7 +632,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL validate all environment variables defined in `vono.config.ts` `env.schema` using Zod at application startup, before accepting any requests.
+1. THE Framework SHALL validate all environment variables defined in `vonosan.config.ts` `env.schema` using Zod at application startup, before accepting any requests.
 2. WHEN validation fails, THE Framework SHALL print a formatted error listing each failing variable with its Zod error message and exit the process.
 3. THE Framework SHALL support cross-field validation via an `env.refine` function that can throw errors for dependent variable combinations (e.g., requiring `GOOGLE_CLIENT_SECRET` when `GOOGLE_CLIENT_ID` is set).
 4. WHEN the developer runs `vono add <module>`, THE CLI SHALL append the module's required env vars to `.env.example` with descriptive comments.
@@ -690,7 +690,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL provide an `@vono/i18n` module installable via `vono add i18n` that supports `prefix`, `cookie`, and `header` locale detection strategies.
+1. THE Framework SHALL provide an `@vonosan/i18n` module installable via `vono add i18n` that supports `prefix`, `cookie`, and `header` locale detection strategies.
 2. WHEN i18n is configured, THE Framework SHALL load translation files from `src/locales/<locale>.json` on demand (lazy loading).
 3. THE Framework SHALL provide a `useI18n()` composable returning `t(key)`, `locale`, `setLocale(locale)`, and `availableLocales`.
 4. THE Framework SHALL provide a server-side `getLocale(c)` and `t(locale, key)` for translating API responses.
@@ -721,7 +721,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 1. THE Framework SHALL configure `unplugin-auto-import` to auto-import server-side utilities from `src/shared/utils/**`, `src/shared/middleware/**`, `src/shared/dto/**`, and `src/lib/**`.
 2. THE Framework SHALL configure `unplugin-auto-import` to auto-import Hono (`Hono`, `HTTPException`), Drizzle ORM operators (`eq`, `and`, `or`, `desc`, `asc`, `isNull`, `isNotNull`, `sql`, `count`, `like`, `inArray`), and Zod (`z`) on the server side.
 3. THE Framework SHALL configure `unplugin-auto-import` to auto-import Vue (`ref`, `computed`, `watch`, `onMounted`, etc.), Vue Router (`useRoute`, `useRouter`), and Pinia (`defineStore`, `storeToRefs`) on the client side, including in `<template>` blocks.
-4. THE Framework SHALL allow developers to extend auto-imports via `vono.config.ts` `autoImport.server.dirs`, `autoImport.server.imports`, `autoImport.client.dirs`, and `autoImport.client.imports`.
+4. THE Framework SHALL allow developers to extend auto-imports via `vonosan.config.ts` `autoImport.server.dirs`, `autoImport.server.imports`, `autoImport.client.dirs`, and `autoImport.client.imports`.
 5. FOR ALL auto-imported symbols, THE generated `.d.ts` files SHALL provide correct TypeScript type information so the editor reports no "cannot find name" errors.
 
 ---
@@ -759,7 +759,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 #### Acceptance Criteria
 
 1. THE Framework SHALL wrap all SSR rendering in a try/catch so that a `renderToString` error does not propagate to the Hono error handler.
-2. WHEN an SSR error occurs and `ssr.fallbackToSpa` is enabled in `vono.config.ts`, THE Server SHALL return the bare SPA shell instead of an error page.
+2. WHEN an SSR error occurs and `ssr.fallbackToSpa` is enabled in `vonosan.config.ts`, THE Server SHALL return the bare SPA shell instead of an error page.
 3. THE Framework SHALL support an `error.vue` global error page component that receives an `error` prop with `statusCode`, `message`, `stack` (dev only), and `url`.
 4. THE Framework SHALL provide `createError({ statusCode, message })` and `clearError({ redirect? })` utilities for throwing and clearing errors from page components.
 5. THE Framework SHALL serve a static fallback HTML error page (HTTP 500) if both SSR rendering and error page rendering fail.
@@ -768,14 +768,14 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ### Requirement 50: Upgrade & Versioning Strategy
 
-**User Story:** As a developer, I want a clear upgrade path between Vono versions, so that I can keep my project up to date without manual migration work.
+**User Story:** As a developer, I want a clear upgrade path between Vonosan versions, so that I can keep my project up to date without manual migration work.
 
 #### Acceptance Criteria
 
 1. THE Framework SHALL follow semantic versioning: patch for bug fixes, minor for backward-compatible features, major for breaking changes.
-2. WHEN the developer runs `vono upgrade --check`, THE CLI SHALL report available updates for `vono`, `@vono/cli`, and all installed `@vono/*` modules.
+2. WHEN the developer runs `vono upgrade --check`, THE CLI SHALL report available updates for `vono`, `@vonosan/cli`, and all installed `@vonosan/*` modules.
 3. WHEN the developer runs `vono upgrade --apply-codemods`, THE CLI SHALL run automated codemods for the current major version upgrade, reporting which changes were applied automatically and which require manual review.
-4. EACH `@vono/*` module SHALL declare a `peerDependencies` range for the compatible `vono` core version.
+4. EACH `@vonosan/*` module SHALL declare a `peerDependencies` range for the compatible `vono` core version.
 
 ---
 
@@ -900,20 +900,20 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ---
 
-### Requirement 59: Vono Config Full Schema
+### Requirement 59: Vonosan Config Full Schema
 
-**User Story:** As a developer, I want the `vono.config.ts` file to support all framework configuration sections, so that every aspect of the framework can be controlled from a single typed configuration file.
+**User Story:** As a developer, I want the `vonosan.config.ts` file to support all framework configuration sections, so that every aspect of the framework can be controlled from a single typed configuration file.
 
 #### Acceptance Criteria
 
-1. THE `defineVonoConfig()` function SHALL accept an `app` object with `name` (string), `url` (string), `env` (string), `key` (string), and `language` (`'ts'` | `'js'`) fields.
-2. THE `defineVonoConfig()` function SHALL accept a `runtime` field specifying the deployment target (`'cloudflare-workers'` | `'cloudflare-pages'` | `'bun'` | `'node'` | `'deno'` | `'aws-lambda'` | `'vercel'` | `'netlify'` | `'fastly'`).
-3. THE `defineVonoConfig()` function SHALL accept a `mode` field (`'fullstack'` | `'api'`) to control whether frontend files are generated and Vue SSR is enabled.
-4. THE `defineVonoConfig()` function SHALL accept a `rateLimit` object with configurable tiers: `auth` (default `windowMs: 300000`, `limit: 5`), `otp` (default `windowMs: 600000`, `limit: 3`), and `api` (default `windowMs: 60000`, `limit: 100`).
-5. THE `defineVonoConfig()` function SHALL accept a `payment` object with `driver` (`'paystack'` | `'stripe'` | `'both'`), and driver-specific sub-objects for `paystack` (publicKey, secretKey, webhookSecret) and `stripe` (publishableKey, secretKey, webhookSecret).
-6. THE `defineVonoConfig()` function SHALL accept a `docs` object with `swagger` (boolean), `fiberplane` (boolean), and `openapi` (string path) fields to control API documentation endpoints.
-7. THE `defineVonoConfig()` function SHALL accept a `test` object with `driver` (`'bun'` | `'vitest'` | `'jest'`) to configure the project's test runner.
-8. THE Framework SHALL provide `env(key, fallback?)`, `envNumber(key, fallback)`, `envBool(key, fallback)`, and `envRequired(key)` config helper functions exported from `vono` for use in `vono.config.ts`.
+1. THE `defineVonosanConfig()` function SHALL accept an `app` object with `name` (string), `url` (string), `env` (string), `key` (string), and `language` (`'ts'` | `'js'`) fields.
+2. THE `defineVonosanConfig()` function SHALL accept a `runtime` field specifying the deployment target (`'cloudflare-workers'` | `'cloudflare-pages'` | `'bun'` | `'node'` | `'deno'` | `'aws-lambda'` | `'vercel'` | `'netlify'` | `'fastly'`).
+3. THE `defineVonosanConfig()` function SHALL accept a `mode` field (`'fullstack'` | `'api'`) to control whether frontend files are generated and Vue SSR is enabled.
+4. THE `defineVonosanConfig()` function SHALL accept a `rateLimit` object with configurable tiers: `auth` (default `windowMs: 300000`, `limit: 5`), `otp` (default `windowMs: 600000`, `limit: 3`), and `api` (default `windowMs: 60000`, `limit: 100`).
+5. THE `defineVonosanConfig()` function SHALL accept a `payment` object with `driver` (`'paystack'` | `'stripe'` | `'both'`), and driver-specific sub-objects for `paystack` (publicKey, secretKey, webhookSecret) and `stripe` (publishableKey, secretKey, webhookSecret).
+6. THE `defineVonosanConfig()` function SHALL accept a `docs` object with `swagger` (boolean), `fiberplane` (boolean), and `openapi` (string path) fields to control API documentation endpoints.
+7. THE `defineVonosanConfig()` function SHALL accept a `test` object with `driver` (`'bun'` | `'vitest'` | `'jest'`) to configure the project's test runner.
+8. THE Framework SHALL provide `env(key, fallback?)`, `envNumber(key, fallback)`, `envBool(key, fallback)`, and `envRequired(key)` config helper functions exported from `vono` for use in `vonosan.config.ts`.
 
 ---
 
@@ -939,7 +939,7 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 1. THE Framework SHALL install and configure `@nuxt/ui/vue-plugin` in `src/main.ts` via `app.use(ui)` so that all Nuxt UI components are available without per-component imports.
 2. THE Framework SHALL add `class="isolate"` to the `#app` div in `index.html` to prevent Tailwind CSS specificity issues during SSR hydration.
-3. THE Framework SHALL configure the `@nuxt/ui/vite` plugin in `vite.config.ts`, passing the `ui.colors` values from `vono.config.ts` to set the `primary` and `neutral` color themes.
+3. THE Framework SHALL configure the `@nuxt/ui/vite` plugin in `vite.config.ts`, passing the `ui.colors` values from `vonosan.config.ts` to set the `primary` and `neutral` color themes.
 4. WHEN the developer installs Iconify icon packages (e.g., `@iconify-json/lucide`, `@iconify-json/simple-icons`), THE Framework SHALL make icons available via Nuxt UI's `<UIcon>` component using the `i-<set>-<name>` naming convention.
 5. THE generated `src/App.vue` SHALL wrap `<RouterView />` inside a `<UApp>` component from Nuxt UI to provide the global UI context for dark mode, toast notifications, and modal management.
 
@@ -973,11 +973,11 @@ The framework is not a runtime library alone — it is a complete developer tool
 
 ### Requirement 64: Configurable Rate Limiting
 
-**User Story:** As a developer, I want rate limiting rules to be configurable in `vono.config.ts` with multiple tiers, so that I can tune throttling for auth endpoints, OTP requests, and general API usage independently.
+**User Story:** As a developer, I want rate limiting rules to be configurable in `vonosan.config.ts` with multiple tiers, so that I can tune throttling for auth endpoints, OTP requests, and general API usage independently.
 
 #### Acceptance Criteria
 
-1. THE Framework SHALL support configuring rate limit tiers in `vono.config.ts` under the `rateLimit` key, with `auth` (default: 5 requests per 5 minutes), `otp` (default: 3 requests per 10 minutes), and `api` (default: 100 requests per minute) tiers.
+1. THE Framework SHALL support configuring rate limit tiers in `vonosan.config.ts` under the `rateLimit` key, with `auth` (default: 5 requests per 5 minutes), `otp` (default: 3 requests per 10 minutes), and `api` (default: 100 requests per minute) tiers.
 2. THE generated `rateLimiter.ts` SHALL use a lazy-initialization pattern that defers `setInterval`-based cleanup to the first request, ensuring compatibility with Cloudflare Workers which forbid global-scope timers.
 3. THE rate limiter SHALL use `hono-rate-limiter` with `standardHeaders: 'draft-6'` and extract the client IP from `cf-connecting-ip` header (Cloudflare) or `x-forwarded-for` header (other runtimes).
 4. WHEN a rate limit is exceeded, THE rate limiter SHALL return HTTP 429 with the standard error response format: `{ success: false, statusCode: 429, message: "Too many attempts, please try again after N minutes." }`.
@@ -993,4 +993,4 @@ The framework is not a runtime library alone — it is a complete developer tool
 - **Seed_Script**: A TypeScript file in `src/db/seeds/` that exports an `async function seed(db)` for populating the database with initial data.
 - **HEALTHCHECK**: A Docker directive in the generated Dockerfile that periodically verifies the application is responding at `GET /health`.
 - **Barrel_File**: The auto-generated `src/db/schema.ts` that re-exports all module schemas from a single entry point for Drizzle Kit.
-- **Config_Helper**: Type-safe environment variable reader functions (`env()`, `envNumber()`, `envBool()`, `envRequired()`) used in `vono.config.ts`.
+- **Config_Helper**: Type-safe environment variable reader functions (`env()`, `envNumber()`, `envBool()`, `envRequired()`) used in `vonosan.config.ts`.

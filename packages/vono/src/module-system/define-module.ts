@@ -19,7 +19,7 @@ export type VonoLifecycleHook =
   | 'build:after'
   | 'routes:resolved'
 
-export interface VonoModuleHooks {
+export interface VonosanModuleHooks {
   'app:created'?: (...args: unknown[]) => void | Promise<void>
   'app:ready'?: (...args: unknown[]) => void | Promise<void>
   'build:before'?: (...args: unknown[]) => void | Promise<void>
@@ -27,8 +27,8 @@ export interface VonoModuleHooks {
   'routes:resolved'?: (...args: unknown[]) => void | Promise<void>
 }
 
-export interface VonoModuleDefinition {
-  /** Unique module identifier, e.g. '@vono/auth' */
+export interface VonosanModuleDefinition {
+  /** Unique module identifier, e.g. '@vonosan/auth' */
   name: string
 
   /** Semver version string */
@@ -68,20 +68,20 @@ export interface VonoModuleDefinition {
   setup?: (options?: Record<string, unknown>) => void | Promise<void>
 
   /** Lifecycle hooks */
-  hooks?: VonoModuleHooks
+  hooks?: VonosanModuleHooks
 }
 
-// ─── defineVonoModule ────────────────────────────────────────────────
+// ─── defineVonosanModule ────────────────────────────────────────────────
 
 /**
- * defineVonoModule — validates and returns the module definition.
+ * defineVonosanModule — validates and returns the module definition.
  *
  * Throws if required fields (name, version) are missing.
  *
  * @example
  * ```ts
- * export default defineVonoModule({
- *   name: '@vono/auth',
+ * export default defineVonosanModule({
+ *   name: '@vonosan/auth',
  *   version: '0.1.0',
  *   setup: async () => { ... },
  *   hooks: {
@@ -90,13 +90,13 @@ export interface VonoModuleDefinition {
  * })
  * ```
  */
-export function defineVonoModule(definition: VonoModuleDefinition): VonoModuleDefinition {
+export function defineVonosanModule(definition: VonosanModuleDefinition): VonosanModuleDefinition {
   if (!definition.name) {
-    throw new Error('[vono] defineVonoModule: "name" is required')
+    throw new Error('[vono] defineVonosanModule: "name" is required')
   }
 
   if (!definition.version) {
-    throw new Error(`[vono] defineVonoModule: "version" is required for module "${definition.name}"`)
+    throw new Error(`[vono] defineVonosanModule: "version" is required for module "${definition.name}"`)
   }
 
   return definition

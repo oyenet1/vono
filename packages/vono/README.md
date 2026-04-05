@@ -1,6 +1,6 @@
 # vono
 
-Vono core runtime — config, composables, SSR helpers, and Vite plugin for building fullstack Vue applications.
+Vonosan core runtime — config, composables, SSR helpers, and Vite plugin for building fullstack Vue applications.
 
 ## Features
 
@@ -30,10 +30,10 @@ npm install vono
 
 ```ts
 // vite.config.ts
-import { vonoPlugin } from "vono/vite";
+import { vonosanPlugin } from "vonosan/vite";
 
 export default {
-  plugins: [vonoPlugin()],
+  plugins: [vonosanPlugin()],
 };
 ```
 

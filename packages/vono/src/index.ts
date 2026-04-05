@@ -9,9 +9,9 @@
  */
 
 // Main vono entry — config and composables
-export { defineVonoConfig, getResolvedConfig } from './config/define-config.js'
-export { useVonoConfig } from './config/use-config.js'
+export { defineVonosanConfig, getResolvedConfig } from './config/define-config.js'
+export { useVonosanConfig } from './config/use-config.js'
 export { env, envNumber, envBool, envRequired } from './config/env-helpers.js'
-export type { PublicVonoConfig } from './config/use-config.js'
-export type { VonoConfig } from './types/index.js'
+export type { PublicVonosanConfig } from './config/use-config.js'
+export type { VonosanConfig } from './types/index.js'
 export * from './types/index.js'

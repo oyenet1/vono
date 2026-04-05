@@ -25,7 +25,7 @@ const METHOD_MAP: Record<string, string> = {
   info: 'info',
 }
 
-const LOGGER_IMPORT = `import { Logger } from 'vono/server'`
+const LOGGER_IMPORT = `import { Logger } from 'vonosansan/server'`
 const LOGGER_IMPORT_RE = /import\s*\{[^}]*Logger[^}]*\}\s*from\s*['"]vono\/server['"]/
 
 /**
@@ -35,7 +35,7 @@ const LOGGER_IMPORT_RE = /import\s*\{[^}]*Logger[^}]*\}\s*from\s*['"]vono\/serve
  * Returns `null` when no changes were needed.
  */
 function fixLogs(content: string): string | null {
-  if (content.includes('// @vono-ignore-logs')) return null
+  if (content.includes('// @vonosan-ignore-logs')) return null
 
   const consoleRe = /\bconsole\.(log|warn|error|debug|info)\s*\(/g
   let changed = false

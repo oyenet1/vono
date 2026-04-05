@@ -111,7 +111,7 @@ export function validateDriverCompatibility(
   if (errors.length > 0) {
     throw new Error(
       `[vono] Driver compatibility errors detected:\n\n${errors.join('\n\n')}\n\n` +
-        `Fix these in your vono.config.ts before starting the server.`,
+        `Fix these in your vonosan.config.ts before starting the server.`,
     )
   }
 }

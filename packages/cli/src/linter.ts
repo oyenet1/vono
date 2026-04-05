@@ -48,10 +48,10 @@ function checkHeader(filePath: string, content: string): LintResult[] {
 
 /**
  * Rule: no raw console.log / console.warn / console.error / console.debug.
- * Files containing `// @vono-ignore-logs` are skipped entirely.
+ * Files containing `// @vonosan-ignore-logs` are skipped entirely.
  */
 function checkConsoleLogs(filePath: string, content: string): LintResult[] {
-  if (content.includes('// @vono-ignore-logs')) return []
+  if (content.includes('// @vonosan-ignore-logs')) return []
 
   const results: LintResult[] = []
   const lines = content.split('\n')

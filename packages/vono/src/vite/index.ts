@@ -9,10 +9,10 @@
  */
 
 import type { Plugin, UserConfig } from 'vite'
-import type { VonoConfig } from '../types/index.js'
+import type { VonosanConfig } from '../types/index.js'
 
 /**
- * Vono Vite plugin — the single entry point that wires the entire framework.
+ * Vonosan Vite plugin — the single entry point that wires the entire framework.
  *
  * Composes internally:
  * - @vitejs/plugin-vue
@@ -24,11 +24,11 @@ import type { VonoConfig } from '../types/index.js'
  *
  * Usage in vite.config.ts:
  * ```ts
- * import { vono } from 'vono/vite'
+ * import { vono } from 'vonosansan/vite'
  * export default defineConfig({ plugins: [vono()] })
  * ```
  */
-export function vono(vonoConfig?: Partial<VonoConfig>): Plugin[] {
+export function vono(vonoConfig?: Partial<VonosanConfig>): Plugin[] {
   const plugins: Plugin[] = []
 
   // ── @hono/vite-dev-server ─────────────────────────────────────────
@@ -49,7 +49,7 @@ export function vono(vonoConfig?: Partial<VonoConfig>): Plugin[] {
   // ── @nuxt/ui/vite ─────────────────────────────────────────────────
   plugins.push(createNuxtUIPlugin(vonoConfig?.ui?.colors))
 
-  // ── Vono core plugin (HMR, config watch, virtual modules) ─────────
+  // ── Vonosan core plugin (HMR, config watch, virtual modules) ─────────
   plugins.push(createVonoCorePlugin(vonoConfig))
 
   return plugins
@@ -123,8 +123,8 @@ function createAutoImportPlugin(): Plugin {
             'hono': ['Hono', 'HTTPException'],
             'drizzle-orm': ['eq', 'and', 'or', 'desc', 'asc', 'isNull', 'isNotNull', 'sql', 'count', 'like', 'inArray'],
             'zod': [['z', 'z']],
-            'vono/server': ['success', 'error', 'buildPaginationMeta', 'generateId', 'prefixedId', 'toCamel', 'withSoftDeletes', 'onlyTrashed', 'withTrashed', 'Logger'],
-            'vono/client': ['useAsyncData', 'useVonoFetch', 'useCookie', 'useState', 'navigateTo', 'useSeo', 'useRouteRules', 'useFormErrors'],
+            'vonosan/server': ['success', 'error', 'buildPaginationMeta', 'generateId', 'prefixedId', 'toCamel', 'withSoftDeletes', 'onlyTrashed', 'withTrashed', 'Logger'],
+            'vonosan/client': ['useAsyncData', 'useVonosanFetch', 'useCookie', 'useState', 'navigateTo', 'useSeo', 'useRouteRules', 'useFormErrors'],
           },
         ],
         dirs: [
@@ -172,9 +172,9 @@ function createNuxtUIPlugin(colors?: { primary: string; neutral: string }): Plug
   }
 }
 
-// ─── Vono core plugin ───────────────────────────────────────────────
+// ─── Vonosan core plugin ───────────────────────────────────────────────
 
-function createVonoCorePlugin(vonoConfig?: Partial<VonoConfig>): Plugin {
+function createVonoCorePlugin(vonoConfig?: Partial<VonosanConfig>): Plugin {
   const runtime = vonoConfig?.runtime ?? 'bun'
 
   return {
@@ -223,10 +223,10 @@ function createVonoCorePlugin(vonoConfig?: Partial<VonoConfig>): Plugin {
       return undefined
     },
 
-    // Full restart on vono.config.ts changes
+    // Full restart on vonosan.config.ts changes
     configureServer(server) {
       server.watcher.on('change', (file) => {
-        if (file.endsWith('vono.config.ts')) {
+        if (file.endsWith('vonosan.config.ts')) {
           server.restart()
         }
       })

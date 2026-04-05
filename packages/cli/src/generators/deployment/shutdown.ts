@@ -25,7 +25,7 @@ export function generateGracefulShutdown(): string {
  * ──────────────────────────────────────────────────────────────────
  */
 
-import { Logger } from 'vono/server'
+import { Logger } from 'vonosansan/server'
 
 // ─── Graceful shutdown ───────────────────────────────────────────────
 

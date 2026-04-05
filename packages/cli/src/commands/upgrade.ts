@@ -74,7 +74,7 @@ function collectVonoPackages(pkg: Record<string, unknown>): Record<string, strin
   const vonoPackages: Record<string, string> = {}
 
   for (const [name, version] of Object.entries(deps)) {
-    if (name === 'vono' || name === '@vono/cli' || name.startsWith('@vono/')) {
+    if (name === 'vonosan' || name === '@vonosan/cli' || name.startsWith('@vonosan/')) {
       vonoPackages[name] = version
     }
   }
@@ -88,10 +88,10 @@ function collectVonoPackages(pkg: Record<string, unknown>): Record<string, strin
  * vono upgrade --check
  *
  * Reads package.json, checks npm registry for latest versions of
- * vono, @vono/cli, and all installed @vono/* packages.
+ * vono, @vonosan/cli, and all installed @vonosan/* packages.
  */
 export async function runUpgradeCheck(_args: string[]): Promise<void> {
-  process.stdout.write(bold('Checking for Vono updates...\n\n'))
+  process.stdout.write(bold('Checking for Vonosan updates...\n\n'))
 
   let pkg: Record<string, unknown>
   try {
@@ -104,7 +104,7 @@ export async function runUpgradeCheck(_args: string[]): Promise<void> {
   const vonoPackages = collectVonoPackages(pkg)
 
   if (Object.keys(vonoPackages).length === 0) {
-    process.stdout.write('No Vono packages found in package.json.\n')
+    process.stdout.write('No Vonosan packages found in package.json.\n')
     return
   }
 
@@ -137,7 +137,7 @@ export async function runUpgradeCheck(_args: string[]): Promise<void> {
   process.stdout.write('\n')
 
   if (updates.length === 0) {
-    process.stdout.write(green('✔ All Vono packages are up to date.\n'))
+    process.stdout.write(green('✔ All Vonosan packages are up to date.\n'))
     return
   }
 
@@ -182,10 +182,10 @@ export async function runUpgradeApply(_args: string[]): Promise<void> {
   }> = [
     // Placeholder for future codemods
     // {
-    //   package: 'vono',
+    //   package: 'vonosan',
     //   fromMajor: 0,
     //   toMajor: 1,
-    //   description: 'Migrate defineVonoConfig shape',
+    //   description: 'Migrate defineVonosanConfig shape',
     //   apply: async () => ({ changed: [], manual: [] }),
     // },
   ]

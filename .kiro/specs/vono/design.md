@@ -1,15 +1,15 @@
-# Design Document: Vono Framework
+# Design Document: Vonosan Framework
 
 ## Overview
 
 Vono (Vue + Hono) is a batteries-included full-stack TypeScript framework that unifies a Hono API backend with a Vue 3 frontend in a single codebase. It ships as a family of npm packages and codifies the Bonifade Technologies development standards into automated tooling.
 
 The framework is composed of:
-- `create-vono` — interactive project scaffolder
+- `create-vonosan` — interactive project scaffolder
 - `vono` — core runtime package (config, composables, Vite plugin, server/client helpers)
-- `@vono/cli` — Artisan-style CLI for code generation, migrations, auditing, and git automation
-- `@vono/drizzle` — Drizzle ORM integration (mixins, soft deletes, scopes, seed helpers)
-- `@vono/auth`, `@vono/notifications`, `@vono/logging`, `@vono/ws` — optional add-on modules
+- `@vonosan/cli` — Artisan-style CLI for code generation, migrations, auditing, and git automation
+- `@vonosan/drizzle` — Drizzle ORM integration (mixins, soft deletes, scopes, seed helpers)
+- `@vonosan/auth`, `@vonosan/notifications`, `@vonosan/logging`, `@vonosan/ws` — optional add-on modules
 
 Projects can be deployed to Node.js, Bun, Deno, Docker, Cloudflare Workers, and Vercel without code changes.
 
@@ -20,9 +20,9 @@ Projects can be deployed to Node.js, Bun, Deno, Docker, Cloudflare Workers, and 
 ### High-Level Structure
 
 ```
-create-vono (scaffolder)
-    └── generates a Vono project
-         ├── vono.config.ts          (defineVonoConfig)
+create-vonosan (scaffolder)
+    └── generates a Vonosan project
+         ├── vonosan.config.ts          (defineVonosanConfig)
          ├── vite.config.ts          (vono() Vite plugin)
          ├── src/
          │   ├── main.ts             (shared app factory)
@@ -61,7 +61,7 @@ create-vono (scaffolder)
 ### Package Dependency Graph
 
 ```
-create-vono
+create-vonosan
   └── @clack/prompts, giget, kolorist, execa
 
 vono (core)
@@ -70,13 +70,13 @@ vono (core)
   ├── vono/client    → composables (useAsyncData, useState, useCookie, etc.)
   └── vono/types     → shared TypeScript interfaces
 
-@vono/cli
+@vonosan/cli
   └── depends on vono (core)
 
-@vono/drizzle
+@vonosan/drizzle
   └── depends on vono (core)
 
-@vono/auth | @vono/notifications | @vono/logging | @vono/ws
+@vonosan/auth | @vonosan/notifications | @vonosan/logging | @vonosan/ws
   └── each depends on vono (core)
 ```
 
@@ -105,7 +105,7 @@ Request
 
 ## Components and Interfaces
 
-### `create-vono` Scaffolder
+### `create-vonosan` Scaffolder
 
 Responsibilities:
 - Launch interactive wizard via `@clack/prompts`
@@ -117,10 +117,10 @@ Responsibilities:
 Key behaviors:
 - Validates target directory does not exist before writing
 - Generates `.env` and `.env.example` with identical keys
-- Writes `vono.config.ts` via `defineVonoConfig()`
+- Writes `vonosan.config.ts` via `defineVonosanConfig()`
 - Generates `llms.txt` documenting architecture
 
-### `@vono/cli` — Command Registry
+### `@vonosan/cli` — Command Registry
 
 | Command | Description |
 |---|---|
@@ -164,10 +164,10 @@ Generates type declaration files:
 - `src/auto-imports-client.d.ts`
 - `src/components.d.ts`
 
-#### Config System (`defineVonoConfig`)
+#### Config System (`defineVonosanConfig`)
 
 ```typescript
-interface VonoConfig {
+interface VonosanConfig {
   app: { name: string; url: string; env: string; key: string; language: 'ts' | 'js' }
   runtime: 'cloudflare-workers' | 'cloudflare-pages' | 'bun' | 'node' | 'deno' | 'aws-lambda' | 'vercel' | 'netlify' | 'fastly'
   mode: 'fullstack' | 'api'
@@ -178,7 +178,7 @@ interface VonoConfig {
   docs?: { swagger: boolean; fiberplane: boolean; openapi: string }
   test?: { driver: 'bun' | 'vitest' | 'jest' }
   ui?: { colors: { primary: string; neutral: string } }
-  modules?: VonoModule[]
+  modules?: VonosanModule[]
   autoImport?: AutoImportConfig
   env?: { schema: ZodSchema; refine?: (env: any) => boolean }
 }
@@ -234,7 +234,7 @@ Each feature module under `src/modules/<name>/` contains:
     <name>.e2e.test.ts
 ```
 
-### Authentication (`@vono/auth`)
+### Authentication (`@vonosan/auth`)
 
 Key components:
 - JWT access tokens (15-min) + refresh tokens (7-day) via `hono/jwt`
@@ -248,7 +248,7 @@ Key components:
 - OTP-based password reset (6-digit, stored as hash in `verification_code` table)
 - Refresh token sessions stored as SHA-256 hashes in `auth_session` table
 
-### WebSocket (`@vono/ws`)
+### WebSocket (`@vonosan/ws`)
 
 Runtime adapter resolution via `@@ws-adapter` alias:
 - Bun → `hono/bun`
@@ -374,10 +374,10 @@ interface PaginationMeta {
 }
 ```
 
-### Vono Module Definition
+### Vonosan Module Definition
 
 ```typescript
-interface VonoModuleDefinition {
+interface VonosanModuleDefinition {
   name: string
   version: string
   requires?: string[]
@@ -390,7 +390,7 @@ interface VonoModuleDefinition {
   routes?: Hono
   migrations?: string[]
   configSchema?: ZodSchema
-  setup?: (config: VonoConfig) => void | Promise<void>
+  setup?: (config: VonosanConfig) => void | Promise<void>
   hooks?: {
     'app:created'?: (app: Hono) => void
     'app:ready'?: (app: Hono) => void
@@ -571,7 +571,7 @@ All errors use the standard `ApiResponse.failure()` shape. HTTP status codes:
 ### Environment Validation Errors
 
 At startup, before accepting requests:
-1. Zod validates all env vars defined in `vono.config.ts` `env.schema`.
+1. Zod validates all env vars defined in `vonosan.config.ts` `env.schema`.
 2. On failure, a formatted error lists each failing variable with its Zod message.
 3. Process exits immediately — no requests are served with invalid config.
 
@@ -636,7 +636,7 @@ Focus areas:
 - Header_Generator output format
 - Conventional commit message validation
 - Rate limiter tier configuration parsing
-- `defineVonoConfig()` validation and error messages
+- `defineVonosanConfig()` validation and error messages
 
 ### Integration Tests
 
@@ -653,7 +653,7 @@ Focus areas:
 ### End-to-End Tests
 
 Focus areas:
-- Full project scaffold via `create-vono` wizard
+- Full project scaffold via `create-vonosan` wizard
 - SSR page rendering: HTML contains head tags, Pinia state script, rendered content
 - SPA page rendering: bare HTML shell, `X-Robots-Tag` header present
 - API endpoint: request → controller → service → DB → standard response shape
@@ -672,4 +672,4 @@ Focus areas:
 }
 ```
 
-Vitest and Jest are available as alternatives via the project wizard (`vono.config.ts` `test.driver`).
+Vitest and Jest are available as alternatives via the project wizard (`vonosan.config.ts` `test.driver`).

@@ -10,7 +10,7 @@
 
 // vono/client — client-side composables and utilities
 export { useAsyncData } from './composables/useAsyncData.js'
-export { useVonoFetch } from './composables/useVonoFetch.js'
+export { useVonosanFetch } from './composables/useVonosanFetch.js'
 export { useCookie } from './composables/useCookie.js'
 export { useState, serializeVonoState, clearVonoState } from './composables/useState.js'
 export { navigateTo, setSSRRedirectHandler } from './composables/navigateTo.js'

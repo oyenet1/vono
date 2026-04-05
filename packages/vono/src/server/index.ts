@@ -9,7 +9,7 @@
  */
 
 // vono/server — server-side helpers and middleware
-export { createVonoApp } from './app-template.js'
+export { createVonosanApp } from './app-template.js'
 export type { VonoAppOptions } from './app-template.js'
 export { configProvider } from './middleware/configProvider.js'
 export { dbProvider } from './middleware/dbProvider.js'

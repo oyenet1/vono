@@ -26,11 +26,11 @@ export function generateTemplates(answers: WizardAnswers): Record<string, string
   const { projectName, deploymentTarget, database, auth, apiDocs, saas, testing } = answers
 
   return {
-    'vono.config.ts': `${h}
+    'vonosan.config.ts': `${h}
 
-import { defineVonoConfig } from 'vono'
+import { defineVonosanConfig } from 'vonosansan'
 
-export default defineVonoConfig({
+export default defineVonosanConfig({
   app: {
     name: '${projectName}',
     url: process.env.APP_URL ?? 'http://localhost:4000',
@@ -54,8 +54,8 @@ export default defineVonoConfig({
     'vite.config.ts': `${h}
 
 import { defineConfig } from 'vite'
-import { vono } from 'vono/vite'
-import vonoConfig from './vono.config.js'
+import { vono } from 'vonosansan/vite'
+import vonoConfig from './vonosan.config.js'
 
 export default defineConfig({
   plugins: [vono(vonoConfig)],
@@ -109,7 +109,7 @@ ALLOWED_ORIGINS=
 
     'llms.txt': `# ${projectName}
 
-> A Vono full-stack TypeScript application.
+> A Vonosan full-stack TypeScript application.
 
 ## Stack
 - Runtime: ${deploymentTarget}
@@ -183,11 +183,11 @@ export function createApp() {
 
     'src/app.ts': `${h}
 
-import { createVonoApp } from 'vono/server'
-import config from '../vono.config.js'
+import { createVonosanApp } from 'vonosansan/server'
+import config from '../vonosan.config.js'
 ${apiDocs ? "import openApiSpec from './openapi.js'" : ''}
 
-const app = createVonoApp({
+const app = createVonosanApp({
   config,
   ${apiDocs ? 'openApiSpec,' : ''}
 })
@@ -228,7 +228,7 @@ export function createRouter() {
 
     'src/route-rules.ts': `${h}
 
-import type { RouteRules } from 'vono/server'
+import type { RouteRules } from 'vonosansan/server'
 
 /**
  * Route rules — control SSR/SPA rendering per path.
@@ -250,7 +250,7 @@ export { default } from './server.js'
       ? {
           'src/openapi.ts': `${h}
 
-import { generateOpenApiSpec } from 'vono/server'
+import { generateOpenApiSpec } from 'vonosansan/server'
 
 export default generateOpenApiSpec(
   '${projectName}',
@@ -263,7 +263,7 @@ export default generateOpenApiSpec(
 
     'src/db/index.ts': `${h}
 
-import { createDb } from '@vono/drizzle'
+import { createDb } from '@vonosan/drizzle'
 
 export const { db, client } = createDb(process.env.DATABASE_URL!)
 `,
@@ -301,7 +301,7 @@ export {}
         },
         dependencies: {
           vono: 'latest',
-          '@vono/drizzle': 'latest',
+          '@vonosan/drizzle': 'latest',
           hono: 'latest',
           vue: 'latest',
           'vue-router': 'latest',
@@ -312,7 +312,7 @@ export {}
           zod: 'latest',
         },
         devDependencies: {
-          '@vono/cli': 'latest',
+          '@vonosan/cli': 'latest',
           typescript: 'latest',
           vite: 'latest',
           'drizzle-kit': 'latest',
@@ -333,10 +333,10 @@ export {}
           jsx: 'preserve',
           lib: ['ESNext', 'DOM'],
           paths: {
-            '@@ws-adapter': ['./node_modules/@vono/ws/adapters/bun.js'],
+            '@@ws-adapter': ['./node_modules/@vonosan/ws/adapters/bun.js'],
           },
         },
-        include: ['src/**/*', 'vono.config.ts'],
+        include: ['src/**/*', 'vonosan.config.ts'],
         exclude: ['node_modules', 'dist'],
       },
       null,

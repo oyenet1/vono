@@ -21,7 +21,7 @@ export type QueueDriver = 'bullmq' | 'cloudflare-queues' | 'sqs' | 'upstash'
  * | vercel / netlify / deno / fastly | upstash            |
  *
  * @param runtime  — detected runtime string
- * @param explicit — optional override from vono.config.ts
+ * @param explicit — optional override from vonosan.config.ts
  */
 export function resolveQueueDriver(runtime: string, explicit?: string): QueueDriver {
   if (explicit) return explicit as QueueDriver

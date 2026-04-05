@@ -21,7 +21,7 @@ const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`
 
 /**
- * Detect the configured test runner from package.json or vono.config.ts.
+ * Detect the configured test runner from package.json or vonosan.config.ts.
  * Defaults to 'bun'.
  */
 function detectTestRunner(): 'bun' | 'vitest' | 'jest' {

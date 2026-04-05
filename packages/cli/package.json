@@ -1,10 +1,10 @@
 {
-  "name": "@vono/cli",
+  "name": "@vonosan/cli",
   "version": "0.1.0",
   "type": "module",
   "description": "Vono Artisan-style scaffolding CLI",
   "bin": {
-    "vono": "./dist/index.js"
+    "vonosan": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "files": ["dist", "templates"],
@@ -20,13 +20,13 @@
     "kolorist": "1.8.0"
   },
   "peerDependencies": {
-    "vono": ">=0.1.0"
+    "vonosan": ">=0.1.0"
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
     "@types/node": "25.5.2",
     "fast-check": "4.6.0",
     "typescript": "5.8.3",
-    "vono": "workspace:*"
+    "vonosan": "workspace:*"
   }
 }

@@ -1,8 +1,8 @@
 {
-  "name": "@fade_networker/vono",
+  "name": "vonosan",
   "version": "0.1.0",
   "type": "module",
-  "description": "Vono core runtime — config, composables, SSR helpers, Vite plugin",
+  "description": "Vonosan core runtime — config, composables, SSR helpers, Vite plugin",
   "license": "MIT",
   "author": "Bowofade Oyerinde",
   "repository": {
@@ -11,7 +11,7 @@
     "directory": "packages/vono"
   },
   "homepage": "https://github.com/oyenet1/vono#readme",
-  "keywords": ["vono", "vue", "vite", "ssr", "framework", "hono", "fullstack"],
+  "keywords": ["vonosan", "vue", "vite", "ssr", "framework", "hono", "fullstack"],
   "exports": {
     ".": {
       "import": "./dist/index.js",

@@ -16,10 +16,10 @@
  *
  * Usage:
  * ```ts
- * const users = await useVonoFetch<User[]>('/api/v1/users')
+ * const users = await useVonosanFetch<User[]>('/api/v1/users')
  * ```
  */
-export async function useVonoFetch<T = unknown>(
+export async function useVonosanFetch<T = unknown>(
   url: string,
   options: RequestInit & { baseUrl?: string } = {},
 ): Promise<T> {
@@ -47,7 +47,7 @@ export async function useVonoFetch<T = unknown>(
   })
 
   if (!response.ok) {
-    throw new Error(`[vono] useVonoFetch: ${response.status} ${response.statusText} — ${url}`)
+    throw new Error(`[vono] useVonosanFetch: ${response.status} ${response.statusText} — ${url}`)
   }
 
   return response.json() as Promise<T>

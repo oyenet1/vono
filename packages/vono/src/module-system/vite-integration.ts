@@ -9,7 +9,7 @@
  */
 
 import type { UserConfig } from 'vite'
-import type { VonoModuleDefinition } from './define-module.js'
+import type { VonosanModuleDefinition } from './define-module.js'
 import { Logger } from '../shared/utils/logger.js'
 
 // ─── applyModulesToViteConfig ────────────────────────────────────────
@@ -18,14 +18,14 @@ import { Logger } from '../shared/utils/logger.js'
  * applyModulesToViteConfig — merges module schemas, routes,
  * auto-imports, and pages into the Vite config at build time.
  *
- * Called by the Vono Vite plugin when building the project.
+ * Called by the Vonosan Vite plugin when building the project.
  *
- * @param modules — registered VonoModuleDefinition array
+ * @param modules — registered VonosanModuleDefinition array
  * @param config  — existing Vite UserConfig to merge into
  * @returns merged Vite config
  */
 export function applyModulesToViteConfig(
-  modules: VonoModuleDefinition[],
+  modules: VonosanModuleDefinition[],
   config: UserConfig,
 ): UserConfig {
   const merged: UserConfig = { ...config }
@@ -47,7 +47,7 @@ export function applyModulesToViteConfig(
   }
 
   // Merge into Vite config via the resolve.alias or plugin options
-  // The actual unplugin-auto-import config is handled by the Vono Vite plugin;
+  // The actual unplugin-auto-import config is handled by the Vonosan Vite plugin;
   // here we attach the collected imports as metadata for the plugin to consume.
   if (serverImports.length > 0 || clientImports.length > 0) {
     merged.define = {

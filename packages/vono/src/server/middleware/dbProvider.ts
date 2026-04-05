@@ -29,7 +29,7 @@ let _dbFactory: DbFactory | null = null
  * Call this in your src/index.ts before starting the server:
  *
  * ```ts
- * import { registerDbFactory } from 'vono/server'
+ * import { registerDbFactory } from 'vonosansan/server'
  * import { createDb } from './db/index.js'
  * registerDbFactory({ createDb })
  * ```

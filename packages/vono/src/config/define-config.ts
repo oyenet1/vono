@@ -8,34 +8,34 @@
  * ──────────────────────────────────────────────────────────────────
  */
 
-import type { VonoConfig } from '../types/index.js'
+import type { VonosanConfig } from '../types/index.js'
 
 // Resolved config singleton — set once at startup
-let _resolvedConfig: VonoConfig | null = null
+let _resolvedConfig: VonosanConfig | null = null
 
 /**
- * Define and validate the Vono framework configuration.
+ * Define and validate the Vonosan framework configuration.
  *
- * Place this in `vono.config.ts` at the project root:
+ * Place this in `vonosan.config.ts` at the project root:
  * ```ts
- * import { defineVonoConfig } from 'vono'
- * export default defineVonoConfig({ ... })
+ * import { defineVonosanConfig } from 'vonosansan'
+ * export default defineVonosanConfig({ ... })
  * ```
  */
-export function defineVonoConfig(config: VonoConfig): VonoConfig {
+export function defineVonosanConfig(config: VonosanConfig): VonosanConfig {
   validateConfig(config)
   _resolvedConfig = config
   return config
 }
 
 /**
- * Get the resolved config. Throws if defineVonoConfig has not been called.
+ * Get the resolved config. Throws if defineVonosanConfig has not been called.
  */
-export function getResolvedConfig(): VonoConfig {
+export function getResolvedConfig(): VonosanConfig {
   if (!_resolvedConfig) {
     throw new Error(
       '[vono] Configuration not initialized. ' +
-      'Ensure vono.config.ts exports a defineVonoConfig() call.',
+      'Ensure vonosan.config.ts exports a defineVonosanConfig() call.',
     )
   }
   return _resolvedConfig
@@ -43,18 +43,18 @@ export function getResolvedConfig(): VonoConfig {
 
 // ─── Validation ─────────────────────────────────────────────────────
 
-function validateConfig(config: VonoConfig): void {
+function validateConfig(config: VonosanConfig): void {
   if (!config.app) {
-    throw new Error('[vono] defineVonoConfig: "app" section is required')
+    throw new Error('[vono] defineVonosanConfig: "app" section is required')
   }
   if (!config.app.name) {
-    throw new Error('[vono] defineVonoConfig: "app.name" is required')
+    throw new Error('[vono] defineVonosanConfig: "app.name" is required')
   }
   if (!config.runtime) {
-    throw new Error('[vono] defineVonoConfig: "runtime" is required')
+    throw new Error('[vono] defineVonosanConfig: "runtime" is required')
   }
   if (!config.mode) {
-    throw new Error('[vono] defineVonoConfig: "mode" is required (fullstack | api)')
+    throw new Error('[vono] defineVonosanConfig: "mode" is required (fullstack | api)')
   }
 
   const validRuntimes = [
@@ -63,14 +63,14 @@ function validateConfig(config: VonoConfig): void {
   ]
   if (!validRuntimes.includes(config.runtime)) {
     throw new Error(
-      `[vono] defineVonoConfig: invalid runtime "${config.runtime}". ` +
+      `[vono] defineVonosanConfig: invalid runtime "${config.runtime}". ` +
       `Valid options: ${validRuntimes.join(', ')}`,
     )
   }
 
   if (!['fullstack', 'api'].includes(config.mode)) {
     throw new Error(
-      `[vono] defineVonoConfig: invalid mode "${config.mode}". ` +
+      `[vono] defineVonosanConfig: invalid mode "${config.mode}". ` +
       `Valid options: fullstack, api`,
     )
   }

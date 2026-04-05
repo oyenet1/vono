@@ -65,7 +65,7 @@ export function validateEnvAtStartup<T>(
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 /**
- * Format Zod errors into the standard Vono error format.
+ * Format Zod errors into the standard Vonosan error format.
  */
 function formatZodErrors(error: ZodError): string {
   const lines: string[] = []

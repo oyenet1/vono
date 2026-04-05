@@ -1,4 +1,4 @@
-# Vono — The Hono + Vue Full-Stack Framework
+# Vonosan — The Hono + Vue Full-Stack Framework
 
 > **Vono** (Vue + Hono) — a batteries-included full-stack TypeScript/JavaScript framework. Hono API + Vue frontend in one codebase, with hybrid SSR, Nuxt UI, Drizzle ORM, auto-imports, and a Laravel-style CLI. Deploy anywhere Hono runs.
 
@@ -39,7 +39,7 @@ bun create vono@latest my-app
 26. [Logging — Activity & Audit Trail](#26-logging--activity--audit-trail)
 27. [Vite Plugin — Framework Core](#27-vite-plugin--framework-core)
 28. [Vono Composables — Client Runtime](#28-vono-composables--client-runtime)
-29. [Plugin / Module System — `defineVonoModule()`](#29-plugin--module-system--definevonomodule)
+29. [Plugin / Module System — `defineVonosanModule()`](#29-plugin--module-system--definevonomodule)
 30. [SSR Error Handling & Error Pages](#30-ssr-error-handling--error-pages)
 31. [Environment Validation — Zod-Powered Env Safety](#31-environment-validation--zod-powered-env-safety)
 32. [Database Connection Pooling](#32-database-connection-pooling)
@@ -60,14 +60,14 @@ Vono ships as multiple npm packages with clear boundaries:
 
 | Package | Purpose | Install |
 |---|---|---|
-| `create-vono` | Project scaffolder (interactive wizard) | `bun create vono@latest my-app` |
+| `create-vonosan` | Project scaffolder (interactive wizard) | `bun create vono@latest my-app` |
 | `vono` | Core runtime — config, composables, SSR helpers, Vite plugin | `bun add vono` (auto-installed) |
-| `@vono/cli` | Artisan-style scaffolding CLI (`vono make:module`, `vono migrate`, etc.) | `bun add -D @vono/cli` |
-| `@vono/drizzle` | Drizzle ORM integration — mixins, soft deletes, scopes, seed helpers | `bun add @vono/drizzle` |
-| `@vono/auth` | Authentication module — JWT, OAuth, magic link, pages, composables | `vono add auth` |
-| `@vono/notifications` | In-app notification module — DB, API, composables, pages | `vono add notifications` |
-| `@vono/logging` | Activity/audit logging module | `vono add logging` |
-| `@vono/ws` | WebSocket module — adapter-based (native, socket.io, CF) | `vono add ws` |
+| `@vonosan/cli` | Artisan-style scaffolding CLI (`vono make:module`, `vono migrate`, etc.) | `bun add -D @vonosan/cli` |
+| `@vonosan/drizzle` | Drizzle ORM integration — mixins, soft deletes, scopes, seed helpers | `bun add @vonosan/drizzle` |
+| `@vonosan/auth` | Authentication module — JWT, OAuth, magic link, pages, composables | `vono add auth` |
+| `@vonosan/notifications` | In-app notification module — DB, API, composables, pages | `vono add notifications` |
+| `@vonosan/logging` | Activity/audit logging module | `vono add logging` |
+| `@vonosan/ws` | WebSocket module — adapter-based (native, socket.io, CF) | `vono add ws` |
 
 ### What ships in `vono` (core):
 
@@ -75,25 +75,25 @@ Vono ships as multiple npm packages with clear boundaries:
 
 | Import | Contents |
 |---|---|
-| `vono` | `defineVonoConfig()`, `useVonoConfig()` |
+| `vono` | `defineVonosanConfig()`, `useVonosanConfig()` |
 | `vono/vite` | Vite plugin — SSR, auto-imports, dev server, HMR |
 | `vono/server` | Server-side helpers — `success()`, `error()`, `paginate()`, middleware factories |
-| `vono/client` | Client-side composables — `useAsyncData()`, `useCookie()`, `useState()`, `useVonoFetch()`, `navigateTo()` |
-| `vono/types` | Shared TypeScript types — `VonoConfig`, `AppVariables`, `ModuleDefinition` |
+| `vono/client` | Client-side composables — `useAsyncData()`, `useCookie()`, `useState()`, `useVonosanFetch()`, `navigateTo()` |
+| `vono/types` | Shared TypeScript types — `VonosanConfig`, `AppVariables`, `ModuleDefinition` |
 
 ### What lives in user-land (generated into the project):
 
 - `src/modules/**` — user's feature modules (routes, controllers, services, pages)
 - `src/db/schema.ts` — barrel file importing all module schemas
 - `src/shared/` — shared middleware, utils, components, composables
-- `vono.config.ts` — project configuration
+- `vonosan.config.ts` — project configuration
 - `src/index.ts`, `src/main.ts`, `src/app.ts`, `src/server.ts` — app entry points
 
 ### Boundary rule:
 
 > **Framework code** (in `node_modules/vono`) handles wiring, conventions, and defaults.
 > **User code** (in `src/`) owns business logic. Generated once, then fully owned by the developer.
-> **Modules** (`@vono/auth`, etc.) can be installed as dependencies OR scaffolded as user code via `vono add auth --eject`.
+> **Modules** (`@vonosan/auth`, etc.) can be installed as dependencies OR scaffolded as user code via `vono add auth --eject`.
 
 ---
 
@@ -261,7 +261,7 @@ my-app/
 ├── tests/                            # Test files
 ├── index.ts                          # Hono server entry (production)
 ├── index.html                        # HTML shell template
-├── vono.config.ts                    # Framework config
+├── vonosan.config.ts                    # Framework config
 ├── vite.config.ts
 ├── drizzle.config.ts
 ├── tsconfig.json
@@ -1337,7 +1337,7 @@ serve({ fetch: app.fetch, port: Number(process.env.PORT) || 4000 }, (info) => {
 
 ### Default Dockerfile (Bun)
 
-When targeting Docker, Vono generates a **Bun-based** multi-stage Dockerfile by default:
+When targeting Docker, Vonosan generates a **Bun-based** multi-stage Dockerfile by default:
 
 ```dockerfile
 # ─────────────────────────────────────────────
@@ -1356,7 +1356,7 @@ RUN bun run build
 # Runtime stage
 # ─────────────────────────────────────────────
 FROM oven/bun:1 AS runtime
-LABEL name="my-vono-app"
+LABEL name="my-vonosan-app"
 LABEL version="1.0.0"
 WORKDIR /app
 
@@ -1385,7 +1385,7 @@ CMD ["bun", "dist/index.js"]
 **Key points:**
 - Uses `oven/bun:1` for both build and runtime (smallest footprint)
 - Multi-stage build keeps the final image small
-- `HEALTHCHECK` hits the Vono health endpoint
+- `HEALTHCHECK` hits the Vonosan health endpoint
 - If Redis/queue is enabled, the CLI also generates a `wait-for-redis.sh` entrypoint script and a `docker-compose.yml`
 - `.env` is copied in — for production, use Docker secrets or env injection instead
 
@@ -2442,7 +2442,7 @@ Every endpoint returns a consistent JSON shape via the `ApiResponse` class. Simp
  *  Use ApiResponse.success() / ApiResponse.failure() in controllers.
  *  The loose helpers success() / error() are aliases for quick usage.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -2617,16 +2617,16 @@ routes.get("/admin/metrics", ctrl.adminMetrics)
 
 ---
 
-## 13. Vono CLI — Installation Wizard
+## 13. Vonosan CLI — Installation Wizard
 
-The `create-vono` CLI scaffolds everything interactively. Always fetches the **latest** version of every dependency at install time (no pinned versions in the template — `@latest` everywhere).
+The `create-vonosan` CLI scaffolds everything interactively. Always fetches the **latest** version of every dependency at install time (no pinned versions in the template — `@latest` everywhere).
 
 ```bash
 # Default (bun):
 bun create vono@latest my-app
 
 # Or with any package manager:
-npx create-vono@latest my-app
+npx create-vonosan@latest my-app
 pnpm create vono@latest my-app
 yarn create vono my-app
 ```
@@ -2638,9 +2638,9 @@ The installer walks through every decision:
 Prompts are ordered by **importance** — foundational decisions first, optional features last:
 
 ```
-🔥 create-vono v1.0.0
+🔥 create-vonosan v1.0.0
 
-┌  Welcome to Vono — The Hono + Vue Framework
+┌  Welcome to Vonosan — The Hono + Vue Framework
 │
 ◆  Project name: my-app
 │
@@ -2838,7 +2838,7 @@ Every dependency is installed at its **latest** version. The CLI runs `bun add h
 | AWS S3 | `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` | Standard S3 bucket |
 | Bunny.net | — (uses native `fetch` — no SDK needed) | CDN storage — `https://storage.bunnycdn.com` REST API |
 
-> **Bunny.net Storage** uses a simple REST API with an `AccessKey` header — no SDK required. Vono generates a typed `BunnyStorage` client wrapper.
+> **Bunny.net Storage** uses a simple REST API with an `AccessKey` header — no SDK required. Vonosan generates a typed `BunnyStorage` client wrapper.
 
 **Conditional — by notifications:**
 
@@ -2939,9 +2939,9 @@ export async function list(c) {
 }
 ```
 
-### 13.4 Package: `create-vono`
+### 13.4 Package: `create-vonosan`
 
-The CLI is published as `create-vono` on npm. It uses:
+The CLI is published as `create-vonosan` on npm. It uses:
 
 | Dep | Purpose |
 |---|---|
@@ -2953,7 +2953,7 @@ The CLI is published as `create-vono` on npm. It uses:
 The CLI fetches latest package versions at install time by running:
 
 ```ts
-// Inside create-vono:
+// Inside create-vonosan:
 const deps = ['hono', 'zod', 'drizzle-orm', /* ... based on choices */]
 const installCmd = packageManager === 'bun'
   ? `bun add ${deps.map(d => `${d}@latest`).join(' ')}`
@@ -2971,8 +2971,8 @@ Vono uses `unplugin-auto-import` for **both** the Hono server code and the Vue c
 Shared middleware, utils, and common Hono helpers are auto-imported across all server files:
 
 ```ts
-// vono.config.ts (server auto-import config)
-export default defineVonoConfig({
+// vonosan.config.ts (server auto-import config)
+export default defineVonosanConfig({
   autoImport: {
     server: {
       // These directories are auto-imported in all server .ts files
@@ -3026,8 +3026,8 @@ export class PlansService {
 Vue composables, Vue Router, Pinia, and your own utilities:
 
 ```ts
-// vono.config.ts (client auto-import config)
-export default defineVonoConfig({
+// vonosan.config.ts (client auto-import config)
+export default defineVonosanConfig({
   autoImport: {
     client: {
       dirs: [
@@ -3051,8 +3051,8 @@ export default defineVonoConfig({
 Add your own files/packages to auto-import via config:
 
 ```ts
-// vono.config.ts
-export default defineVonoConfig({
+// vonosan.config.ts
+export default defineVonosanConfig({
   autoImport: {
     server: {
       dirs: [
@@ -3147,7 +3147,7 @@ export default defineConfig({
 
 ## 15. Nuxt UI — Default Frontend UI
 
-Full-stack Vono projects use **Nuxt UI v4** as the default component library. 125+ accessible components, Tailwind CSS, dark mode, icons — all pre-configured.
+Full-stack Vonosan projects use **Nuxt UI v4** as the default component library. 125+ accessible components, Tailwind CSS, dark mode, icons — all pre-configured.
 
 ### 15.1 Pre-configured Setup
 
@@ -3212,10 +3212,10 @@ export function createApp(isServer = false) {
 
 ### 15.2 Theme Configuration
 
-Customize colors in `vono.config.ts`:
+Customize colors in `vonosan.config.ts`:
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   ui: {
     colors: {
       primary: 'green',     // Brand color
@@ -3240,7 +3240,7 @@ bun add -D @iconify-json/lucide @iconify-json/simple-icons
 
 ---
 
-## 16. Vono Artisan — Scaffolding CLI
+## 16. Vonosan Artisan — Scaffolding CLI
 
 Laravel-style `make:*` commands for generating boilerplate. Respects the TS/JS choice from install.
 
@@ -3266,7 +3266,7 @@ bun vono make:notification order_shipped # Notification type + template
 
 #### Post-Install Add Commands
 
-Features that were skipped during install can be added later via `vono add`. Each command installs dependencies, generates files (schema, service, routes, pages), and updates `vono.config.ts`:
+Features that were skipped during install can be added later via `vono add`. Each command installs dependencies, generates files (schema, service, routes, pages), and updates `vonosan.config.ts`:
 
 ```bash
 bun vono add notifications          # Add notifications module (table + API + page)
@@ -3321,7 +3321,7 @@ $ bun vono make:module posts
  *  Module:  posts
  *  Path:    /api/v1/posts
  * ──────────────────────────────────────────────────────────────
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  *  Feel free to modify this file to fit your needs.
  * ──────────────────────────────────────────────────────────────
  */
@@ -3361,7 +3361,7 @@ export { postsRoutes }
  *  Handles HTTP request/response for the Posts module.
  *  Parses input, delegates to PostsService, returns JSON.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3423,7 +3423,7 @@ export class PostsController {
  *  No HTTP concerns — receives a Drizzle DB instance,
  *  returns data or throws domain errors.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3497,7 +3497,7 @@ export class PostsService {
  *  Zod schemas for request validation + TypeScript types.
  *  Used by the controller to validate incoming data.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3559,7 +3559,7 @@ $ bun vono make:test auth
 
 ### 16.3 Package: `vono-cli`
 
-The artisan CLI is a dev dependency auto-installed by `create-vono`:
+The artisan CLI is a dev dependency auto-installed by `create-vonosan`:
 
 ```json
 {
@@ -3567,7 +3567,7 @@ The artisan CLI is a dev dependency auto-installed by `create-vono`:
     "vono-cli": "latest"
   },
   "scripts": {
-    "vono": "vono"
+    "vonosan": "vonosan"
   }
 }
 ```
@@ -3597,7 +3597,7 @@ Every module owns its Drizzle table definitions. When you scaffold a module with
  *  Drizzle table definitions for this module.
  *  Auto-imported into src/db/schema.ts barrel file.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3626,7 +3626,7 @@ export const posts = pgTable('posts', {
  *  Drizzle table definitions for authentication.
  *  Auto-imported into src/db/schema.ts barrel file.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3667,7 +3667,7 @@ export const sessions = pgTable('sessions', {
  *  Includes: users, roles, role_user junction, sessions.
  *  Auto-imported into src/db/schema.ts barrel file.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3719,7 +3719,7 @@ In both modes, `current_role` on the `users` table stores the user's active role
 
 ### 17.2 Central Schema — Auto-Import Barrel
 
-The central `src/db/schema.ts` is a **barrel file** that auto-imports and re-exports every module schema. Vono generates and maintains this file automatically whenever you create or remove a module:
+The central `src/db/schema.ts` is a **barrel file** that auto-imports and re-exports every module schema. Vonosan generates and maintains this file automatically whenever you create or remove a module:
 
 ```ts
 // src/db/schema.ts — AUTO-GENERATED, DO NOT EDIT
@@ -3761,7 +3761,7 @@ This means:
 
 ### 17.3 How Auto-Import Works
 
-When `make:module` creates a schema file, or `remove:module` deletes one, Vono scans all modules for `*.schema.ts` files and regenerates the barrel:
+When `make:module` creates a schema file, or `remove:module` deletes one, Vonosan scans all modules for `*.schema.ts` files and regenerates the barrel:
 
 ```ts
 // Inside vono-cli — schema barrel generator
@@ -3841,7 +3841,7 @@ $ bun vono migrate:make create_posts_table
 
 Vono commands map to Drizzle Kit:
 
-| Vono command | Drizzle Kit equivalent |
+| Vonosan command | Drizzle Kit equivalent |
 |---|---|
 | `migrate:make <name>` | `drizzle-kit generate` (with custom naming) |
 | `migrate:run` | `drizzle-kit migrate` |
@@ -3865,7 +3865,7 @@ $ bun vono make:seed plans
  *  Populates the plans table with initial data.
  *  Run with: bun vono db:seed plans
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -3896,7 +3896,7 @@ When tables in different modules reference each other, define relations in a ded
  *  different modules together. Keeps modules decoupled —
  *  each module defines its own tables, this file connects them.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4025,7 +4025,7 @@ export function forceDelete(db: DrizzleDb, table: any, condition: SQL) {
 
 **Usage comparison:**
 
-| Laravel | Vono |
+| Laravel | Vonosan |
 |---|---|
 | `Post::all()` | `db.select().from(posts).where(withSoftDeletes(posts))` |
 | `Post::withTrashed()->get()` | `db.select().from(posts)` (no filter) |
@@ -4107,24 +4107,24 @@ export function prefixedId(prefix: string): string {
 }
 ```
 
-| Laravel | Vono |
+| Laravel | Vonosan |
 |---|---|
 | `$table->uuid('id')->primary()` | `id: text('id').primaryKey()` + `prefixedId('post')` |
 | `Str::uuid()` | `generateId()` |
 
 ---
 
-## 19. Vono Config — Runtime-Aware Configuration System
+## 19. Vonosan Config — Runtime-Aware Configuration System
 
-Like Laravel's `config/` directory and `.env`, Vono centralizes all configuration in `vono.config.ts` with environment-specific overrides from `.env`. The config is **runtime-aware** — it knows whether you're on Cloudflare Workers, Bun, or Node.js, and automatically selects the right drivers, queue backends, and adapters.
+Like Laravel's `config/` directory and `.env`, Vonosan centralizes all configuration in `vonosan.config.ts` with environment-specific overrides from `.env`. The config is **runtime-aware** — it knows whether you're on Cloudflare Workers, Bun, or Node.js, and automatically selects the right drivers, queue backends, and adapters.
 
 ### 19.1 The Config File
 
 ```ts
-// vono.config.ts
-import { defineVonoConfig } from 'vono'
+// vonosan.config.ts
+import { defineVonosanConfig } from 'vonosansan'
 
-export default defineVonoConfig({
+export default defineVonosanConfig({
   // ─── App ────────────────────────────────────────────────
   app: {
     name: 'My App',
@@ -4463,13 +4463,13 @@ PAYSTACK_WEBHOOK_SECRET=
 
 ### 19.3 Runtime Resolution — How `auto` Works
 
-When config values are set to `auto`, Vono reads `runtime` from config and resolves the correct implementation:
+When config values are set to `auto`, Vonosan reads `runtime` from config and resolves the correct implementation:
 
 ```ts
 // src/shared/resolvers/queue.ts  (internal — auto-generated by Vono)
-import type { VonoConfig } from '../../vono.config'
+import type { VonosanConfig } from '../../vonosan.config'
 
-export function resolveQueueDriver(config: VonoConfig) {
+export function resolveQueueDriver(config: VonosanConfig) {
   if (config.queue.driver !== 'auto') return config.queue.driver
 
   switch (config.runtime) {
@@ -4519,7 +4519,7 @@ The same pattern applies to cache, storage, and database connection strategy.
 
 ### 19.5 Config Helpers
 
-Type-safe env readers used in `vono.config.ts`:
+Type-safe env readers used in `vonosan.config.ts`:
 
 ```ts
 // Built into vono package:
@@ -4622,7 +4622,7 @@ A policy is a plain class with methods named after actions. Each method receives
  *  Each method receives the authenticated user and optionally
  *  the resource being acted upon.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4669,7 +4669,7 @@ Policies are registered in a central `src/shared/policies/index.ts` registry:
  *  Central registry of all module policies.
  *  Auto-updated when you run: bun vono make:policy <module>
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4700,7 +4700,7 @@ Gates are one-off authorization checks defined centrally. Use them for actions n
  *  Add your gates here; use with: authorize(user, 'gate-name')
  *  or as middleware: gate('gate-name')
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4741,7 +4741,7 @@ A unified helper that checks both gates and policies:
  *  Supports both gates (simple) and policies (resource-level).
  *  Use dot notation for policies: 'posts.update'
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4837,7 +4837,7 @@ The `gate()` and `policy()` middleware factories:
  *  Use gate() for simple ability checks on route groups.
  *  Use policy() for resource-level checks on individual routes.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -4981,7 +4981,7 @@ $ bun vono make:resource posts
  *    return c.json(ApiResponse.success(PostsResource.toResource(post)))
  *    return c.json(ApiResponse.success(PostsResource.toCollection(posts, total, page, limit)))
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -5162,9 +5162,9 @@ export class UsersResource {
 
 ```ts
 // src/shared/utils/storage.ts
-import type { VonoConfig } from '../../vono.config'
+import type { VonosanConfig } from '../../vonosan.config'
 
-export function resolveStorageUrl(path: string, config?: VonoConfig): string {
+export function resolveStorageUrl(path: string, config?: VonosanConfig): string {
   const driver = config?.storage.driver ?? 'local'
 
   switch (driver) {
@@ -5196,7 +5196,7 @@ export function resolveStorageUrl(path: string, config?: VonoConfig): string {
 
 ## 22. PM2 Deployment — Process Management
 
-PM2 is the standard production process manager for **Bun** and **Node.js** deployments. When the wizard target is Bun, Node.js, Docker (Bun), or Docker (Node), Vono auto-generates an `ecosystem.config.js` tailored to the chosen runtime. For serverless/edge targets (Cloudflare, Vercel, Netlify, Lambda, Deno, Fastly) PM2 is not applicable — those runtimes handle process lifecycle natively.
+PM2 is the standard production process manager for **Bun** and **Node.js** deployments. When the wizard target is Bun, Node.js, Docker (Bun), or Docker (Node), Vonosan auto-generates an `ecosystem.config.js` tailored to the chosen runtime. For serverless/edge targets (Cloudflare, Vercel, Netlify, Lambda, Deno, Fastly) PM2 is not applicable — those runtimes handle process lifecycle natively.
 
 ### 22.1 When PM2 is Generated
 
@@ -5222,7 +5222,7 @@ The CLI generates the config based on the runtime selection. The key difference 
 /**
  * ──────────────────────────────────────────────────────────────
  *  PM2 Ecosystem Config — Bun Runtime
- *  Auto-generated by Vono CLI — https://vono.dev
+ *  Auto-generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  *  Start:   pm2 start ecosystem.config.js
  *  Reload:  pm2 reload my-app
@@ -5274,7 +5274,7 @@ module.exports = {
 /**
  * ──────────────────────────────────────────────────────────────
  *  PM2 Ecosystem Config — Node.js Runtime
- *  Auto-generated by Vono CLI — https://vono.dev
+ *  Auto-generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  *  Start:   pm2 start ecosystem.config.js
  *  Reload:  pm2 reload my-app
@@ -5336,7 +5336,7 @@ When the target is Docker (Bun) or Docker (Node), the generated `Dockerfile` use
 ```dockerfile
 # ──────────────────────────────────────────────────────────────
 #  Dockerfile — Bun Runtime with PM2
-#  Auto-generated by Vono CLI — https://vono.dev
+#  Auto-generated by Vonosan CLI — https://vono.dev
 # ──────────────────────────────────────────────────────────────
 
 # --- Build stage ---
@@ -5364,7 +5364,7 @@ CMD ["pm2-runtime", "ecosystem.config.js"]
 ```dockerfile
 # ──────────────────────────────────────────────────────────────
 #  Dockerfile — Node.js Runtime with PM2
-#  Auto-generated by Vono CLI — https://vono.dev
+#  Auto-generated by Vonosan CLI — https://vono.dev
 # ──────────────────────────────────────────────────────────────
 
 # --- Build stage ---
@@ -5489,7 +5489,7 @@ Vono supports two WebSocket approaches: **Hono WebSocket** (built-in, lightweigh
 
 ### 23.2 Hono WebSocket — Built-in (All Runtimes)
 
-Hono's `upgradeWebSocket()` helper provides a simple, cross-runtime WebSocket API. Import path varies by runtime — Vono auto-selects the correct one based on the `runtime` config.
+Hono's `upgradeWebSocket()` helper provides a simple, cross-runtime WebSocket API. Import path varies by runtime — Vonosan auto-selects the correct one based on the `runtime` config.
 
 #### Server setup
 
@@ -5502,13 +5502,13 @@ Hono's `upgradeWebSocket()` helper provides a simple, cross-runtime WebSocket AP
  *  Cross-runtime WebSocket using Hono's upgradeWebSocket() helper.
  *  Works on Bun, Node (@hono/node-ws), Cloudflare Workers, and Deno.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
 import { Hono } from 'hono'
 
-// Import is auto-resolved by Vono based on your runtime config:
+// Import is auto-resolved by Vonosan based on your runtime config:
 //   bun             → import { upgradeWebSocket, websocket } from 'hono/bun'
 //   node            → import { createNodeWebSocket } from '@hono/node-ws'
 //   cloudflare      → import { upgradeWebSocket } from 'hono/cloudflare-workers'
@@ -5620,7 +5620,7 @@ export default app
  *  Reactive WebSocket connection with auto-reconnect.
  *  Uses the native browser WebSocket API — no extra library needed.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -5721,7 +5721,7 @@ Socket.IO provides rooms, namespaces, auto-reconnect, binary support, and fallba
  *  Runs alongside Hono on the same port — no separate WS server needed.
  *
  *  Reference: https://socket.io/docs/v4/server-initialization/#with-hono--bun
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -5798,7 +5798,7 @@ export default {
  *  The HTTP server from `serve()` is passed to Socket.IO.
  *
  *  Reference: https://socket.io/docs/v4/server-initialization/#with-hono-nodejs
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -5869,7 +5869,7 @@ console.log(`Server running on port ${process.env.PORT ?? 8787}`)
  *  Reactive Socket.IO client with auto-connect and typed events.
  *  Requires: `socket.io-client` (auto-installed by Vono).
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -5978,11 +5978,11 @@ function sendMessage() {
 </template>
 ```
 
-### 23.4 Vono Config — WebSocket
+### 23.4 Vonosan Config — WebSocket
 
 ```ts
-// vono.config.ts — WebSocket section
-export default defineVonoConfig({
+// vonosan.config.ts — WebSocket section
+export default defineVonosanConfig({
   // ... other config ...
 
   // ─── Real-Time / WebSocket ──────────────────────────────────
@@ -6022,7 +6022,7 @@ export default defineVonoConfig({
 
 ## 24. Auth Scaffolding — Pages, APIs & Composables
 
-When **auth is selected** in the wizard (any option except "No auth"), Vono auto-generates a complete authentication system: API routes, controllers, services, **frontend pages**, composables, middleware, and a dashboard layout. This gives you a working login → register → forgot password → reset password → dashboard → profile flow out of the box.
+When **auth is selected** in the wizard (any option except "No auth"), Vonosan auto-generates a complete authentication system: API routes, controllers, services, **frontend pages**, composables, middleware, and a dashboard layout. This gives you a working login → register → forgot password → reset password → dashboard → profile flow out of the box.
 
 ### 24.1 What Gets Generated
 
@@ -6077,7 +6077,7 @@ src/
  *  Handles registration, login, logout, token refresh,
  *  password reset (OTP), and OAuth callbacks.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -6137,7 +6137,7 @@ export { authRoutes }
  *  Validates request bodies before they reach the controller.
  *  Used with zValidator('json', SchemaName) in routes.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -6202,7 +6202,7 @@ export type LoginDtoType = z.infer<typeof LoginDto>
    Supports Email + Password login with optional
    Google/GitHub OAuth buttons (generated only if selected).
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -6307,7 +6307,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
    Module:  auth
    Route:   /register  (file-based: register.page.vue)
   ──────────────────────────────────────────────────────────────
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -6424,7 +6424,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
    Step 1: Enter email → send OTP
    Step 2: Enter 6-digit OTP → navigate to /reset-password
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -6567,7 +6567,7 @@ async function resendOtp() {
    Pre-fills email and OTP from query params (from forgot-password flow).
    User enters new password + confirmation → calls POST /api/v1/auth/reset-password.
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -6661,7 +6661,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 ### 24.9 Generated `useAuth` Composable
 
-> **Note:** This composable uses Vono's own `useCookie()`, `useState()`, `useVonoFetch()`, `navigateTo()`, and `useRuntimeConfig()` — NOT Nuxt equivalents. See [Section 28: Vono Composables](#28-vono-composables--client-runtime) for their API.
+> **Note:** This composable uses Vono's own `useCookie()`, `useState()`, `useVonosanFetch()`, `navigateTo()`, and `useRuntimeConfig()` — NOT Nuxt equivalents. See [Section 28: Vonosan Composables](#28-vono-composables--client-runtime) for their API.
 
 ```ts
 /**
@@ -6673,7 +6673,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
  *  Tokens are stored in cookies for SSR compatibility.
  *  Includes auto-refresh on 401 responses.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -6801,7 +6801,7 @@ export function useAuth() {
  *  Extracts per-field errors from 422 API responses and maps them
  *  to Nuxt UI's UFormField :error prop for inline display.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -6841,7 +6841,7 @@ export function useFormErrors<T extends string>() {
  *  Redirects authenticated users away from login/register pages.
  *  Waits for initAuth() to complete before making redirect decisions.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -6878,7 +6878,7 @@ export function authGuard(to: any, from: any) {
    Overview page shown after login. Displays welcome message
    and quick-start cards. Customize to fit your app.
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -6932,7 +6932,7 @@ const { user } = useAuth()
   ──────────────────────────────────────────────────────────────
    Edit name, change password, view sessions.
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -7043,7 +7043,7 @@ async function updatePassword(event: FormSubmitEvent<PasswordSchema>) {
    Used by all /dashboard/* pages via definePage({ meta: { layout: 'dashboard' } }).
    Includes collapsible sidebar, user dropdown, and dark mode toggle.
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -7143,7 +7143,7 @@ const userMenuItems = [
 
 ## 25. Notifications — In-App Alerts & Preferences
 
-When **notifications** is selected in the wizard (or added later via `bun vono add notifications`), Vono generates a complete notification system: Drizzle tables, API routes, services, and (in fullstack mode) a notifications page with preferences.
+When **notifications** is selected in the wizard (or added later via `bun vono add notifications`), Vonosan generates a complete notification system: Drizzle tables, API routes, services, and (in fullstack mode) a notifications page with preferences.
 
 ### 25.1 What Gets Generated
 
@@ -7170,9 +7170,9 @@ src/
  *  Module:  notifications
  * ──────────────────────────────────────────────────────────────
  *  Generates `notifications` and `notification_preferences` tables.
- *  Auto-registered into the global schema by Vono CLI.
+ *  Auto-registered into the global schema by Vonosan CLI.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7188,7 +7188,7 @@ export const notifications = pgTable('notifications', {
   type: varchar('type', { length: 50 }).notNull().default('info'),
   //  'info' | 'warning' | 'success' | 'error'
   category: varchar('category', { length: 50 }).notNull().default('system_updates'),
-  //  'account_billing' | 'security' | 'system_updates' (configurable in vono.config.ts)
+  //  'account_billing' | 'security' | 'system_updates' (configurable in vonosan.config.ts)
 
   // Content
   title: varchar('title', { length: 500 }).notNull(),
@@ -7241,7 +7241,7 @@ export const notificationPreferences = pgTable('notification_preferences', {
  * ──────────────────────────────────────────────────────────────
  *  CRUD for in-app notifications + user preferences.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7294,7 +7294,7 @@ export { notificationsRoutes }
  *  Used by controllers and also internally by other services
  *  to create notifications (e.g. auth, billing, system events).
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7400,7 +7400,7 @@ export class NotificationsService {
  *  Notification DTOs — Zod Validation Schemas
  *  Module:  notifications
  * ──────────────────────────────────────────────────────────────
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7434,7 +7434,7 @@ export const CreateNotificationDto = z.object({
  *  Manages fetching, reading, and deleting notifications.
  *  Also handles notification preferences (toggles, frequency).
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7535,7 +7535,7 @@ export function useNotifications() {
    In-app notification inbox with category filters, mark-as-read,
    and notification preferences panel.
 
-   Generated by Vono CLI — https://vono.dev
+   Generated by Vonosan CLI — https://vono.dev
   ──────────────────────────────────────────────────────────────
 -->
 
@@ -7793,7 +7793,7 @@ export async function sendPaymentReceivedNotification(
 
 ## 26. Logging — Activity & Audit Trail
 
-When **logging** is selected in the wizard (or added later via `bun vono add logging`), Vono generates an activity logging system that **automatically uses the queue when available** for async persistence, falling back to synchronous DB writes when no queue is configured.
+When **logging** is selected in the wizard (or added later via `bun vono add logging`), Vonosan generates an activity logging system that **automatically uses the queue when available** for async persistence, falling back to synchronous DB writes when no queue is configured.
 
 ### 26.1 Queue-Aware Architecture
 
@@ -7837,7 +7837,7 @@ src/
  *  Stores all application activity for audit trail purposes.
  *  Queried by admins via /api/v1/logs.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -7889,7 +7889,7 @@ export const activityLogs = pgTable('activity_logs', {
  *  The `log()` method is designed to never throw — logging failures
  *  should not break application flows.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -8000,7 +8000,7 @@ export class LoggingService {
  *  Processes log events dispatched by LoggingService.log().
  *  Runs in background via the configured queue driver.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -8032,7 +8032,7 @@ export const logActivityJob = {
  * ──────────────────────────────────────────────────────────────
  *  View activity logs. Admin-only access.
  *
- *  Generated by Vono CLI — https://vono.dev
+ *  Generated by Vonosan CLI — https://vono.dev
  * ──────────────────────────────────────────────────────────────
  */
 
@@ -8130,7 +8130,7 @@ export const LogActions = {
 
 ### 26.9 Logging Middleware (Auto-Log All Requests)
 
-Optionally, Vono can generate a request-logging middleware that auto-logs every API call:
+Optionally, Vonosan can generate a request-logging middleware that auto-logs every API call:
 
 ```ts
 // src/shared/middleware/request-logger.middleware.ts
@@ -8181,7 +8181,7 @@ export function requestLogger() {
 
 ## 27. Vite Plugin — Framework Core
 
-The Vite plugin is the heart of Vono. It reads `vono.config.ts` and configures everything automatically.
+The Vite plugin is the heart of Vono. It reads `vonosan.config.ts` and configures everything automatically.
 
 ### Usage
 
@@ -8189,7 +8189,7 @@ Users write a minimal `vite.config.ts`:
 
 ```ts
 import { defineConfig } from 'vite'
-import { vono } from 'vono/vite'
+import { vono } from 'vonosansan/vite'
 
 export default defineConfig({
   plugins: [vono()],
@@ -8207,7 +8207,7 @@ The plugin internally composes:
 
 ### What the plugin does:
 
-1. **Reads `vono.config.ts`** and resolves runtime/deployment target
+1. **Reads `vonosan.config.ts`** and resolves runtime/deployment target
 2. **Configures SSR** — sets `ssr.noExternal`, `ssr.external` based on target
 3. **Wires file-based routing** — scans `src/modules/**/pages/*.page.vue`
 4. **Sets up auto-imports** — server imports (Hono, Drizzle) + client imports (Vue, composables)
@@ -8235,7 +8235,7 @@ The plugin internally composes:
 // The plugin uses Vite's ssrLoadModule for server code HMR:
 // - API route changes → hot-reload without full restart
 // - Vue component changes → standard Vite HMR
-// - vono.config.ts changes → full dev server restart
+// - vonosan.config.ts changes → full dev server restart
 ```
 
 ### Edge-compatible server entry:
@@ -8253,7 +8253,7 @@ The plugin generates a production server entry that avoids Node-only APIs:
 
 ---
 
-## 28. Vono Composables — Client Runtime
+## 28. Vonosan Composables — Client Runtime
 
 Vono provides its own composables that work in vanilla Vue (no Nuxt required). These are auto-imported from `vono/client`.
 
@@ -8265,7 +8265,7 @@ SSR-safe data fetching with deduplication. Fetches on server during SSR, hydrate
 // In any Vue component or page
 const { data, pending, error, refresh } = useAsyncData(
   'users',
-  () => useVonoFetch<User[]>('/api/v1/users')
+  () => useVonosanFetch<User[]>('/api/v1/users')
 )
 ```
 
@@ -8294,13 +8294,13 @@ interface UseAsyncDataReturn<T> {
 }
 ```
 
-### `useVonoFetch(url, options?)`
+### `useVonosanFetch(url, options?)`
 
 Typed fetch wrapper. Uses relative URLs on server (via internal fetch), absolute on client. Automatically includes auth cookies/headers.
 
 ```ts
 // Auto-imported — no import needed
-const users = await useVonoFetch<{ success: boolean; data: User[] }>('/api/v1/users', {
+const users = await useVonosanFetch<{ success: boolean; data: User[] }>('/api/v1/users', {
   method: 'GET',
   query: { page: 1, limit: 20 },
 })
@@ -8372,14 +8372,14 @@ await navigateTo('/login', { redirectCode: 302 })
 
 ### `useRuntimeConfig()`
 
-Access resolved Vono config values. Server-only values are stripped on client.
+Access resolved Vonosan config values. Server-only values are stripped on client.
 
 ```ts
 const config = useRuntimeConfig()
 
 // Client-safe values
-config.public.appName    // from vono.config.ts → app.name
-config.public.apiBaseUrl // from vono.config.ts → app.apiBaseUrl
+config.public.appName    // from vonosan.config.ts → app.name
+config.public.apiBaseUrl // from vonosan.config.ts → app.apiBaseUrl
 
 // Server-only (throws on client)
 config.databaseUrl       // from env
@@ -8388,17 +8388,17 @@ config.jwtSecret         // from env
 
 ---
 
-## 29. Plugin / Module System — `defineVonoModule()`
+## 29. Plugin / Module System — `defineVonosanModule()`
 
-Vono modules are installable packages that can register middleware, auto-imports, schemas, routes, pages, and composables. This is how `@vono/auth`, `@vono/notifications`, etc. are built.
+Vono modules are installable packages that can register middleware, auto-imports, schemas, routes, pages, and composables. This is how `@vonosan/auth`, `@vonosan/notifications`, etc. are built.
 
 ### Defining a module
 
 ```ts
-// @vono/auth/src/index.ts
-import { defineVonoModule } from 'vono'
+// @vonosan/auth/src/index.ts
+import { defineVonosanModule } from 'vonosansan'
 
-export default defineVonoModule({
+export default defineVonosanModule({
   name: 'auth',
   version: '1.0.0',
 
@@ -8415,12 +8415,12 @@ export default defineVonoModule({
 
   // Server-side auto-imports
   serverImports: [
-    { from: '@vono/auth/server', imports: ['requireAuth', 'requireRole', 'getCurrentUser'] },
+    { from: '@vonosan/auth/server', imports: ['requireAuth', 'requireRole', 'getCurrentUser'] },
   ],
 
   // Client-side auto-imports
   clientImports: [
-    { from: '@vono/auth/client', imports: ['useAuth', 'useUser'] },
+    { from: '@vonosan/auth/client', imports: ['useAuth', 'useUser'] },
   ],
 
   // Vue pages to register (file-based routing)
@@ -8442,7 +8442,7 @@ export default defineVonoModule({
   // Migrations
   migrations: ['./db/migrations/'],
 
-  // Config schema (merged into VonoConfig)
+  // Config schema (merged into VonosanConfig)
   configSchema: {
     auth: {
       providers: ['email', 'google', 'github'],
@@ -8460,15 +8460,15 @@ export default defineVonoModule({
 })
 ```
 
-### Using modules in `vono.config.ts`
+### Using modules in `vonosan.config.ts`
 
 ```ts
-import { defineVonoConfig } from 'vono'
-import auth from '@vono/auth'
-import notifications from '@vono/notifications'
-import logging from '@vono/logging'
+import { defineVonosanConfig } from 'vonosansan'
+import auth from '@vonosan/auth'
+import notifications from '@vonosan/notifications'
+import logging from '@vonosan/logging'
 
-export default defineVonoConfig({
+export default defineVonosanConfig({
   modules: [
     auth({ providers: ['email', 'google'], roles: { enabled: true, multiple: true } }),
     notifications(),
@@ -8484,9 +8484,9 @@ When you need full control, eject a module to copy its source into your project:
 
 ```bash
 vono add auth --eject
-# Copies @vono/auth source into src/modules/auth/
-# Removes @vono/auth from dependencies
-# Updates vono.config.ts to remove module registration
+# Copies @vonosan/auth source into src/modules/auth/
+# Removes @vonosan/auth from dependencies
+# Updates vonosan.config.ts to remove module registration
 ```
 
 After ejecting, the code is fully yours — no more automatic updates from the package.
@@ -8494,7 +8494,7 @@ After ejecting, the code is fully yours — no more automatic updates from the p
 ### Module lifecycle hooks
 
 ```ts
-defineVonoModule({
+defineVonosanModule({
   hooks: {
     'app:created': (app) => { /* Hono app created, before routes mounted */ },
     'app:ready': (app) => { /* All routes mounted, server about to listen */ },
@@ -8511,7 +8511,7 @@ defineVonoModule({
 
 ### SSR Error Boundary
 
-If `renderToString` throws during SSR, the server MUST NOT crash. Vono wraps SSR in a try/catch:
+If `renderToString` throws during SSR, the server MUST NOT crash. Vonosan wraps SSR in a try/catch:
 
 ```ts
 // Internal SSR handler (inside vono core)
@@ -8605,13 +8605,13 @@ clearError({ redirect: '/' })
 
 Vono validates ALL environment variables at startup using Zod. No more runtime crashes from missing env vars.
 
-### Define env schema in `vono.config.ts`
+### Define env schema in `vonosan.config.ts`
 
 ```ts
-import { defineVonoConfig } from 'vono'
+import { defineVonosanConfig } from 'vonosansan'
 import { z } from 'zod'
 
-export default defineVonoConfig({
+export default defineVonosanConfig({
   env: {
     schema: {
       // Required — app crashes at startup if missing
@@ -8667,7 +8667,7 @@ $ bun run dev
 When running `vono add auth`, the CLI automatically appends required env vars to `.env.example`:
 
 ```bash
-# Auth (added by @vono/auth)
+# Auth (added by @vonosan/auth)
 JWT_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -8698,10 +8698,10 @@ Vono uses connection pooling by default. The strategy adapts based on the deploy
 | **Vercel Serverless** | `@vercel/postgres` or Neon serverless driver | HTTP-based, connection per query |
 | **Deno Deploy** | Neon serverless driver | HTTP-based |
 
-### Configuration in `vono.config.ts`
+### Configuration in `vonosan.config.ts`
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   database: {
     driver: 'postgres',  // 'postgres' | 'mysql' | 'sqlite' | 'turso'
     pool: {
@@ -8717,7 +8717,7 @@ export default defineVonoConfig({
 
 ```ts
 // Internal: src/db/index.ts (generated, but uses vono core)
-import { createDbClient } from 'vono/server'
+import { createDbClient } from 'vonosansan/server'
 import * as schema from './schema'
 
 // Creates a POOLED client for Node/Bun, single client for edge
@@ -8747,7 +8747,7 @@ app.use('*', async (c, next) => {
 
 ## 33. Database Transactions
 
-Drizzle ORM supports transactions natively. Vono provides a convenience helper.
+Drizzle ORM supports transactions natively. Vonosan provides a convenience helper.
 
 ### Basic transaction
 
@@ -8813,12 +8813,12 @@ class OrderService {
 
 ## 34. CORS Configuration
 
-CORS is configured in `vono.config.ts` — not hardcoded in middleware.
+CORS is configured in `vonosan.config.ts` — not hardcoded in middleware.
 
 ### Configuration
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   server: {
     cors: {
       origin: ['https://myapp.com', 'https://admin.myapp.com'],
@@ -8837,7 +8837,7 @@ export default defineVonoConfig({
 ### Environment-based CORS
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   server: {
     cors: {
       origin: process.env.NODE_ENV === 'development'
@@ -8870,7 +8870,7 @@ Vono provides a storage abstraction layer supporting multiple drivers. File uplo
 ### Configuration
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   storage: {
     driver: 'r2',
     drivers: {
@@ -8908,7 +8908,7 @@ export default defineVonoConfig({
 ### Upload handler
 
 ```ts
-import { useStorage } from 'vono/server'
+import { useStorage } from 'vonosansan/server'
 
 export const uploadRoutes = new Hono()
 
@@ -8964,7 +8964,7 @@ Vono supports scheduled tasks that run on a cron schedule. The implementation ad
 
 ```ts
 // src/modules/billing/jobs/check-expired-trials.job.ts
-import { defineJob } from 'vono/server'
+import { defineJob } from 'vonosansan/server'
 
 export default defineJob({
   name: 'check-expired-trials',
@@ -9036,7 +9036,7 @@ Vono uses a simple, framework-agnostic email system. Templates are TypeScript fu
 ### Configuration
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   email: {
     driver: 'resend',
     from: 'Vono App <hello@myapp.com>',
@@ -9057,7 +9057,7 @@ export default defineVonoConfig({
 
 ```ts
 // src/modules/auth/emails/welcome.email.ts
-import { defineEmail } from 'vono/server'
+import { defineEmail } from 'vonosansan/server'
 
 export const WelcomeEmail = defineEmail({
   subject: (data: { name: string }) => `Welcome to MyApp, ${data.name}!`,
@@ -9083,7 +9083,7 @@ export const WelcomeEmail = defineEmail({
 ### Sending email
 
 ```ts
-import { sendEmail } from 'vono/server'
+import { sendEmail } from 'vonosansan/server'
 import { WelcomeEmail } from '../emails/welcome.email'
 
 // Send immediately
@@ -9104,7 +9104,7 @@ await sendEmail(c, {
 
 ## 38. i18n / Localization
 
-Vono provides optional i18n support via the `@vono/i18n` module.
+Vono provides optional i18n support via the `@vonosan/i18n` module.
 
 ### Installation
 
@@ -9115,7 +9115,7 @@ vono add i18n
 ### Configuration
 
 ```ts
-export default defineVonoConfig({
+export default defineVonosanConfig({
   modules: [
     i18n({
       defaultLocale: 'en',
@@ -9166,7 +9166,7 @@ const { t, locale, setLocale, availableLocales } = useI18n()
 
 ```ts
 // Server-side: detect locale from request
-import { getLocale, t } from 'vono/server'
+import { getLocale, t } from 'vonosansan/server'
 
 app.get('/api/v1/greeting', (c) => {
   const locale = getLocale(c)  // From cookie, header, or URL prefix
@@ -9230,7 +9230,7 @@ The `<LayoutResolver>` component in `App.vue` handles layout switching:
 <!-- src/App.vue -->
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { resolveLayout } from 'vono/client'
+import { resolveLayout } from 'vonosansan/client'
 
 const route = useRoute()
 const layout = computed(() => resolveLayout(route.meta.layout || 'default'))
@@ -9265,7 +9265,7 @@ Vono follows strict semver:
 vono upgrade --check
 
 # Upgrade to latest
-bun update vono @vono/cli @vono/drizzle
+bun update vono @vonosan/cli @vonosan/drizzle
 
 # Run codemods for breaking changes (major versions)
 vono upgrade --apply-codemods
@@ -9273,16 +9273,16 @@ vono upgrade --apply-codemods
 
 ### Codemods
 
-For major version upgrades, Vono provides automated codemods:
+For major version upgrades, Vonosan provides automated codemods:
 
 ```bash
 # Example: Upgrade from v1 to v2
 vono upgrade --from=1 --to=2
 
 # This runs:
-# ✅ Renamed defineVonoConfig() → defineConfig() in vono.config.ts
+# ✅ Renamed defineVonosanConfig() → defineConfig() in vonosan.config.ts
 # ✅ Moved middleware/ to shared/middleware/
-# ✅ Updated import paths from 'vono/helpers' to 'vono/server'
+# ✅ Updated import paths from 'vonosansan/helpers' to 'vonosan/server'
 # ⚠️  Manual: Review updated CORS config format
 ```
 
@@ -9295,12 +9295,12 @@ Every release includes:
 
 ### Module versioning
 
-Modules (`@vono/auth`, etc.) are versioned independently but declare compatible `vono` peer dependency ranges:
+Modules (`@vonosan/auth`, etc.) are versioned independently but declare compatible `vono` peer dependency ranges:
 
 ```json
 {
   "peerDependencies": {
-    "vono": "^1.0.0"
+    "vonosan": "^1.0.0"
   }
 }
 ```

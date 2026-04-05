@@ -11,24 +11,24 @@
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, writeFileSync, cpSync } from 'node:fs'
 import { join } from 'node:path'
-import { Logger } from 'vono/server'
+import { Logger } from 'vonosansan/server'
 
 const green = (s: string) => `\x1b[32m${s}\x1b[0m`
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`
 const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`
 
-/** Known installable Vono modules */
+/** Known installable Vonosan modules */
 const KNOWN_MODULES: Record<string, string> = {
-  auth: '@vono/auth',
-  notifications: '@vono/notifications',
-  logging: '@vono/logging',
-  ws: '@vono/ws',
-  storage: '@vono/storage',
-  queue: '@vono/queue',
-  cache: '@vono/cache',
-  email: '@vono/email',
-  i18n: '@vono/i18n',
+  auth: '@vonosan/auth',
+  notifications: '@vonosan/notifications',
+  logging: '@vonosan/logging',
+  ws: '@vonosan/ws',
+  storage: '@vonosan/storage',
+  queue: '@vonosan/queue',
+  cache: '@vonosan/cache',
+  email: '@vonosan/email',
+  i18n: '@vonosan/i18n',
 }
 
 function run(cmd: string): void {
@@ -36,19 +36,19 @@ function run(cmd: string): void {
 }
 
 /**
- * Reads vono.config.ts and appends the module to the `modules` array.
+ * Reads vonosan.config.ts and appends the module to the `modules` array.
  * This is a best-effort text manipulation — for a production implementation
  * you would use an AST transformer.
  */
-function updateVonoConfig(packageName: string): void {
-  const configPath = join(process.cwd(), 'vono.config.ts')
+function updateVonosanConfig(packageName: string): void {
+  const configPath = join(process.cwd(), 'vonosan.config.ts')
   if (!existsSync(configPath)) return
 
   const content = readFileSync(configPath, 'utf8')
 
   // Idempotency check
   if (content.includes(packageName)) {
-    process.stdout.write(yellow(`  vono.config.ts already references "${packageName}" — skipping.\n`))
+    process.stdout.write(yellow(`  vonosan.config.ts already references "${packageName}" — skipping.\n`))
     return
   }
 
@@ -60,16 +60,16 @@ function updateVonoConfig(packageName: string): void {
 
   if (updated !== content) {
     writeFileSync(configPath, updated, 'utf8')
-    process.stdout.write(green(`  Updated vono.config.ts\n`))
+    process.stdout.write(green(`  Updated vonosan.config.ts\n`))
   }
 }
 
 /**
  * `vono add <module> [--eject]`
  *
- * - Installs the @vono/<module> package
+ * - Installs the @vonosan/<module> package
  * - Generates required files
- * - Updates vono.config.ts (idempotent)
+ * - Updates vonosan.config.ts (idempotent)
  *
  * With `--eject`: copies module source into src/modules/<module>/ and
  * removes the package dependency.
@@ -85,7 +85,7 @@ export async function runAdd(args: string[]): Promise<void> {
     process.exit(1)
   }
 
-  const packageName = KNOWN_MODULES[moduleName] ?? `@vono/${moduleName}`
+  const packageName = KNOWN_MODULES[moduleName] ?? `@vonosan/${moduleName}`
 
   process.stdout.write(bold(`Adding module "${moduleName}" (${packageName}) …\n`))
 
@@ -104,11 +104,11 @@ export async function runAdd(args: string[]): Promise<void> {
     )
   }
 
-  // Update vono.config.ts
-  updateVonoConfig(packageName)
+  // Update vonosan.config.ts
+  updateVonosanConfig(packageName)
 
   process.stdout.write(
-    green(`\n✔ Module "${moduleName}" added. Configure it in vono.config.ts.\n`),
+    green(`\n✔ Module "${moduleName}" added. Configure it in vonosan.config.ts.\n`),
   )
 }
 
@@ -149,8 +149,8 @@ async function ejectModule(moduleName: string, packageName: string): Promise<voi
     process.stdout.write(yellow(`⚠  Could not remove ${packageName} — remove it manually.\n`))
   }
 
-  // Update vono.config.ts to remove the package reference
-  const configPath = join(process.cwd(), 'vono.config.ts')
+  // Update vonosan.config.ts to remove the package reference
+  const configPath = join(process.cwd(), 'vonosan.config.ts')
   if (existsSync(configPath)) {
     const content = readFileSync(configPath, 'utf8')
     const updated = content.replace(new RegExp(`import.*from.*${packageName}.*\\n`, 'g'), '')

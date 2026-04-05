@@ -11,7 +11,7 @@
 #!/usr/bin/env node
 
 /**
- * @vono/cli — Artisan-style CLI for the Vono framework.
+ * @vonosan/cli — Artisan-style CLI for the Vonosan framework.
  *
  * Command router: maps `vono <command>` to the appropriate handler.
  */
@@ -139,7 +139,7 @@ const COMMANDS: Record<string, CommandHandler> = {
 
 function printHelp(): void {
   process.stdout.write(`
-\x1b[1mVono CLI\x1b[0m — Artisan-style tooling for the Vono framework
+\x1b[1mVono CLI\x1b[0m — Artisan-style tooling for the Vonosan framework
 
 \x1b[33mUsage:\x1b[0m  vono <command> [args] [options]
 
@@ -197,7 +197,7 @@ function printHelp(): void {
   vono make:helper <name>      Generate shared helper
 
 \x1b[33mModule Installer:\x1b[0m
-  vono add <module>            Install @vono/<module> and update config
+  vono add <module>            Install @vonosan/<module> and update config
   vono add <module> --eject    Copy module source into src/modules/<module>/
 
 \x1b[33mJobs:\x1b[0m
