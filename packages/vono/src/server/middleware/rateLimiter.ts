@@ -76,11 +76,18 @@ export function createRateLimiter(
     }
 
     // ── Derive rate-limit key ────────────────────────────────────────
-    const key = keyFn
+    // Security: sanitize the IP to prevent header injection attacks.
+    // Only take the first IP from x-forwarded-for (leftmost = client IP).
+    // Reject values that don't look like valid IPs to prevent spoofing.
+    const rawIp = keyFn
       ? keyFn(c)
-      : (c.req.header('x-forwarded-for') ??
+      : (c.req.header('cf-connecting-ip') ??
+         c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ??
          c.req.header('x-real-ip') ??
          'unknown')
+
+    // Sanitize: strip anything that isn't a valid IP character
+    const key = rawIp.replace(/[^0-9a-fA-F.:]/g, '').slice(0, 45) || 'unknown'
 
     const now = Date.now()
 

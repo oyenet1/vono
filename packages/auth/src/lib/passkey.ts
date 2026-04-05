@@ -435,11 +435,13 @@ export function base64urlToBuffer(base64url: string): Uint8Array {
 }
 
 function bufferEqual(a: Uint8Array, b: Uint8Array): boolean {
+  // Constant-time comparison to prevent timing attacks on RP ID hash checks
   if (a.length !== b.length) return false
+  let diff = 0
   for (let i = 0; i < a.length; i++) {
-    if (a[i] !== b[i]) return false
+    diff |= a[i] ^ b[i]
   }
-  return true
+  return diff === 0
 }
 
 function concatBuffers(...buffers: Uint8Array[]): Uint8Array {

@@ -14,9 +14,10 @@ import { Logger } from 'vono/server'
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface TokenPayload {
-  sub: string
+  sub?: string
+  accountId?: string
   email: string
-  role: string
+  role?: string
   [key: string]: unknown
 }
 
@@ -30,7 +31,8 @@ export async function signAccessToken(
   secret: string,
 ): Promise<string> {
   const exp = Math.floor(Date.now() / 1000) + 60 * 15 // 15 minutes
-  return sign({ ...payload, exp }, secret)
+  const sub = payload.sub ?? payload.accountId ?? payload.email
+  return sign({ ...payload, sub, exp }, secret)
 }
 
 /**
@@ -41,7 +43,8 @@ export async function signRefreshToken(
   secret: string,
 ): Promise<string> {
   const exp = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // 7 days
-  return sign({ ...payload, exp }, secret)
+  const sub = payload.sub ?? payload.accountId ?? payload.email
+  return sign({ ...payload, sub, exp }, secret)
 }
 
 /**

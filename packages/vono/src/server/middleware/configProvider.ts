@@ -30,15 +30,18 @@ export const configProvider = createMiddleware<{
 
   /**
    * Read a required env var — throws if missing.
+   * In production, error messages are generic to avoid leaking config keys.
    */
   function get(key: string): string {
     const value =
       bindings[key] ??
       (typeof process !== 'undefined' ? process.env[key] : undefined)
     if (!value) {
+      const isDev = (bindings['NODE_ENV'] ?? process.env['NODE_ENV']) !== 'production'
       throw new Error(
-        `[vono] configProvider: Missing required env var: ${key}\n` +
-        `Add it to your .env file.`,
+        isDev
+          ? `[vono] configProvider: Missing required env var: ${key}\nAdd it to your .env file.`
+          : '[vono] Server configuration error. Check your environment variables.',
       )
     }
     return value

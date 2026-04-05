@@ -31,10 +31,14 @@ export interface SoftDeletableTable {
 /**
  * Returns a condition that excludes soft-deleted records.
  * Use in WHERE clauses: .where(withSoftDeletes(table))
+ *
+ * Caller must pass the drizzle-orm isNull function to avoid a hard
+ * dependency on drizzle-orm in the core vono package.
  */
-export function withSoftDeletes(table: SoftDeletableTable) {
-  // Dynamic import to avoid bundling drizzle-orm in non-drizzle contexts
-  const { isNull } = require('drizzle-orm') as typeof import('drizzle-orm')
+export function withSoftDeletes(
+  table: SoftDeletableTable,
+  isNull: (col: unknown) => unknown,
+) {
   return isNull(table.deletedAt)
 }
 
@@ -42,8 +46,10 @@ export function withSoftDeletes(table: SoftDeletableTable) {
  * Returns a condition that includes ONLY soft-deleted records.
  * Use in WHERE clauses: .where(onlyTrashed(table))
  */
-export function onlyTrashed(table: SoftDeletableTable) {
-  const { isNotNull } = require('drizzle-orm') as typeof import('drizzle-orm')
+export function onlyTrashed(
+  table: SoftDeletableTable,
+  isNotNull: (col: unknown) => unknown,
+) {
   return isNotNull(table.deletedAt)
 }
 

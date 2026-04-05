@@ -17,15 +17,15 @@
     "dev": "tsc -p tsconfig.json --watch"
   },
   "peerDependencies": {
-    "hono": ">=4.0.0",
-    "drizzle-orm": ">=0.30.0",
+    "hono": ">=4.8.0",
+    "drizzle-orm": ">=0.44.0",
     "vono": ">=0.1.0"
   },
   "devDependencies": {
-    "typescript": "latest",
-    "@types/bun": "latest",
-    "hono": "latest",
-    "drizzle-orm": "latest",
+    "typescript": "^5.8.3",
+    "@types/bun": "^1.2.14",
+    "hono": "^4.8.10",
+    "drizzle-orm": "^0.44.5",
     "vono": "workspace:*"
   }
 }

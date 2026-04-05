@@ -235,20 +235,22 @@ function mountDocEndpoints(
 // ─── HTML builders ───────────────────────────────────────────────────
 
 function buildSwaggerHtml(specUrl: string): string {
+  // Use pinned CDN versions with SRI for security
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com 'unsafe-inline'; style-src 'self' https://unpkg.com 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'">
   <title>API Docs — Swagger UI</title>
-  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
 </head>
 <body>
   <div id="swagger-ui"></div>
-  <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
   <script>
     SwaggerUIBundle({
-      url: '${specUrl}',
+      url: ${JSON.stringify(specUrl)},
       dom_id: '#swagger-ui',
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
       layout: 'BaseLayout',
@@ -259,18 +261,21 @@ function buildSwaggerHtml(specUrl: string): string {
 }
 
 function buildScalarHtml(specUrl: string, title: string): string {
+  // Escape title to prevent XSS
+  const safeTitle = title.replace(/[<>&"']/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;' }[c] ?? c))
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — API Reference</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'">
+  <title>${safeTitle} — API Reference</title>
 </head>
 <body>
   <script
     id="api-reference"
     data-url="${specUrl}"
-    src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+    src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest/dist/browser/standalone.min.js"></script>
 </body>
 </html>`
 }
