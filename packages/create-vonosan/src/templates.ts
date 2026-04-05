@@ -128,9 +128,8 @@ ALLOWED_ORIGINS=
 - \`src/jobs/\` — cron jobs
 
 ## Commands
-- \`vonosan make:module <name>\` — scaffold a new module
-- \`vonosan migrate:run\` — run pending migrations
-- \`vonosan lint\` — check code quality
+- \`bun run dev\` — start the development server
+- \`bunx @vonosan/cli make:module <name>\` — scaffold a module (after CLI package is published)
 `,
 
     'index.html': `<!DOCTYPE html>
@@ -263,9 +262,14 @@ export default generateOpenApiSpec(
 
     'src/db/index.ts': `${h}
 
-import { createDb } from '@vonosan/drizzle'
-
-export const { db, client } = createDb(process.env.DATABASE_URL!)
+/**
+ * Database bootstrap placeholder.
+ *
+ * Use standard Drizzle ORM setup from the official docs:
+ * https://orm.drizzle.team/docs/overview
+ */
+export const db = null
+export const client = null
 `,
 
     'src/db/schema.ts': `${h}
@@ -294,14 +298,10 @@ export {}
           build: 'vite build',
           preview: 'vite preview',
           start: 'bun dist/server/index.js',
-          'migrate:run': 'vonosan migrate:run',
-          'migrate:make': 'vonosan migrate:make',
-          lint: 'vonosan lint',
           ...(testing !== 'none' ? { test: testing === 'bun' ? 'bun test' : testing } : {}),
         },
         dependencies: {
           vonosan: 'latest',
-          '@vonosan/drizzle': 'latest',
           hono: 'latest',
           vue: 'latest',
           'vue-router': 'latest',
@@ -312,7 +312,6 @@ export {}
           zod: 'latest',
         },
         devDependencies: {
-          '@vonosan/cli': 'latest',
           typescript: 'latest',
           vite: 'latest',
           'drizzle-kit': 'latest',
