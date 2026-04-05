@@ -7,11 +7,17 @@
  * 🔄 Updated Date: 2026-04-05
  * ──────────────────────────────────────────────────────────────────
  */
-
-// Main vono entry — config and composables
-export { defineVonoConfig, getResolvedConfig } from './config/define-config.js'
-export { useVonoConfig } from './config/use-config.js'
-export { env, envNumber, envBool, envRequired } from './config/env-helpers.js'
-export type { PublicVonoConfig } from './config/use-config.js'
-export type { VonoConfig } from './types/index.js'
-export * from './types/index.js'
+export type LintRule = 'header-missing' | 'console-log' | 'naming-snake-case-response' | 'versioning-missing-prefix' | 'dry-violation';
+export interface LintResult {
+    file: string;
+    line: number;
+    rule: LintRule;
+    message: string;
+}
+/**
+ * Scans all `.ts` and `.vue` files under `srcDir` and returns all lint violations.
+ *
+ * @param srcDir - absolute or relative path to the project's `src/` directory
+ */
+export declare function lintProject(srcDir: string): Promise<LintResult[]>;
+//# sourceMappingURL=linter.d.ts.map

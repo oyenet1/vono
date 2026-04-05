@@ -9,51 +9,31 @@
  */
 
 import type { Component } from 'vue'
-import { defineAsyncComponent } from 'vue'
 
-// ─── Layout registry ─────────────────────────────────────────────────
-
-/**
- * Built-in layout names supported by Vono.
- * 'blank' / undefined means no wrapper — render the page directly.
- */
 export type LayoutName = 'default' | 'dashboard' | 'auth' | 'blank' | undefined
 
 /**
  * resolveLayout — returns the correct layout component for a given name.
  *
- * - 'default'   → DefaultLayout (slot wrapper)
- * - 'dashboard' → DashboardLayout (sidebar + main)
- * - 'auth'      → AuthLayout (centered card)
- * - 'blank'     → null (no wrapper)
- * - undefined   → null (no wrapper)
+ * Returns null for 'blank' or undefined (no wrapper).
+ * Returns a lazy-loaded component for named layouts.
  *
- * Usage in a page component:
- * ```vue
- * <script setup>
- * defineOptions({ layout: 'dashboard' })
- * </script>
- * ```
- *
- * Usage in the router view wrapper:
- * ```ts
- * const Layout = resolveLayout(route.meta.layout as LayoutName)
- * ```
+ * The actual .vue files live in the generated project's src/shared/layouts/.
+ * This function is a runtime helper — the import paths are resolved by Vite
+ * in the consuming project, not by tsc in the framework package.
  */
-export function resolveLayout(layoutName: LayoutName): Component | null {
-  switch (layoutName) {
-    case 'default':
-      return defineAsyncComponent(() => import('./layouts/default.vue'))
+export function resolveLayout(
+  layoutName: LayoutName,
+  layoutMap?: Record<string, Component>,
+): Component | null {
+  if (!layoutName || layoutName === 'blank') return null
 
-    case 'dashboard':
-      return defineAsyncComponent(() => import('./layouts/dashboard.vue'))
-
-    case 'auth':
-      return defineAsyncComponent(() => import('./layouts/auth.vue'))
-
-    case 'blank':
-    case undefined:
-    default:
-      return null
+  // If a custom layout map is provided (from the consuming project), use it
+  if (layoutMap && layoutMap[layoutName]) {
+    return layoutMap[layoutName]
   }
+
+  // Return null — the consuming project's App.vue handles layout resolution
+  // via its own import.meta.glob of src/shared/layouts/*.vue
+  return null
 }

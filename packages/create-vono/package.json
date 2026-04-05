@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
+    "@types/node": "25.5.2",
     "typescript": "5.8.3"
   }
 }

@@ -127,9 +127,12 @@ export function createVonoApp(options: VonoAppOptions): Hono<{ Variables: AppVar
   api.use('*', dbProvider)
 
   // Auto-discover and mount all *.routes.ts files from src/modules/
-  autoRegisterRoutes(api).catch((err) => {
-    Logger.error('[vono] autoRegisterRoutes failed', { error: String(err) })
-  })
+  // The consuming project passes its import.meta.glob result via options
+  if (options.modules) {
+    autoRegisterRoutes(api, options.modules).catch((err) => {
+      Logger.error('[vono] autoRegisterRoutes failed', { error: String(err) })
+    })
+  }
 
   // Mount inner router at /api/v1
   app.route('/api/v1', api)

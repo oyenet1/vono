@@ -11,37 +11,23 @@
 import type { Hono } from 'hono'
 
 /**
- * Auto-discovers and mounts all *.routes.ts files from src/modules/*/.
+ * Auto-discovers and mounts all routes.ts files from src/modules.
  *
- * Each module exports a Hono sub-app as its default export.
- * The route prefix is derived from the module folder name.
+ * Pass the result of import.meta.glob from your Vite project:
  *
- * Convention:
- *   src/modules/auth/auth.routes.ts  → /auth
- *   src/modules/payment/payment.routes.ts  → /payment
- *
- * This function uses import.meta.glob (Vite) for zero-config discovery.
- * No manual route registration is required when adding a new module.
+ *   const mods = import.meta.glob('/src/modules/' + '*' + '/' + '*.routes.ts', { eager: true })
+ *   await autoRegisterRoutes(api, mods)
  */
-export async function autoRegisterRoutes(app: Hono): Promise<void> {
-  // import.meta.glob is resolved at build time by Vite
-  const modules = import.meta.glob<{ default: Hono }>(
-    '/src/modules/*/*.routes.ts',
-    { eager: true },
-  )
-
+export async function autoRegisterRoutes(
+  app: Hono,
+  modules: Record<string, { default?: Hono }>,
+): Promise<void> {
   for (const [path, mod] of Object.entries(modules)) {
-    // Extract module name from path:
-    // "/src/modules/auth/auth.routes.ts" → "auth"
     const match = path.match(/\/modules\/([^/]+)\//)
     if (!match) continue
 
     const prefix = `/${match[1]}`
-
-    if (!mod.default) {
-      console.warn(`[vono] autoRegisterRoutes: ${path} has no default export, skipping`)
-      continue
-    }
+    if (!mod.default) continue
 
     app.route(prefix, mod.default)
   }

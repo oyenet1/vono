@@ -36,26 +36,25 @@ export function useState<T>(key: string, init?: () => T): Ref<T | undefined> {
       | undefined
 
     if (windowState?.[key] !== undefined) {
-      const restored = ref<T | undefined>(windowState[key] as T)
-      // Remove from window state after hydration to free memory
+      const restored = ref(windowState[key] as T | undefined)
       delete windowState[key]
-      return restored
+      return restored as Ref<T | undefined>
     }
   }
 
   // Check SSR store
   if (ssrStateStore[key] !== undefined) {
-    return ref<T | undefined>(ssrStateStore[key] as T)
+    return ref(ssrStateStore[key] as T | undefined) as Ref<T | undefined>
   }
 
   // Initialize with provided factory or undefined
   const value = init ? init() : undefined
   ssrStateStore[key] = value
 
-  const state = ref<T | undefined>(value)
+  const state = ref(value) as Ref<T | undefined>
 
-  // Keep SSR store in sync
-  return new Proxy(state, {
+  // Keep SSR store in sync via a wrapper
+  const proxy = new Proxy(state, {
     set(target, prop, newValue) {
       if (prop === 'value') {
         ssrStateStore[key] = newValue
@@ -63,6 +62,8 @@ export function useState<T>(key: string, init?: () => T): Ref<T | undefined> {
       return Reflect.set(target, prop, newValue)
     },
   })
+
+  return proxy
 }
 
 /**

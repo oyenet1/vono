@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
+    "@types/node": "25.5.2",
     "@unhead/ssr": "2.0.10",
     "@unhead/vue": "2.0.10",
     "drizzle-orm": "0.44.5",
