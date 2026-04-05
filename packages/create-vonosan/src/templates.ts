@@ -56,6 +56,81 @@ export function generateTemplates(answers: WizardAnswers): Record<string, string
   const needsUpstashRedis = cache === 'upstash'
   const needsSocketIo = websocketDriver === 'socket.io'
   const needsNativeWs = websocketDriver === 'native'
+  const isBunRuntimeTarget = deploymentTarget === 'bun' || deploymentTarget === 'bun-docker'
+  const isNodeRuntimeTarget = deploymentTarget === 'nodejs' || deploymentTarget === 'nodejs-docker'
+  const needsSocketIoBunEngine = needsSocketIo && isBunRuntimeTarget
+  const rootServerEntry = needsSocketIo && isBunRuntimeTarget
+    ? `${h}
+
+import app from './src/app.js'
+import { createBunSocketIOServer } from './src/shared/ws/socketio.server.js'
+
+const port = Number(process.env.PORT ?? 4000)
+
+const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
+
+if (typeof bunRef?.serve === 'function') {
+  const socket = createBunSocketIOServer(app)
+
+  bunRef.serve({
+    port,
+    idleTimeout: socket.idleTimeout,
+    fetch: socket.fetch,
+    websocket: socket.websocket,
+  })
+} else {
+  const { serve } = await import('@hono/node-server')
+  serve({
+    port,
+    fetch: app.fetch,
+  })
+}
+
+export default app
+`
+    : needsSocketIo && isNodeRuntimeTarget
+      ? `${h}
+
+import app from './src/app.js'
+import { attachSocketIOServer } from './src/shared/ws/socketio.server.js'
+import type { Server as HTTPServer } from 'node:http'
+
+const port = Number(process.env.PORT ?? 4000)
+
+const { serve } = await import('@hono/node-server')
+
+const httpServer = serve({
+  port,
+  fetch: app.fetch,
+})
+
+attachSocketIOServer(httpServer as unknown as HTTPServer)
+
+export default app
+`
+      : `${h}
+
+import app from './src/app.js'
+
+const port = Number(process.env.PORT ?? 4000)
+
+const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
+
+if (typeof bunRef?.serve === 'function') {
+  bunRef.serve({
+    port,
+    fetch: app.fetch,
+  })
+} else {
+  const { serve } = await import('@hono/node-server')
+  serve({
+    port,
+    fetch: app.fetch,
+  })
+}
+
+export default app
+`
 
   return {
     'vonosan.config.ts': `${h}
@@ -207,29 +282,7 @@ WEBSOCKET_DRIVER=
 </html>
 `,
 
-    'index.ts': `${h}
-
-import app from './src/app.js'
-
-const port = Number(process.env.PORT ?? 4000)
-
-const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
-
-if (typeof bunRef?.serve === 'function') {
-  bunRef.serve({
-    port,
-    fetch: app.fetch,
-  })
-} else {
-  const { serve } = await import('@hono/node-server')
-  serve({
-    port,
-    fetch: app.fetch,
-  })
-}
-
-export default app
-`,
+    'index.ts': rootServerEntry,
 
     'src/App.vue': `<!--
   ${projectName} — Root App Component
@@ -455,17 +508,60 @@ export const websocketDriver = '${websocketDriver}' as const
 
     ...(websocketDriver === 'socket.io'
       ? {
-          'src/shared/ws/socketio.server.ts': `${h}
+          'src/shared/ws/socketio.server.ts': isBunRuntimeTarget
+            ? `${h}
+
+import { Server as Engine } from '@socket.io/bun-engine'
+import { Server as SocketIOServer } from 'socket.io'
+import type { Hono } from 'hono'
+
+export function createBunSocketIOServer(app: Hono) {
+  const io = new SocketIOServer()
+  const engine = new Engine({ path: '/socket.io/' })
+
+  io.bind(engine)
+
+  io.on('connection', (socket) => {
+    socket.emit('connected', { ok: true })
+  })
+
+  const { websocket } = engine.handler()
+
+  return {
+    io,
+    websocket,
+    idleTimeout: 30,
+    fetch(req: Request, server: unknown) {
+      const url = new URL(req.url)
+
+      if (url.pathname.startsWith('/socket.io/')) {
+        return engine.handleRequest(req, server as never)
+      }
+
+      return app.fetch(req, server as never)
+    },
+  }
+}
+`
+            : `${h}
 
 import { Server as SocketIOServer } from 'socket.io'
+import type { Server as HTTPServer } from 'node:http'
 
-export function createSocketIOServer() {
-  return new SocketIOServer({
+export function attachSocketIOServer(httpServer: HTTPServer) {
+  const io = new SocketIOServer(httpServer, {
+    path: '/socket.io/',
     cors: {
       origin: process.env.CLIENT_URL ?? process.env.APP_URL ?? 'http://localhost:4000',
       credentials: true,
     },
   })
+
+  io.on('connection', (socket) => {
+    socket.emit('connected', { ok: true })
+  })
+
+  return io
 }
 `,
         }
@@ -619,6 +715,7 @@ export {}
                 'socket.io-client': 'latest',
               }
             : {}),
+          ...(needsSocketIoBunEngine ? { '@socket.io/bun-engine': 'latest' } : {}),
           ...(needsNativeWs ? { ws: 'latest' } : {}),
           zod: 'latest',
         },
