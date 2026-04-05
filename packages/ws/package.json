@@ -21,9 +21,9 @@
     "vono": ">=0.1.0"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "@types/bun": "^1.2.14",
-    "hono": "^4.8.10",
+    "@types/bun": "1.2.14",
+    "hono": "4.8.10",
+    "typescript": "5.8.3",
     "vono": "workspace:*"
   }
 }
