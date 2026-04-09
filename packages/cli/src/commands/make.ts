@@ -64,7 +64,7 @@ function requireName(args: string[], usage: string): string {
 // ─── make:module ─────────────────────────────────────────────────────────────
 
 export async function runMakeModule(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:module <name>')
+  const name = requireName(args, 'vonosan make:module <name>')
   const api = !args.includes('--no-api')
   const frontend = args.includes('--frontend') || args.includes('--full-stack')
   const saas = args.includes('--saas')
@@ -86,7 +86,7 @@ export async function runMakeModule(args: string[]): Promise<void> {
 // ─── make:version ────────────────────────────────────────────────────────────
 
 export async function runMakeVersion(args: string[]): Promise<void> {
-  const version = requireName(args, 'vono make:version <v>')
+  const version = requireName(args, 'vonosan make:version <v>')
   const versionDir = `src/api/${version}`
 
   process.stdout.write(bold(`Generating API version namespace "${version}" …\n`))
@@ -128,38 +128,38 @@ export default ${version}Router
 // ─── Individual make:* commands ───────────────────────────────────────────────
 
 export async function runMakeService(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:service <name>')
+  const name = requireName(args, 'vonosan make:service <name>')
   writeFile(`src/modules/${name}/${name}.service.ts`, generateService(name))
 }
 
 export async function runMakeController(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:controller <name>')
+  const name = requireName(args, 'vonosan make:controller <name>')
   writeFile(`src/modules/${name}/${name}.controller.ts`, generateController(name))
 }
 
 export async function runMakeDto(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:dto <name>')
+  const name = requireName(args, 'vonosan make:dto <name>')
   writeFile(`src/modules/${name}/${name}.dto.ts`, generateDto(name))
 }
 
 export async function runMakeRoutes(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:routes <name>')
+  const name = requireName(args, 'vonosan make:routes <name>')
   writeFile(`src/modules/${name}/${name}.routes.ts`, generateRoutes(name))
 }
 
 export async function runMakeSchema(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:schema <name>')
+  const name = requireName(args, 'vonosan make:schema <name>')
   const saas = args.includes('--saas')
   writeFile(`src/modules/${name}/${name}.schema.ts`, generateSchema(name, saas))
 }
 
 export async function runMakeMiddleware(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:middleware <name>')
+  const name = requireName(args, 'vonosan make:middleware <name>')
   writeFile(`src/modules/${name}/${name}.middleware.ts`, generateMiddleware(name))
 }
 
 export async function runMakePage(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:page <module/PageName>')
+  const name = requireName(args, 'vonosan make:page <module/PageName>')
   // Support "module/PageName" or just "name"
   const parts = name.split('/')
   const moduleName = parts.length > 1 ? parts[0] : name
@@ -168,7 +168,7 @@ export async function runMakePage(args: string[]): Promise<void> {
 }
 
 export async function runMakeComponent(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:component <module/ComponentName>')
+  const name = requireName(args, 'vonosan make:component <module/ComponentName>')
   const parts = name.split('/')
   const moduleName = parts.length > 1 ? parts[0] : name
   const componentName = parts.length > 1 ? parts[1] : toPascalCase(name)
@@ -179,7 +179,7 @@ export async function runMakeComponent(args: string[]): Promise<void> {
 }
 
 export async function runMakeComposable(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:composable <module/useComposable>')
+  const name = requireName(args, 'vonosan make:composable <module/useComposable>')
   const parts = name.split('/')
   const moduleName = parts.length > 1 ? parts[0] : name
   const composableName = parts.length > 1 ? parts[1] : `use${toPascalCase(name)}`
@@ -190,28 +190,28 @@ export async function runMakeComposable(args: string[]): Promise<void> {
 }
 
 export async function runMakeStore(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:store <name>')
+  const name = requireName(args, 'vonosan make:store <name>')
   writeFile(`src/modules/${name}/stores/${name}.store.ts`, generateStore(name))
 }
 
 export async function runMakeMigration(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:migration <name>')
+  const name = requireName(args, 'vonosan make:migration <name>')
   const timestamp = Date.now()
   writeFile(`src/db/migrations/${timestamp}_${name}.sql`, generateMigration(name))
 }
 
 export async function runMakeSeed(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:seed <name>')
+  const name = requireName(args, 'vonosan make:seed <name>')
   writeFile(`src/db/seeds/${name}.ts`, generateSeed(name))
 }
 
 export async function runMakeTest(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:test <name>')
+  const name = requireName(args, 'vonosan make:test <name>')
   writeFile(`src/modules/${name}/tests/${name}.unit.test.ts`, generateTest(name))
 }
 
 export async function runMakeNotification(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:notification <name>')
+  const name = requireName(args, 'vonosan make:notification <name>')
   writeFile(
     `src/modules/${name}/notifications/${name}.notification.ts`,
     generateNotification(name),
@@ -219,26 +219,26 @@ export async function runMakeNotification(args: string[]): Promise<void> {
 }
 
 export async function runMakeResource(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:resource <name>')
+  const name = requireName(args, 'vonosan make:resource <name>')
   writeFile(`src/modules/${name}/${name}.resource.ts`, generateResource(name))
 }
 
 export async function runMakePolicy(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:policy <name>')
+  const name = requireName(args, 'vonosan make:policy <name>')
   writeFile(`src/modules/${name}/${name}.policy.ts`, generatePolicy(name))
 }
 
 export async function runMakeJob(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:job <name>')
+  const name = requireName(args, 'vonosan make:job <name>')
   writeFile(`src/jobs/${name}.job.ts`, generateJob(name))
 }
 
 export async function runMakeEmail(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:email <name>')
+  const name = requireName(args, 'vonosan make:email <name>')
   writeFile(`src/emails/${name}.email.ts`, generateEmail(name))
 }
 
 export async function runMakeHelper(args: string[]): Promise<void> {
-  const name = requireName(args, 'vono make:helper <name>')
+  const name = requireName(args, 'vonosan make:helper <name>')
   writeFile(`src/shared/utils/${name}.ts`, generateHelper(name))
 }

@@ -50,7 +50,7 @@ export function createDb(
 ): DbClient {
   if (!connectionString) {
     throw new Error(
-      '[vono/drizzle] createDb: connectionString is required. ' +
+      '[vonosan/drizzle] createDb: connectionString is required. ' +
       'Set DATABASE_URL in your .env file.',
     )
   }

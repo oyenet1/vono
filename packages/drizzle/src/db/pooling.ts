@@ -128,7 +128,7 @@ async function importNeon(): Promise<{ neon: (connectionString: string) => unkno
     return await import('@neondatabase/serverless') as { neon: (connectionString: string) => unknown }
   } catch {
     throw new Error(
-      '[vono/drizzle] HTTP serverless pooling requires @neondatabase/serverless. ' +
+      '[vonosan/drizzle] HTTP serverless pooling requires @neondatabase/serverless. ' +
       'Install it: bun add @neondatabase/serverless',
     )
   }

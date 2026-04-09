@@ -35,7 +35,7 @@ const LOGGER_IMPORT_RE = /import\s*\{[^}]*Logger[^}]*\}\s*from\s*['"]vonosan\/se
  * Returns `null` when no changes were needed.
  */
 function fixLogs(content: string): string | null {
-  if (content.includes('// @vono-ignore-logs')) return null
+  if (content.includes('// @vonosan-ignore-logs')) return null
 
   const consoleRe = /\bconsole\.(log|warn|error|debug|info)\s*\(/g
   let changed = false
@@ -63,7 +63,7 @@ function fixLogs(content: string): string | null {
 }
 
 /**
- * `vono fix:logs` — replaces raw `console.*` calls with `Logger.*` equivalents
+ * `vonosan fix:logs` — replaces raw `console.*` calls with `Logger.*` equivalents
  * across all .ts files under src/.
  */
 export async function runFixLogs(args: string[]): Promise<void> {

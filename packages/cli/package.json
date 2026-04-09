@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Vono Artisan-style scaffolding CLI",
   "bin": {
-    "vono": "./dist/index.js"
+    "vonosan": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "publishConfig": {
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
+    "@types/node": "25.5.2",
     "fast-check": "4.6.0",
     "typescript": "5.8.3",
     "vonosan": "workspace:*"

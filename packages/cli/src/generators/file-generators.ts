@@ -321,7 +321,11 @@ export function generateComposable(name: string): string {
   return `${header}
 
 import { ref } from 'vue'
+<<<<<<< HEAD
 import { useVonoFetch } from 'vonosan/client'
+=======
+import { useVonosanFetch } from 'vonosan/client'
+>>>>>>> v0.1.0
 
 export function use${pascal}() {
   const items = ref<unknown[]>([])
@@ -332,7 +336,7 @@ export function use${pascal}() {
     loading.value = true
     error.value = null
     try {
-      const { data } = await useVonoFetch('/api/v1/${name}')
+      const { data } = await useVonosanFetch('/api/v1/${name}')
       items.value = (data as any)?.data ?? []
     } catch (e) {
       error.value = String(e)
@@ -342,7 +346,7 @@ export function use${pascal}() {
   }
 
   async function create(payload: unknown) {
-    const { data } = await useVonoFetch('/api/v1/${name}', {
+    const { data } = await useVonosanFetch('/api/v1/${name}', {
       method: 'POST',
       body: JSON.stringify(payload),
     })
@@ -404,7 +408,7 @@ import { Logger } from 'vonosan/server'
 
 /**
  * Seed: ${name}
- * Run with: vono db:seed ${name}
+ * Run with: vonosan db:seed ${name}
  */
 export async function seed() {
   Logger.info('Running seed: ${name}')

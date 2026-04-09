@@ -42,7 +42,7 @@ function printReport(results: LintResult[]): void {
 }
 
 /**
- * `vono audit [--fix]`
+ * `vonosan audit [--fix]`
  *
  * Scans all files under src/ and reports violations.
  * With `--fix`, auto-resolves header and console-log violations.
@@ -52,7 +52,7 @@ export async function runAudit(args: string[]): Promise<void> {
   const fix = args.includes('--fix')
   const srcDir = join(process.cwd(), 'src')
 
-  process.stdout.write(`${bold('Vono Audit')} — scanning ${srcDir} …\n`)
+  process.stdout.write(`${bold('Vonosan Audit')} — scanning ${srcDir} …\n`)
 
   if (fix) {
     process.stdout.write('\nAuto-fixing headers …\n')
@@ -77,7 +77,7 @@ export async function runAudit(args: string[]): Promise<void> {
 
   if (!fix && autoFixable.length > 0) {
     process.stdout.write(
-      `\n${yellow(`  ${autoFixable.length} can be auto-fixed — run \`vono audit --fix\` to resolve them.`)}`,
+      `\n${yellow(`  ${autoFixable.length} can be auto-fixed — run \`vonosan audit --fix\` to resolve them.`)}`,
     )
   }
 

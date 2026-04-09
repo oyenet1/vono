@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
+    "@types/node": "25.5.2",
     "hono": "4.8.10",
     "typescript": "5.8.3",
     "vonosan": "workspace:*"

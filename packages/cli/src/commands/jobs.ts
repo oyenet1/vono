@@ -19,7 +19,7 @@ const bold = (s: string) => `\x1b[1m${s}\x1b[0m`
 // ─── jobs:run ─────────────────────────────────────────────────────────────────
 
 /**
- * `vono jobs:run <name>` — executes a named cron job immediately.
+ * `vonosan jobs:run <name>` — executes a named cron job immediately.
  *
  * Discovers job files from `src/jobs/*.job.ts` and `src/modules/**\/*.job.ts`,
  * then calls `runJobNow(name, jobs, db, config)`.
@@ -28,7 +28,7 @@ export async function runJobsRun(args: string[]): Promise<void> {
   const [name] = args
 
   if (!name) {
-    process.stderr.write(red('Usage: vono jobs:run <name>\n'))
+    process.stderr.write(red('Usage: vonosan jobs:run <name>\n'))
     process.exit(1)
   }
 

@@ -16,7 +16,7 @@ const green = (s: string) => `\x1b[32m${s}\x1b[0m`
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`
 const dim = (s: string) => `\x1b[2m${s}\x1b[0m`
 
-const BRANCH_STATE_PATH = join(process.cwd(), '.vono', 'branch-state.json')
+const BRANCH_STATE_PATH = join(process.cwd(), '.vonosan', 'branch-state.json')
 
 interface BranchState {
   parent: string
@@ -47,7 +47,7 @@ function currentBranch(): string {
 }
 
 /**
- * `vono branch:finish`
+ * `vonosan branch:finish`
  *
  * 1. Checks for uncommitted changes — halts if any.
  * 2. Merges the current feature branch into the recorded parent.
@@ -59,7 +59,7 @@ export async function runBranchFinish(_args: string[]): Promise<void> {
 
   if (!state) {
     process.stderr.write(
-      red('No branch state found. Did you run `vono branch:new <feature-name>` first?\n'),
+      red('No branch state found. Did you run `vonosan branch:new <feature-name>` first?\n'),
     )
     process.exit(1)
   }
@@ -80,7 +80,7 @@ export async function runBranchFinish(_args: string[]): Promise<void> {
   if (hasUncommittedChanges()) {
     process.stderr.write(
       red(
-        '✖ You have uncommitted changes. Please commit or stash them before running `vono branch:finish`.\n',
+        '✖ You have uncommitted changes. Please commit or stash them before running `vonosan branch:finish`.\n',
       ),
     )
     process.exit(1)

@@ -21,7 +21,7 @@ const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`
 const bold = (s: string) => `\x1b[1m${s}\x1b[0m`
 
 /**
- * Detect the configured test runner from package.json or vono.config.ts.
+ * Detect the configured test runner from package.json or vonosan.config.ts.
  * Defaults to 'bun'.
  */
 function detectTestRunner(): 'bun' | 'vitest' | 'jest' {
@@ -60,7 +60,7 @@ function buildTestCommand(runner: 'bun' | 'vitest' | 'jest'): { cmd: string; arg
 // ─── runTest ─────────────────────────────────────────────────────────
 
 /**
- * vono test — executes the configured test runner and reports results.
+ * vonosan test — executes the configured test runner and reports results.
  */
 export async function runTest(_args: string[]): Promise<void> {
   const runner = detectTestRunner()
@@ -84,7 +84,7 @@ export async function runTest(_args: string[]): Promise<void> {
 // ─── runTestClean ─────────────────────────────────────────────────────
 
 /**
- * vono test:clean — runs tests first, then deletes **\/*.test.ts
+ * vonosan test:clean — runs tests first, then deletes **\/*.test.ts
  * only if ALL tests pass. Reports error without deleting if any fail.
  */
 export async function runTestClean(_args: string[]): Promise<void> {

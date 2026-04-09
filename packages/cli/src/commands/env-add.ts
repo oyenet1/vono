@@ -36,7 +36,7 @@ function appendKey(filePath: string, key: string, comment?: string): boolean {
 }
 
 /**
- * `vono env:add <KEY> [description]`
+ * `vonosan env:add <KEY> [description]`
  *
  * Appends KEY= to .env and KEY= # description to .env.example.
  * Skips silently if the key already exists in either file.
@@ -46,7 +46,7 @@ export async function runEnvAdd(args: string[]): Promise<void> {
   const description = descParts.join(' ')
 
   if (!key) {
-    process.stderr.write(red('Usage: vono env:add <KEY> [description]\n'))
+    process.stderr.write(red('Usage: vonosan env:add <KEY> [description]\n'))
     process.exit(1)
   }
 

@@ -1,8 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/vono" },
-    { "path": "./packages/create-vono" },
+    { "path": "./packages/vonosan" },
+    { "path": "./packages/create-vonosan" },
     { "path": "./packages/cli" },
     { "path": "./packages/drizzle" },
     { "path": "./packages/auth" },
