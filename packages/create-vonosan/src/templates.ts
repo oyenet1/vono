@@ -37,6 +37,7 @@ export function generateTemplates(answers: WizardAnswers): Record<string, string
     websocket,
     websocketDriver,
   } = answers
+  const isApiOnly = answers.projectType === 'api'
   const isDockerTarget = deploymentTarget === 'bun-docker' || deploymentTarget === 'nodejs-docker'
   const dockerRuntime = deploymentTarget === 'nodejs-docker' ? 'nodejs' : 'bun'
   const runtimeTarget =
@@ -443,7 +444,9 @@ WEBSOCKET_DRIVER=
 - \`bun run make:module -- users\` — scaffold a module
 `,
 
-    'index.html': `<!DOCTYPE html>
+    ...(!isApiOnly
+      ? {
+          'index.html': `<!DOCTYPE html>
 <html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
@@ -457,9 +460,7 @@ WEBSOCKET_DRIVER=
 </html>
 `,
 
-    'index.ts': rootServerEntry,
-
-    'src/App.vue': `<!--
+          'src/App.vue': `<!--
   ${projectName} — Root App Component
 -->
 <template>
@@ -469,7 +470,7 @@ WEBSOCKET_DRIVER=
 </template>
 `,
 
-    'src/main.ts': `${h}
+          'src/main.ts': `${h}
 
 import { createSSRApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -490,6 +491,10 @@ export function createApp() {
   return { app, pinia, head, router }
 }
 `,
+        }
+      : {}),
+
+    'index.ts': rootServerEntry,
 
     'src/app.ts': `${h}
 
@@ -522,7 +527,9 @@ export default {
 }
 `,
 
-    'src/router.ts': `${h}
+    ...(!isApiOnly
+      ? {
+        'src/router.ts': `${h}
 
 import { createRouter as _createRouter, createWebHistory, createMemoryHistory } from 'vue-router'
 
@@ -541,7 +548,7 @@ export function createRouter() {
 }
 `,
 
-    'src/modules/home/index.page.vue': `<template>
+          'src/modules/home/index.page.vue': `<template>
   <main>
     <h1>${projectName}</h1>
     <p>Welcome to your Vonosan app.</p>
@@ -549,7 +556,7 @@ export function createRouter() {
 </template>
 `,
 
-    'src/route-rules.ts': `${h}
+          'src/route-rules.ts': `${h}
 
 import type { RouteRules } from 'vonosan/server/route-rules'
 
@@ -563,6 +570,8 @@ export const routeRules: RouteRules = {
   '/admin/**': { mode: 'spa' },
 }
 `,
+        }
+      : {}),
 
     'src/env.d.ts': `/// <reference types="vite/client" />
 
@@ -972,11 +981,15 @@ export {}
           vonosan: 'latest',
           hono: 'latest',
           '@hono/node-server': 'latest',
-          vue: 'latest',
-          'vue-router': 'latest',
-          pinia: 'latest',
-          '@unhead/vue': 'latest',
-          '@nuxt/ui': 'latest',
+          ...(!isApiOnly
+            ? {
+                vue: 'latest',
+                'vue-router': 'latest',
+                pinia: 'latest',
+                '@unhead/vue': 'latest',
+                '@nuxt/ui': 'latest',
+              }
+            : {}),
           'drizzle-orm': 'latest',
           ...(usesPostgresJs ? { postgres: 'latest' } : {}),
           ...(usesCockroach ? { pg: 'latest' } : {}),
@@ -990,7 +1003,7 @@ export {}
           ...(needsSocketIo
             ? {
                 'socket.io': 'latest',
-                'socket.io-client': 'latest',
+                ...(!isApiOnly ? { 'socket.io-client': 'latest' } : {}),
               }
             : {}),
           ...(needsSocketIoBunEngine ? { '@socket.io/bun-engine': 'latest' } : {}),
