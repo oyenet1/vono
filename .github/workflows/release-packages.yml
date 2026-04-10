@@ -70,6 +70,29 @@ jobs:
       - name: Build all packages
         run: bun run build
 
+      - name: Resolve workspace references
+        run: |
+          set -euo pipefail
+          for pkg in packages/*/package.json; do
+            node -e "
+              const fs = require('fs');
+              const p = JSON.parse(fs.readFileSync('$pkg', 'utf8'));
+              let changed = false;
+              for (const depType of ['dependencies', 'devDependencies', 'peerDependencies']) {
+                if (!p[depType]) continue;
+                for (const [name, ver] of Object.entries(p[depType])) {
+                  if (ver.startsWith('workspace:')) {
+                    const resolved = ver === 'workspace:*' ? p.version : ver.replace('workspace:', '');
+                    p[depType][name] = resolved;
+                    changed = true;
+                    console.log(name + ': ' + ver + ' -> ' + resolved + ' in ' + depType);
+                  }
+                }
+              }
+              if (changed) fs.writeFileSync('$pkg', JSON.stringify(p, null, 2) + '\\n');
+            "
+          done
+
       - name: Pack workspace packages
         run: |
           set -euo pipefail
@@ -161,6 +184,29 @@ jobs:
 
       - name: Build all packages
         run: bun run build
+
+      - name: Resolve workspace references
+        run: |
+          set -euo pipefail
+          for pkg in packages/*/package.json; do
+            node -e "
+              const fs = require('fs');
+              const p = JSON.parse(fs.readFileSync('$pkg', 'utf8'));
+              let changed = false;
+              for (const depType of ['dependencies', 'devDependencies', 'peerDependencies']) {
+                if (!p[depType]) continue;
+                for (const [name, ver] of Object.entries(p[depType])) {
+                  if (ver.startsWith('workspace:')) {
+                    const resolved = ver === 'workspace:*' ? p.version : ver.replace('workspace:', '');
+                    p[depType][name] = resolved;
+                    changed = true;
+                    console.log(name + ': ' + ver + ' -> ' + resolved + ' in ' + depType);
+                  }
+                }
+              }
+              if (changed) fs.writeFileSync('$pkg', JSON.stringify(p, null, 2) + '\\n');
+            "
+          done
 
       - name: Publish workspace packages to npm
         env:
