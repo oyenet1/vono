@@ -9,6 +9,7 @@ coverage/
 .turbo/
 packages/*/dist/
 packages/*/node_modules/
+*.tsbuildinfo
 
 # Release/package artifacts
 release-packages/

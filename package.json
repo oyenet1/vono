@@ -7,11 +7,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun run --filter='*' build",
+    "build": "tsc --build",
     "dev": "bun run --filter='*' dev",
     "test": "bun test",
     "lint": "bun run --filter='*' lint",
-    "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules"
+    "clean": "rm -rf packages/*/dist packages/*/*.tsbuildinfo packages/*/node_modules node_modules"
   },
   "devDependencies": {
     "@types/bun": "1.2.14",
