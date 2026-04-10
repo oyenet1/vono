@@ -63,16 +63,20 @@ function createDevServerPlugin(): Plugin {
     apply: 'serve',
     async config() {
       const { default: devServer } = await import('@hono/vite-dev-server')
-      return devServer({
-        entry: './index.ts',
-        exclude: [
-          /.*\.vue($|\?)/,
-          /^\/(public|assets|static)\/.+/,
-          /.*\.(s?css|less)($|\?)/,
-          /.*\.(svg|png|jpg|jpeg|gif|ico|woff2?)($|\?)/,
-          /^\/src\/.+/,
+      return {
+        plugins: [
+          devServer({
+            entry: './index.ts',
+            exclude: [
+              /.*\.vue($|\?)/,
+              /^\/(public|assets|static)\/.+/,
+              /.*\.(s?css|less)($|\?)/,
+              /.*\.(svg|png|jpg|jpeg|gif|ico|woff2?)($|\?)/,
+              /^\/src\/.+/,
+            ],
+          }) as unknown as Plugin,
         ],
-      }) as unknown as UserConfig
+      } satisfies UserConfig
     },
   }
 }
@@ -84,12 +88,16 @@ function createVueRouterPlugin(): Plugin {
     name: 'vonosan:vue-router',
     async config() {
       const { default: VueRouter } = await import('vue-router/vite')
-      return VueRouter({
-        routesFolder: [{ src: 'src/modules' }],
-        extensions: ['.page.vue'],
-        filePatterns: ['**/*.page'],
-        dts: 'src/route-map.d.ts',
-      }) as unknown as UserConfig
+      return {
+        plugins: [
+          VueRouter({
+            routesFolder: [{ src: 'src/modules' }],
+            extensions: ['.page.vue'],
+            filePatterns: ['**/*.page'],
+            dts: 'src/route-map.d.ts',
+          }) as unknown as Plugin,
+        ],
+      } satisfies UserConfig
     },
   }
 }
@@ -101,7 +109,9 @@ function createVuePlugin(): Plugin {
     name: 'vonosan:vue',
     async config() {
       const { default: vue } = await import('@vitejs/plugin-vue')
-      return vue() as unknown as UserConfig
+      return {
+        plugins: [vue() as unknown as Plugin],
+      } satisfies UserConfig
     },
   }
 }
@@ -113,27 +123,33 @@ function createAutoImportPlugin(): Plugin {
     name: 'vonosan:auto-import',
     async config() {
       const { default: AutoImport } = await import('unplugin-auto-import/vite')
-      return AutoImport({
-        dts: 'src/auto-imports.d.ts',
-        imports: [
-          'vue',
-          'vue-router',
-          'pinia',
-          {
-            'hono': ['Hono', 'HTTPException'],
-            'drizzle-orm': ['eq', 'and', 'or', 'desc', 'asc', 'isNull', 'isNotNull', 'sql', 'count', 'like', 'inArray'],
-            'zod': [['z', 'z']],
-            'vonosan/server': ['success', 'error', 'buildPaginationMeta', 'generateId', 'prefixedId', 'toCamel', 'withSoftDeletes', 'onlyTrashed', 'withTrashed', 'Logger'],
-            'vonosan/client': ['useAsyncData', 'useVonosanFetch', 'useCookie', 'useState', 'navigateTo', 'useSeo', 'useRouteRules', 'useFormErrors'],
-          },
+      return {
+        plugins: [
+          AutoImport({
+            dts: 'src/auto-imports.d.ts',
+            imports: [
+              'vue',
+              'vue-router',
+              'pinia',
+              {
+                'hono': ['Hono', 'HTTPException'],
+                'drizzle-orm': ['eq', 'and', 'or', 'desc', 'asc', 'isNull', 'isNotNull', 'sql', 'count', 'like', 'inArray'],
+                'zod': [['z', 'z']],
+                'vonosan/server': ['success', 'error', 'buildPaginationMeta', 'generateId', 'prefixedId', 'toCamel', 'withSoftDeletes', 'onlyTrashed', 'withTrashed', 'Logger'],
+                'vonosan/client': ['useAsyncData', 'useVonosanFetch', 'useCookie', 'useState', 'navigateTo', 'useSeo', 'useRouteRules', 'useFormErrors'],
+              },
+            ],
+            dirs: [
+              'src/composables/**',
+              'src/shared/utils/**',
+              'src/shared/middleware/**',
+              'src/shared/composables/**',
+              'src/modules/**/composables/**',
+              'src/lib/**',
+            ],
+          }) as unknown as Plugin,
         ],
-        dirs: [
-          'src/shared/utils/**',
-          'src/shared/middleware/**',
-          'src/shared/composables/**',
-          'src/lib/**',
-        ],
-      }) as unknown as UserConfig
+      } satisfies UserConfig
     },
   }
 }
@@ -145,12 +161,16 @@ function createVueComponentsPlugin(): Plugin {
     name: 'vonosan:vue-components',
     async config() {
       const { default: Components } = await import('unplugin-vue-components/vite')
-      return Components({
-        dts: 'src/components.d.ts',
-        dirs: ['src/shared/components', 'src/modules'],
-        extensions: ['vue'],
-        deep: true,
-      }) as unknown as UserConfig
+      return {
+        plugins: [
+          Components({
+            dts: 'src/components.d.ts',
+            dirs: ['src/components', 'src/shared/components', 'src/modules'],
+            extensions: ['vue'],
+            deep: true,
+          }) as unknown as Plugin,
+        ],
+      } satisfies UserConfig
     },
   }
 }
@@ -163,7 +183,9 @@ function createNuxtUIPlugin(colors?: { primary: string; neutral: string }): Plug
     async config() {
       try {
         const { default: ui } = await import('@nuxt/ui/vite')
-        return ui({ colors }) as unknown as UserConfig
+        return {
+          plugins: [ui({ colors }) as unknown as Plugin],
+        } satisfies UserConfig
       } catch {
         // @nuxt/ui not installed — skip
         return {}

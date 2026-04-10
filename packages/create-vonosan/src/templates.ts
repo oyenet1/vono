@@ -474,7 +474,6 @@ WEBSOCKET_DRIVER=
 import { createSSRApp } from 'vue'
 import { createPinia } from 'pinia'
 import { createHead } from '@unhead/vue'
-import { ui } from '@nuxt/ui/vue-plugin'
 import App from './App.vue'
 import { createRouter } from './router.js'
 
@@ -486,7 +485,6 @@ export function createApp() {
 
   app.use(pinia)
   app.use(head)
-  app.use(ui)
   app.use(router)
 
   return { app, pinia, head, router }
@@ -983,11 +981,7 @@ export {}
           zod: 'latest',
         },
         devDependencies: {
-          '@hono/vite-dev-server': 'latest',
-          '@vitejs/plugin-vue': 'latest',
           typescript: 'latest',
-          'unplugin-auto-import': 'latest',
-          'unplugin-vue-components': 'latest',
           vite: 'latest',
           'drizzle-kit': 'latest',
           ...(usesCockroach ? { '@types/pg': 'latest' } : {}),

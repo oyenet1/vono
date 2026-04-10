@@ -52,6 +52,10 @@ export type { ResourceCollection } from './resources/base-resource.js'
 export { resolveStorageUrl } from './utils/storage-url.js'
 export type { StorageUrlConfig } from './utils/storage-url.js'
 
+// OpenAPI
+export { generateOpenApiSpec, appendModuleTag } from './openapi/index.js'
+export type { OpenApiSpec } from './openapi/index.js'
+
 // Authorization — Gates & Policies
 export {
   registerGate,
