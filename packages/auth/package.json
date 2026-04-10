@@ -22,15 +22,20 @@
   "peerDependencies": {
     "drizzle-orm": ">=0.44.0",
     "hono": ">=4.8.0",
+    "vue": ">=3.5.0",
+    "vue-router": ">=5.0.0",
     "vonosan": ">=0.1.0",
     "zod": ">=4.0.0"
   },
   "devDependencies": {
+    "@hono/zod-validator": "0.7.5",
     "@types/bun": "1.2.14",
     "@types/node": "25.5.2",
     "drizzle-orm": "0.44.5",
     "hono": "4.8.10",
     "typescript": "5.8.3",
+    "vue": "3.5.13",
+    "vue-router": "5.0.0",
     "vonosan": "workspace:*",
     "zod": "4.1.8"
   }

@@ -19,6 +19,10 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch"
   },
+  "dependencies": {
+    "@neondatabase/serverless": "1.0.1",
+    "postgres": "3.4.7"
+  },
   "peerDependencies": {
     "drizzle-orm": ">=0.44.0",
     "vonosan": ">=0.1.0"

@@ -14,13 +14,15 @@ import type { AppVariables } from 'vonosan/types'
 import { success, error } from 'vonosan/server'
 import { PasskeyService } from '../service/passkey.service.js'
 import { authMiddleware } from '../middleware/auth.middleware.js'
+import type { Context } from 'hono'
 
 const passkeyRoutes = new Hono<{ Variables: AppVariables }>()
+type AppContext = Context<{ Variables: AppVariables }>
 
 // ─── Helper to build PasskeyService from context ─────────────────────────────
 
-function getService(c: Parameters<typeof passkeyRoutes.get>[1] extends (c: infer C) => unknown ? C : never) {
-  const db = c.var.db as Parameters<typeof PasskeyService>[0]
+function getService(c: AppContext) {
+  const db = c.var.db as ConstructorParameters<typeof PasskeyService>[0]
   const config = c.var.config
 
   const origin = config.CLIENT_URL || 'http://localhost:5173'
@@ -43,7 +45,7 @@ function getService(c: Parameters<typeof passkeyRoutes.get>[1] extends (c: infer
  */
 passkeyRoutes.post('/register/begin', authMiddleware, async (c) => {
   const account = c.var.account
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
 
   const options = await service.beginRegistration(
     account.id,
@@ -67,7 +69,7 @@ passkeyRoutes.post('/register/finish', authMiddleware, async (c) => {
     return c.json(error('Missing registration response'), 422)
   }
 
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
 
   const result = await service.finishRegistration(
     account.id,
@@ -88,7 +90,7 @@ passkeyRoutes.post('/register/finish', authMiddleware, async (c) => {
  */
 passkeyRoutes.post('/auth/begin', async (c) => {
   const body = await c.req.json().catch(() => ({})) as { accountId?: string }
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
 
   const options = await service.beginAuthentication(body.accountId)
 
@@ -108,7 +110,7 @@ passkeyRoutes.post('/auth/finish', async (c) => {
     return c.json(error('Missing authentication response'), 422)
   }
 
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
 
   const result = await service.finishAuthentication(
     body.response as Parameters<typeof service.finishAuthentication>[0],
@@ -130,7 +132,7 @@ passkeyRoutes.post('/auth/finish', async (c) => {
  */
 passkeyRoutes.get('/credentials', authMiddleware, async (c) => {
   const account = c.var.account
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
 
   const credentials = await service.listCredentials(account.id)
 
@@ -144,17 +146,17 @@ passkeyRoutes.get('/credentials', authMiddleware, async (c) => {
  */
 passkeyRoutes.patch('/credentials/:credentialId', authMiddleware, async (c) => {
   const account = c.var.account
-  const { credentialId } = c.req.param()
+  const credentialId = c.req.param('credentialId')
   const body = await c.req.json() as { name?: string }
 
   if (!body.name) {
     return c.json(error('Name is required'), 422)
   }
 
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const service = getService(c)
   await service.renameCredential(credentialId, account.id, body.name)
 
-  return c.json(success('Passkey renamed'))
+  return c.json(success('Passkey renamed', null))
 })
 
 /**
@@ -163,12 +165,12 @@ passkeyRoutes.patch('/credentials/:credentialId', authMiddleware, async (c) => {
  */
 passkeyRoutes.delete('/credentials/:credentialId', authMiddleware, async (c) => {
   const account = c.var.account
-  const { credentialId } = c.req.param()
-  const service = getService(c as unknown as Parameters<typeof getService>[0])
+  const credentialId = c.req.param('credentialId')
+  const service = getService(c)
 
   await service.deleteCredential(credentialId, account.id)
 
-  return c.json(success('Passkey deleted'))
+  return c.json(success('Passkey deleted', null))
 })
 
 export default passkeyRoutes

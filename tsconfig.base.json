@@ -3,6 +3,14 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "vonosan": ["packages/vonosan/src/index.ts"],
+      "vonosan/server": ["packages/vonosan/src/server/index.ts"],
+      "vonosan/client": ["packages/vonosan/src/client/index.ts"],
+      "vonosan/types": ["packages/vonosan/src/types/index.ts"],
+      "vonosan/vite": ["packages/vonosan/src/vite/index.ts"]
+    },
     "strict": true,
     "jsx": "preserve",
     "esModuleInterop": true,

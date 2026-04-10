@@ -16,6 +16,8 @@ import { ApiResponse } from 'vonosan/server'
 import { AuthService } from '../service/auth.service.js'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 
+type AuthDb = PostgresJsDatabase<typeof import('../schema.js')>
+
 // ─── Schemas ─────────────────────────────────────────────────────────────────
 
 const RegisterSchema = z.object({
@@ -49,7 +51,7 @@ const authRouter = new Hono<{ Variables: AppVariables }>()
 
 authRouter.post('/register', zValidator('json', RegisterSchema), async (c) => {
   const { email, password, username } = c.req.valid('json')
-  const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
+  const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
   const account = await service.register(email, password, username)
   return c.json(ApiResponse.success(account, 'Account created successfully'), 201)
 })
@@ -58,30 +60,32 @@ authRouter.post('/login', zValidator('json', LoginSchema), async (c) => {
   const { email, password } = c.req.valid('json')
   const ip = c.req.header('CF-Connecting-IP') ?? c.req.header('X-Forwarded-For')
   const userAgent = c.req.header('User-Agent')
-  const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
+  const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
   const tokens = await service.login(email, password, ip, userAgent)
   return c.json(ApiResponse.success(tokens, 'Login successful'))
 })
 
 authRouter.post('/refresh', zValidator('json', RefreshSchema), async (c) => {
   const { refreshToken } = c.req.valid('json')
-  const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
+  const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
   const tokens = await service.refresh(refreshToken)
   return c.json(ApiResponse.success(tokens, 'Token refreshed'))
 })
 
 authRouter.post('/logout', async (c) => {
-  const body = await c.req.json<{ sessionId?: string }>().catch(() => ({}))
-  if (body.sessionId) {
-    const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
-    await service.logout(body.sessionId)
+  const body = await c.req.json<{ sessionId?: string }>().catch(() => null)
+  const sessionId = body?.sessionId
+
+  if (sessionId) {
+    const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
+    await service.logout(sessionId)
   }
   return c.json(ApiResponse.success(null, 'Logged out successfully'))
 })
 
 authRouter.post('/forgot-password', zValidator('json', ForgotPasswordSchema), async (c) => {
   const { email } = c.req.valid('json')
-  const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
+  const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
   // OTP is returned — caller is responsible for sending it via email
   await service.forgotPassword(email)
   return c.json(ApiResponse.success(null, 'If that email exists, a reset code has been sent'))
@@ -89,7 +93,7 @@ authRouter.post('/forgot-password', zValidator('json', ForgotPasswordSchema), as
 
 authRouter.post('/reset-password', zValidator('json', ResetPasswordSchema), async (c) => {
   const { email, otp, password } = c.req.valid('json')
-  const service = new AuthService(c.var.db as PostgresJsDatabase, c.var.config.JWT_SECRET)
+  const service = new AuthService(c.var.db as AuthDb, c.var.config.JWT_SECRET)
   await service.resetPassword(email, otp, password)
   return c.json(ApiResponse.success(null, 'Password reset successfully'))
 })

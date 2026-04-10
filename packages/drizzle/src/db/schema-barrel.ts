@@ -10,6 +10,7 @@
 
 import { readdir, writeFile, access } from 'node:fs/promises'
 import { join, relative, resolve } from 'node:path'
+import type { Dirent } from 'node:fs'
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -114,9 +115,9 @@ export async function generateSchemaBarrel(options: SchemaBarrelOptions = {}): P
 async function findSchemaFiles(dir: string): Promise<string[]> {
   const results: string[] = []
 
-  let entries: Awaited<ReturnType<typeof readdir>>
+  let entries: Dirent<string>[]
   try {
-    entries = await readdir(dir, { withFileTypes: true })
+    entries = await readdir(dir, { withFileTypes: true, encoding: 'utf8' }) as Dirent<string>[]
   } catch {
     // Directory doesn't exist yet — return empty
     return results

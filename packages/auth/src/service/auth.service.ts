@@ -41,7 +41,7 @@ export interface RegisterInput {
  */
 export class AuthService {
   constructor(
-    private readonly db: PostgresJsDatabase,
+    private readonly db: PostgresJsDatabase<typeof import('../schema.js')>,
     private readonly jwtSecret: string,
   ) {}
 
@@ -128,6 +128,10 @@ export class AuthService {
     const payload = await verifyToken(refreshToken, this.jwtSecret)
     if (!payload) {
       throw new HTTPException(401, { message: 'Invalid or expired refresh token' })
+    }
+
+    if (!payload.sub) {
+      throw new HTTPException(401, { message: 'Invalid refresh token subject' })
     }
 
     // Verify session exists

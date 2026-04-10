@@ -11,6 +11,7 @@
 import { drizzle as drizzlePg } from 'drizzle-orm/postgres-js'
 import { drizzle as drizzleHttp } from 'drizzle-orm/neon-http'
 import postgres from 'postgres'
+import { neon } from '@neondatabase/serverless'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http'
 
@@ -107,9 +108,6 @@ export function createHyperdrivePool(hyperdriveConnectionString: string): Pooled
  * ```
  */
 export function createHttpServerlessPool(connectionString: string): PooledDbResult {
-  // neon() from @neondatabase/serverless accepts a connection string
-  // and returns a query function compatible with drizzle-orm/neon-http
-  const { neon } = await importNeon()
   const sql = neon(connectionString)
   const db = drizzleHttp(sql)
 
@@ -117,20 +115,6 @@ export function createHttpServerlessPool(connectionString: string): PooledDbResu
     db,
     // HTTP is stateless — no connection to close
     end: async () => {},
-  }
-}
-
-/**
- * Lazy-import @neondatabase/serverless to avoid bundling it in non-serverless targets.
- */
-async function importNeon(): Promise<{ neon: (connectionString: string) => unknown }> {
-  try {
-    return await import('@neondatabase/serverless') as { neon: (connectionString: string) => unknown }
-  } catch {
-    throw new Error(
-      '[vonosan/drizzle] HTTP serverless pooling requires @neondatabase/serverless. ' +
-      'Install it: bun add @neondatabase/serverless',
-    )
   }
 }
 

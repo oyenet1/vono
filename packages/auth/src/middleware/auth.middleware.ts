@@ -13,12 +13,14 @@ import { HTTPException } from 'hono/http-exception'
 import type { AppVariables, AuthAccount } from 'vonosan/types'
 import { Logger } from 'vonosan/server'
 import { verifyToken } from '../lib/jwt.js'
-import { apiKeys } from '../schema.js'
+import { accounts, apiKeys } from '../schema.js'
 import { eq } from 'drizzle-orm'
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type AuthVariables = AppVariables & { account: AuthAccount }
+type AuthDb = PostgresJsDatabase<typeof import('../schema.js')>
 
 // ─── authMiddleware ───────────────────────────────────────────────────────────
 
@@ -41,13 +43,14 @@ export const authMiddleware = createMiddleware<{ Variables: AuthVariables }>(
       throw new HTTPException(401, { message: 'Unauthorized: invalid or expired token' })
     }
 
-    const db = c.var.db as import('drizzle-orm/postgres-js').PostgresJsDatabase
+    if (!payload.sub) {
+      throw new HTTPException(401, { message: 'Unauthorized: invalid token subject' })
+    }
+
+    const db = c.var.db as AuthDb
 
     // Load account from DB to get current roles/status
-    const { accounts } = await import('../schema.js')
-    const account = await db.query.accounts?.findFirst?.({
-      where: eq(accounts.id, payload.sub),
-    })
+    const [account] = await db.select().from(accounts).where(eq(accounts.id, payload.sub)).limit(1)
 
     if (!account || account.status !== 'active') {
       throw new HTTPException(401, { message: 'Unauthorized: account not found or inactive' })
@@ -83,11 +86,17 @@ export const optionalAuthMiddleware = createMiddleware<{ Variables: AppVariables
         const payload = await verifyToken(token, config.JWT_SECRET)
 
         if (payload) {
-          const { accounts } = await import('../schema.js')
-          const db = c.var.db as import('drizzle-orm/postgres-js').PostgresJsDatabase
-          const account = await db.query.accounts?.findFirst?.({
-            where: eq(accounts.id, payload.sub),
-          })
+          if (!payload.sub) {
+            await next()
+            return
+          }
+
+          const db = c.var.db as AuthDb
+          const [account] = await db
+            .select()
+            .from(accounts)
+            .where(eq(accounts.id, payload.sub))
+            .limit(1)
 
           if (account && account.status === 'active') {
             c.set('account', {
@@ -154,7 +163,7 @@ export const apiKeyOrJwtMiddleware = createMiddleware<{ Variables: AuthVariables
   async (c, next) => {
     const authHeader = c.req.header('Authorization')
     const config = c.var.config
-    const db = c.var.db as import('drizzle-orm/postgres-js').PostgresJsDatabase
+    const db = c.var.db as AuthDb
 
     // Try API key first (vono_ prefix)
     if (authHeader?.startsWith('Bearer vono_')) {
@@ -164,18 +173,17 @@ export const apiKeyOrJwtMiddleware = createMiddleware<{ Variables: AuthVariables
       const { hashOtp } = await import('../lib/otp.js')
       const keyHash = await hashOtp(rawKey)
 
-      const keyRow = await db.query.apiKeys?.findFirst?.({
-        where: eq(apiKeys.key_hash, keyHash),
-      })
+      const [keyRow] = await db.select().from(apiKeys).where(eq(apiKeys.key_hash, keyHash)).limit(1)
 
       if (!keyRow) {
         throw new HTTPException(401, { message: 'Unauthorized: invalid API key' })
       }
 
-      const { accounts } = await import('../schema.js')
-      const account = await db.query.accounts?.findFirst?.({
-        where: eq(accounts.id, keyRow.account_id),
-      })
+      const [account] = await db
+        .select()
+        .from(accounts)
+        .where(eq(accounts.id, keyRow.account_id))
+        .limit(1)
 
       if (!account || account.status !== 'active') {
         throw new HTTPException(401, { message: 'Unauthorized: account inactive' })
@@ -210,10 +218,11 @@ export const apiKeyOrJwtMiddleware = createMiddleware<{ Variables: AuthVariables
         throw new HTTPException(401, { message: 'Unauthorized: invalid token' })
       }
 
-      const { accounts } = await import('../schema.js')
-      const account = await db.query.accounts?.findFirst?.({
-        where: eq(accounts.id, payload.sub),
-      })
+      if (!payload.sub) {
+        throw new HTTPException(401, { message: 'Unauthorized: invalid token subject' })
+      }
+
+      const [account] = await db.select().from(accounts).where(eq(accounts.id, payload.sub)).limit(1)
 
       if (!account || account.status !== 'active') {
         throw new HTTPException(401, { message: 'Unauthorized: account not found' })
