@@ -383,6 +383,7 @@ vonosan add auth                   # Install @vonosan/auth
 vonosan add notifications          # Install @vonosan/notifications
 vonosan add logging                # Install @vonosan/logging
 vonosan add ws                     # Install @vonosan/ws
+vonosan add frontend               # Add Vue + Vite frontend scaffold later
 
 vonosan add auth --eject           # Copy module source into your project
 ```
@@ -1147,7 +1148,7 @@ export default defineConfig({
 ```ts
 import { createSSRApp, createApp as createSPAApp } from 'vue'
 import { createPinia } from 'pinia'
-import { createHead } from '@unhead/vue'
+import { createUnhead } from '@unhead/vue'
 import { createRouter } from './router'
 import { resolveRouteRule } from './route-rules'
 import App from './App.vue'
@@ -1167,7 +1168,7 @@ export function createApp({ isServer, url }: CreateAppOptions) {
 
   const router = createRouter(isServer)
   const pinia = createPinia()
-  const head = createHead()
+  const head = createUnhead()
 
   app.use(router)
   app.use(pinia)
@@ -3716,14 +3717,14 @@ import './assets/css/main.css'
 import { createSSRApp } from 'vue'
 import { createPinia } from 'pinia'
 import ui from '@nuxt/ui/vue-plugin'
-import { createHead } from '@unhead/vue'
+import { createUnhead } from '@unhead/vue'
 import App from './App.vue'
 import { createRouter } from './router'
 
 export function createApp(isServer = false) {
   const app = createSSRApp(App)
   const pinia = createPinia()
-  const head = createHead()
+  const head = createUnhead()
   const router = createRouter(isServer)
 
   app.use(pinia)

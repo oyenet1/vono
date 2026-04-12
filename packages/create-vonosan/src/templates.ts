@@ -431,7 +431,7 @@ WEBSOCKET_DRIVER=
 
     'llms.txt': `# ${projectName}
 
-> A Vonosan full-stack TypeScript application.
+  > A Vonosan ${isApiOnly ? 'API-only' : 'full-stack'} TypeScript application.
 
 ## Stack
 - Runtime: ${deploymentTarget}
@@ -587,7 +587,9 @@ export const routeRules: RouteRules = {
         }
       : {}),
 
-    'src/env.d.ts': `/// <reference types="vite/client" />
+    ...(!isApiOnly
+      ? {
+          'src/env.d.ts': `/// <reference types="vite/client" />
 
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
@@ -595,6 +597,8 @@ declare module '*.vue' {
   export default component
 }
 `,
+        }
+      : {}),
 
     'src/index.ts': `${h}
 

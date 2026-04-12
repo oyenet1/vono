@@ -367,6 +367,7 @@ vonosan add auth                   # Install @vonosan/auth
 vonosan add notifications          # Install @vonosan/notifications
 vonosan add logging                # Install @vonosan/logging
 vonosan add ws                     # Install @vonosan/ws
+vonosan add frontend               # Add Vue + Vite frontend scaffold later
 
 vonosan add auth --eject           # Copy module source into your project
 ```

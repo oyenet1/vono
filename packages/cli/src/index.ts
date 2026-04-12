@@ -199,6 +199,7 @@ function printHelp(): void {
 \x1b[33mModule Installer:\x1b[0m
   vonosan add <module>            Install @vonosan/<module> and update config
   vonosan add <module> --eject    Copy module source into src/modules/<module>/
+  vonosan add frontend            Scaffold Vue + Vite frontend into API-only app
 
 \x1b[33mJobs:\x1b[0m
   vonosan jobs:run <name>         Execute a named cron job immediately
