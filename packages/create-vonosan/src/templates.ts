@@ -439,6 +439,7 @@ export default defineVonosanConfig({
           'vite.config.ts': `${h}
 
 import { defineConfig, loadEnv } from 'vite'
+import vue from '@vitejs/plugin-vue'
 import { vonosan } from 'vonosan/vite'
 import vonoConfig from './vonosan.config.js'
 
@@ -447,7 +448,7 @@ export default defineConfig(({ mode }) => {
   const port = Number(env.PORT ?? '4000')
 
   return {
-    plugins: [...vonosan(vonoConfig)],
+    plugins: [vue(), ...vonosan(vonoConfig)],
     server: {
       host: '0.0.0.0',
       port,
