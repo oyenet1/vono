@@ -47,7 +47,7 @@ export function scaffoldProject(answers: WizardAnswers, targetDir: string): void
       mkdirSync(dirname(homePagePath), { recursive: true })
       writeFileSync(
         homePagePath,
-        `<template>\n  <main>\n    <h1>${answers.projectName}</h1>\n    <p>Welcome to your Vonosan app.</p>\n  </main>\n</template>\n`,
+        `<template>\n  <div class="landing">\n    <header class="topbar">\n      <p class="brand">${answers.projectName}</p>\n    </header>\n\n    <section class="hero">\n      <p class="eyebrow">Welcome to Vonosan</p>\n      <h1>Build fast apps for every age and every audience.</h1>\n      <p class="subtext">A clean starter with a beautiful home page, ready for your product.</p>\n    </section>\n  </div>\n</template>\n\n<style scoped>\n.landing {\n  min-height: 100vh;\n  padding: 1.25rem;\n  color: #10243e;\n  font-family: \"Space Grotesk\", \"Nunito\", \"Segoe UI\", sans-serif;\n  background: radial-gradient(1000px 400px at 90% -10%, rgba(11, 109, 246, 0.18), transparent 60%), linear-gradient(180deg, #f8fafc, #eef6ff);\n}\n.topbar {\n  max-width: 1080px;\n  margin: 0 auto;\n}\n.brand {\n  margin: 0;\n  font-weight: 700;\n}\n.hero {\n  max-width: 1080px;\n  margin: 3rem auto 0;\n}\n.eyebrow {\n  margin: 0;\n  color: #0b6df6;\n  font-size: 0.8rem;\n  font-weight: 700;\n  text-transform: uppercase;\n}\n.hero h1 {\n  margin: 0.6rem 0 0;\n  font-size: clamp(1.9rem, 4vw, 3rem);\n}\n.subtext {\n  max-width: 60ch;\n  color: #4a5f7a;\n  line-height: 1.6;\n}\n</style>\n`,
         'utf8',
       )
     }

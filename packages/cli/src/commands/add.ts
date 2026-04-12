@@ -96,16 +96,16 @@ export default defineConfig(({ mode }) => {
   </UApp>
 </template>
 `,
-    'src/main.ts': `import { createSSRApp } from 'vue'
+    'src/main.ts': `import { createApp as createVueApp } from 'vue'
 import { createPinia } from 'pinia'
-import { createUnhead } from '@unhead/vue'
+import { createHead } from '@unhead/vue/client'
 import App from './App.vue'
 import { createRouter } from './router.js'
 
 export function createApp() {
-  const app = createSSRApp(App)
+  const app = createVueApp(App)
   const pinia = createPinia()
-  const head = createUnhead()
+  const head = createHead()
   const router = createRouter()
 
   app.use(pinia)
