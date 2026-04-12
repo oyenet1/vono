@@ -14,6 +14,8 @@ import { execa } from 'execa'
 import { runWizard } from './wizard.js'
 import { scaffoldProject } from './scaffold.js'
 
+const CLI_VERSION = '0.2.5'
+
 // ─── Helpers ─────────────────────────────────────────────────────────
 
 const green = (s: string) => `\x1b[32m${s}\x1b[0m`
@@ -31,7 +33,7 @@ async function main(): Promise<void> {
   // Parse flags
   const saasFlag = args.includes('--saas')
 
-  process.stdout.write(bold(`\ncreate-vonosan v0.1.0\n\n`))
+  process.stdout.write(bold(`\ncreate-vonosan v${CLI_VERSION}\n\n`))
 
   // ── Run interactive wizard ────────────────────────────────────────
   const answers = await runWizard(initialProjectName, saasFlag)

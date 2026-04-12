@@ -128,6 +128,19 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
 import * as schema from './schema.js'
 
+export async function createDb(connectionString: string) {
+  const client = postgres(connectionString)
+  const db = drizzle(client, { schema })
+  return {
+    db,
+    client: {
+      async end() {
+        await client.end({ timeout: 5 })
+      },
+    },
+  }
+}
+
 export const client = postgres(process.env.DATABASE_URL!)
 export const db = drizzle(client, { schema })
 `
@@ -137,6 +150,19 @@ export const db = drizzle(client, { schema })
 import { drizzle } from 'drizzle-orm/cockroach'
 import { Pool } from 'pg'
 import * as schema from './schema.js'
+
+export async function createDb(connectionString: string) {
+  const client = new Pool({ connectionString })
+  const db = drizzle({ client, schema })
+  return {
+    db,
+    client: {
+      async end() {
+        await client.end()
+      },
+    },
+  }
+}
 
 export const client = new Pool({ connectionString: process.env.DATABASE_URL! })
 export const db = drizzle({ client, schema })
@@ -148,6 +174,19 @@ import { drizzle } from 'drizzle-orm/mysql2'
 import mysql from 'mysql2/promise'
 import * as schema from './schema.js'
 
+export async function createDb(connectionString: string) {
+  const client = mysql.createPool(connectionString)
+  const db = drizzle({ client, schema, mode: 'default' })
+  return {
+    db,
+    client: {
+      async end() {
+        await client.end()
+      },
+    },
+  }
+}
+
 export const client = mysql.createPool(process.env.DATABASE_URL!)
 export const db = drizzle({ client, schema, mode: 'default' })
 `
@@ -158,6 +197,19 @@ import { drizzle } from 'drizzle-orm/singlestore'
 import mysql from 'mysql2/promise'
 import * as schema from './schema.js'
 
+export async function createDb(connectionString: string) {
+  const client = mysql.createPool(connectionString)
+  const db = drizzle({ client, schema })
+  return {
+    db,
+    client: {
+      async end() {
+        await client.end()
+      },
+    },
+  }
+}
+
 export const client = mysql.createPool(process.env.DATABASE_URL!)
 export const db = drizzle({ client, schema })
 `
@@ -166,6 +218,19 @@ export const db = drizzle({ client, schema })
 
 import { drizzle } from 'drizzle-orm/node-mssql'
 import * as schema from './schema.js'
+
+export async function createDb(connectionString: string) {
+  const db = drizzle(connectionString, { schema })
+  const rawClient = (db as { $client?: { close?: () => Promise<void> } }).$client
+  return {
+    db,
+    client: {
+      async end() {
+        if (rawClient?.close) await rawClient.close()
+      },
+    },
+  }
+}
 
 export const db = drizzle(process.env.DATABASE_URL!, { schema })
 export const client = db.$client
@@ -176,6 +241,23 @@ export const client = db.$client
 import { drizzle } from 'drizzle-orm/libsql'
 import { createClient } from '@libsql/client'
 import * as schema from './schema.js'
+
+export async function createDb(connectionString: string) {
+  const client = createClient({
+    url: connectionString,
+    authToken: process.env.DATABASE_AUTH_TOKEN,
+  })
+  const db = drizzle(client, { schema })
+  return {
+    db,
+    client: {
+      async end() {
+        const close = (client as { close?: () => void }).close
+        if (close) close.call(client)
+      },
+    },
+  }
+}
 
 export const client = createClient({
   url: process.env.DATABASE_URL!,
@@ -190,6 +272,12 @@ export const db = drizzle(client, { schema })
 import { drizzle } from 'drizzle-orm/d1'
 import * as schema from './schema.js'
 
+export async function createDb() {
+  throw new Error(
+    '[vonosan] D1 selected: use createD1Db(env.DB) in your Cloudflare runtime setup.',
+  )
+}
+
 export function createD1Db(binding: D1Database) {
   return drizzle(binding, { schema })
 }
@@ -197,6 +285,10 @@ export function createD1Db(binding: D1Database) {
 export type AppDb = ReturnType<typeof createD1Db>
 `
                 : `${h}
+
+export async function createDb() {
+  throw new Error('[vonosan] No database driver selected.')
+}
 
 export const db = null
 export const client = null
@@ -346,13 +438,25 @@ export default defineVonosanConfig({
       ? {
           'vite.config.ts': `${h}
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig, loadEnv } from 'vite'
 import { vonosan } from 'vonosan/vite'
 import vonoConfig from './vonosan.config.js'
 
-export default defineConfig({
-  plugins: [vue(), ...vonosan(vonoConfig)],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const port = Number(env.PORT ?? '4000')
+
+  return {
+    plugins: [...vonosan(vonoConfig)],
+    server: {
+      host: '0.0.0.0',
+      port,
+    },
+    preview: {
+      host: '0.0.0.0',
+      port,
+    },
+  }
 })
 `,
         }
@@ -478,9 +582,7 @@ WEBSOCKET_DRIVER=
   ${projectName} — Root App Component
 -->
 <template>
-  <UApp>
-    <RouterView />
-  </UApp>
+  <RouterView />
 </template>
 `,
 
@@ -504,6 +606,13 @@ export function createApp() {
 
   return { app, pinia, head, router }
 }
+
+if (!import.meta.env.SSR) {
+  const { app, router } = createApp()
+  router.isReady().then(() => {
+    app.mount('#app')
+  })
+}
 `,
         }
       : {}),
@@ -512,15 +621,22 @@ export function createApp() {
 
     'src/app.ts': `${h}
 
-import { createVonosanApp } from 'vonosan/server'
+import { createVonosanApp, registerDbFactory } from 'vonosan/server'
+import type { Hono } from 'hono'
 import config from '../vonosan.config.js'
+import { createDb } from './db/index.js'
 ${needsNativeWs ? "import { registerNativeWebSocketRoutes } from './shared/ws/native.server.js'" : ''}
 ${websocketDriver === 'cloudflare-websocket' ? "import { registerCloudflareWebSocketRoutes } from './shared/ws/cloudflare.server.js'" : ''}
 ${apiDocs ? "import openApiSpec from './openapi.js'" : ''}
 
+const modules = import.meta.glob('./modules/*/*.routes.ts', { eager: true }) as Record<string, { default?: Hono }>
+
+registerDbFactory({ createDb })
+
 const app = createVonosanApp({
   config,
   ${apiDocs ? 'openApiSpec,' : ''}
+  modules,
 })
 
 ${needsNativeWs ? 'registerNativeWebSocketRoutes(app)' : ''}
@@ -552,6 +668,22 @@ const routes = [
     path: '/',
     component: () => import('./modules/home/index.page.vue'),
   },
+  ${auth ? `{
+    path: '/auth/login',
+    component: () => import('./modules/auth/login.page.vue'),
+  },
+  {
+    path: '/auth/register',
+    component: () => import('./modules/auth/register.page.vue'),
+  },
+  {
+    path: '/auth/forgot-password',
+    component: () => import('./modules/auth/forgot-password.page.vue'),
+  },
+  {
+    path: '/auth/reset-password',
+    component: () => import('./modules/auth/reset-password.page.vue'),
+  },` : ''}
 ]
 
 export function createRouter() {
@@ -586,6 +718,217 @@ export const routeRules: RouteRules = {
 `,
         }
       : {}),
+
+    ...(auth
+      ? {
+          'src/modules/auth/auth.routes.ts': `${h}
+
+import { authRouter } from '@vonosan/auth'
+
+export default authRouter
+`,
+        }
+      : {}),
+
+    ...(auth && !isApiOnly
+      ? {
+          'src/modules/auth/login.page.vue': `<template>
+  <main style="max-width: 480px; margin: 3rem auto; padding: 1rem;">
+    <h1>Login</h1>
+    <form @submit.prevent="onSubmit" style="display: grid; gap: 0.75rem; margin-top: 1rem;">
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="password" type="password" placeholder="Password" required />
+      <button type="submit" :disabled="loading">{{ loading ? 'Signing in...' : 'Login' }}</button>
+    </form>
+    <p v-if="message" style="color: green; margin-top: 0.75rem;">{{ message }}</p>
+    <p v-if="error" style="color: #c00; margin-top: 0.75rem;">{{ error }}</p>
+  </main>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const email = ref('')
+const password = ref('')
+const loading = ref(false)
+const error = ref('')
+const message = ref('')
+
+async function onSubmit() {
+  loading.value = true
+  error.value = ''
+  message.value = ''
+  try {
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value, password: password.value }),
+    })
+    if (!res.ok) throw new Error('Invalid credentials')
+    message.value = 'Login successful.'
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Login failed'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+`,
+          'src/modules/auth/register.page.vue': `<template>
+  <main style="max-width: 480px; margin: 3rem auto; padding: 1rem;">
+    <h1>Create account</h1>
+    <form @submit.prevent="onSubmit" style="display: grid; gap: 0.75rem; margin-top: 1rem;">
+      <input v-model="username" type="text" placeholder="Username" required />
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="password" type="password" placeholder="Password" required />
+      <button type="submit" :disabled="loading">{{ loading ? 'Creating...' : 'Register' }}</button>
+    </form>
+    <p v-if="message" style="color: green; margin-top: 0.75rem;">{{ message }}</p>
+    <p v-if="error" style="color: #c00; margin-top: 0.75rem;">{{ error }}</p>
+  </main>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const loading = ref(false)
+const error = ref('')
+const message = ref('')
+
+async function onSubmit() {
+  loading.value = true
+  error.value = ''
+  message.value = ''
+  try {
+    const res = await fetch('/api/v1/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username.value,
+        email: email.value,
+        password: password.value,
+      }),
+    })
+    if (!res.ok) throw new Error('Registration failed')
+    message.value = 'Account created.'
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Registration failed'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+`,
+          'src/modules/auth/forgot-password.page.vue': `<template>
+  <main style="max-width: 480px; margin: 3rem auto; padding: 1rem;">
+    <h1>Forgot password</h1>
+    <form @submit.prevent="onSubmit" style="display: grid; gap: 0.75rem; margin-top: 1rem;">
+      <input v-model="email" type="email" placeholder="Email" required />
+      <button type="submit" :disabled="loading">{{ loading ? 'Sending...' : 'Send reset code' }}</button>
+    </form>
+    <p v-if="message" style="color: green; margin-top: 0.75rem;">{{ message }}</p>
+    <p v-if="error" style="color: #c00; margin-top: 0.75rem;">{{ error }}</p>
+  </main>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const email = ref('')
+const loading = ref(false)
+const error = ref('')
+const message = ref('')
+
+async function onSubmit() {
+  loading.value = true
+  error.value = ''
+  message.value = ''
+  try {
+    const res = await fetch('/api/v1/auth/forgot-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.value }),
+    })
+    if (!res.ok) throw new Error('Request failed')
+    message.value = 'If the email exists, a reset code has been sent.'
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Request failed'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+`,
+          'src/modules/auth/reset-password.page.vue': `<template>
+  <main style="max-width: 480px; margin: 3rem auto; padding: 1rem;">
+    <h1>Reset password</h1>
+    <form @submit.prevent="onSubmit" style="display: grid; gap: 0.75rem; margin-top: 1rem;">
+      <input v-model="email" type="email" placeholder="Email" required />
+      <input v-model="otp" type="text" placeholder="OTP code" maxlength="6" required />
+      <input v-model="password" type="password" placeholder="New password" required />
+      <button type="submit" :disabled="loading">{{ loading ? 'Resetting...' : 'Reset password' }}</button>
+    </form>
+    <p v-if="message" style="color: green; margin-top: 0.75rem;">{{ message }}</p>
+    <p v-if="error" style="color: #c00; margin-top: 0.75rem;">{{ error }}</p>
+  </main>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const email = ref('')
+const otp = ref('')
+const password = ref('')
+const loading = ref(false)
+const error = ref('')
+const message = ref('')
+
+async function onSubmit() {
+  loading.value = true
+  error.value = ''
+  message.value = ''
+  try {
+    const res = await fetch('/api/v1/auth/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email.value,
+        otp: otp.value,
+        password: password.value,
+      }),
+    })
+    if (!res.ok) throw new Error('Reset failed')
+    message.value = 'Password reset successful.'
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Reset failed'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+`,
+        }
+      : {}),
+
+    'src/modules/health/health.routes.ts': `${h}
+
+import { Hono } from 'hono'
+
+const healthRouter = new Hono()
+
+healthRouter.get('/', (c) => {
+  return c.json({
+    ok: true,
+    service: '${projectName}',
+    timestamp: new Date().toISOString(),
+  })
+})
+
+export default healthRouter
+`,
 
     ...(!isApiOnly
       ? {
@@ -990,9 +1333,9 @@ export {}
                 build: 'tsc -p tsconfig.json',
               }
             : {
-                dev: 'vite --host 0.0.0.0 --port 4000',
+                dev: 'vite',
                 build: 'vite build',
-                preview: 'vite preview --host 0.0.0.0 --port 4000',
+                preview: 'vite preview',
               }),
           start: startCommand,
           'vono:cli': 'node ./scripts/vono-cli.mjs',
@@ -1006,6 +1349,7 @@ export {}
           vonosan: 'latest',
           hono: 'latest',
           '@hono/node-server': 'latest',
+          ...(auth ? { '@vonosan/auth': 'latest', '@hono/zod-validator': 'latest' } : {}),
           ...(!isApiOnly
             ? {
                 vue: 'latest',
