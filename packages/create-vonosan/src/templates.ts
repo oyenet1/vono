@@ -293,13 +293,47 @@ export async function createDb() {
 export const db = null
 export const client = null
 `
+  const portResolverSnippet = `import { createServer } from 'node:net'
+
+async function isPortAvailable(port: number): Promise<boolean> {
+  return await new Promise((resolve) => {
+    const server = createServer()
+
+    server.once('error', () => resolve(false))
+    server.once('listening', () => {
+      server.close(() => resolve(true))
+    })
+
+    server.listen(port, '0.0.0.0')
+  })
+}
+
+async function findAvailablePort(startPort: number, maxAttempts = 50): Promise<number> {
+  for (let offset = 0; offset < maxAttempts; offset++) {
+    const candidate = startPort + offset
+    if (await isPortAvailable(candidate)) {
+      return candidate
+    }
+  }
+
+  throw new Error(
+    \`[vonosan] Could not find an available port starting from \${startPort} (checked \${maxAttempts} ports).\`,
+  )
+}`
+
   const rootServerEntry = needsSocketIo && isBunRuntimeTarget
     ? `${h}
 
 import app from './src/app.js'
 import { createBunSocketIOServer } from './src/shared/ws/socketio.server.js'
+${portResolverSnippet}
 
-const port = Number(process.env.PORT ?? 4000)
+const requestedPort = Number(process.env.PORT ?? 4000)
+const port = await findAvailablePort(requestedPort)
+
+if (port !== requestedPort) {
+  console.warn(\`[vonosan] Port \${requestedPort} is in use. Using \${port} instead.\`)
+}
 
 const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
 
@@ -328,8 +362,14 @@ export default app
 import app from './src/app.js'
 import { attachSocketIOServer } from './src/shared/ws/socketio.server.js'
 import type { Server as HTTPServer } from 'node:http'
+${portResolverSnippet}
 
-const port = Number(process.env.PORT ?? 4000)
+const requestedPort = Number(process.env.PORT ?? 4000)
+const port = await findAvailablePort(requestedPort)
+
+if (port !== requestedPort) {
+  console.warn(\`[vonosan] Port \${requestedPort} is in use. Using \${port} instead.\`)
+}
 
 const { serve } = await import('@hono/node-server')
 
@@ -347,8 +387,14 @@ export default app
 
 import app from './src/app.js'
 import { websocket } from './src/shared/ws/native.server.js'
+${portResolverSnippet}
 
-const port = Number(process.env.PORT ?? 4000)
+const requestedPort = Number(process.env.PORT ?? 4000)
+const port = await findAvailablePort(requestedPort)
+
+if (port !== requestedPort) {
+  console.warn(\`[vonosan] Port \${requestedPort} is in use. Using \${port} instead.\`)
+}
 
 const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
 
@@ -370,8 +416,14 @@ export default app
 import app from './src/app.js'
 import { attachNodeWebSocketServer } from './src/shared/ws/native.server.js'
 import type { Server as HTTPServer } from 'node:http'
+${portResolverSnippet}
 
-const port = Number(process.env.PORT ?? 4000)
+const requestedPort = Number(process.env.PORT ?? 4000)
+const port = await findAvailablePort(requestedPort)
+
+if (port !== requestedPort) {
+  console.warn(\`[vonosan] Port \${requestedPort} is in use. Using \${port} instead.\`)
+}
 
 const { serve } = await import('@hono/node-server')
 
@@ -387,8 +439,14 @@ export default app
       : `${h}
 
 import app from './src/app.js'
+${portResolverSnippet}
 
-const port = Number(process.env.PORT ?? 4000)
+const requestedPort = Number(process.env.PORT ?? 4000)
+const port = await findAvailablePort(requestedPort)
+
+if (port !== requestedPort) {
+  console.warn(\`[vonosan] Port \${requestedPort} is in use. Using \${port} instead.\`)
+}
 
 const bunRef = (globalThis as { Bun?: { serve?: (options: unknown) => unknown } }).Bun
 
